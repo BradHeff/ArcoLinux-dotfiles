@@ -310,6 +310,8 @@ for_window [title="thun"] floating enable
 for_window [class="Pamac-updater"] move position center
 for_window [class="Pamac-updater"] floating enable
 
+for_window [class="Package Manager"] move position center
+for_window [class="Package Manager"] floating enable
 # Scratchpad
 for_window [title="scratch"] floating enable
 for_window [title="scratch"] move scratchpad
