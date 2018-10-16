@@ -307,6 +307,9 @@ for_window [title="bash"] floating enable
 for_window [title="thun"] move position center
 for_window [title="thun"] floating enable
 
+for_window [class="Pamac-updater"] move position center
+for_window [class="Pamac-updater"] floating enable
+
 # Scratchpad
 for_window [title="scratch"] floating enable
 for_window [title="scratch"] move scratchpad
