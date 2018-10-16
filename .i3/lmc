@@ -1,0 +1,16 @@
+#!/bin/sh
+
+newvol="pkill -RTMIN+10 i3blocks"
+newmpd="pkill -RTMIN+11 i3blocks"
+newip="pkill -RTMIN+12 i3blocks"
+
+case "$1" in
+	"up") pactl set-sink-volume @DEFAULT_SINK@ +5%; $newvol ;;
+	"down") pactl set-sink-volume @DEFAULT_SINK@ -5%; $newvol ;;
+	"mute") pactl set-sink-mute @DEFAULT_SINK@ toggle; $newvol ;;
+	"toggle") mpc toggle ; $newmpd ;;	
+	"next") mpc next ; $newmpd ;;
+	"prev") mpc prev ; $newmpd ;;
+	"con") perl ~/.i3/getip.pl; $newip;;
+esac
+exit

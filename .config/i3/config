@@ -1,0 +1,384 @@
+###############################################################
+#{{{ SETTINGS
+###############################################################
+
+# mod key
+set $mod Mod4
+floating_modifier $mod
+
+# font
+font pango:Terminus (TTF) 11
+
+# colors
+set $trans	 	         #00000000
+set $inactive-bg-color   #333333
+set $text-color          #f3f4f5
+set $urbg-color          #E53935
+set $color 		         #9e5630
+set $ws_color		     #d37340
+set $ws_bord		     #faa619
+
+# set window borders
+new_window pixel 3
+new_float pixel 3
+
+# GAPS
+smart_gaps on
+gaps inner 6
+gaps outer 2
+
+##############################
+#}}} SETTINGS END
+##############################
+
+
+###############################################################
+#{{{ KEYBINDS
+###############################################################
+
+##############################
+#{{ USER BINDS
+##############################
+
+# start a terminal
+#bindsym $mod+Return exec urxvt
+#bindsym $mod+Shift+x exec xfce4-terminal
+bindsym $mod+Return exec --no-startup-id urxvt;focus
+
+# start a Firefox
+bindsym $mod+Shift+w exec firefox
+
+# start a FileManager
+bindsym $mod+t exec thunar
+
+#start a Sublime Text
+bindsym $mod+Shift+a exec subl3
+
+# Take Screenshot
+bindsym Print exec scrot -q 100 -e 'mv $f ~/Pictures/screenshots/'
+
+# move workspace to to left screen or right
+bindsym $mod+bracketright move workspace to output right
+bindsym $mod+bracketleft move workspace to output left
+
+# Backlight Control
+#bindsym Shift+$mod+bracketright exec sudo light -A 10
+#bindsym Shift+$mod+bracketleft exec sudo light -U 10
+
+# switch workspaces
+bindsym $mod+n workspace next
+bindsym $mod+b workspace prev
+
+# Lock Screen
+#bindsym $mod+q exec slock
+
+# kill focused window
+bindsym $mod+Shift+q kill
+bindsym $mod+Control+q exec xkill
+
+# Scratchpad
+bindsym $mod+Shift+Return exec urxvt -title scratch
+bindsym $mod+Shift+s scratchpad show
+
+# Open Webcam
+bindsym $mod+c exec --no-startup-id /home/pheonix/.i3/camtoggle
+
+# Open VPN Menu
+bindsym $mod+Shift+v exec --no-startup-id perl /home/pheonix/.config/polybar/vpn_menu.pl
+bindsym $mod+Control+v exec --no-startup-id urxvt -title bash -geometry 120x23 -e sudo openvpn --config /home/pheonix/Documents/purevpn/udp_nz.ovpn
+#bindsym $mod+Shift+v exec --no-startup-id urxvt -title bash -geometry 120x23 -e sudo openvpn --config /home/pheonix/Documents/purevpn/udp_ger.ovpn
+# Volume Controls
+bindsym $mod+Shift+plus exec --no-startup-id sh /home/pheonix/.i3/lmc up
+bindsym $mod+Shift+minus exec --no-startup-id sh /home/pheonix/.i3/lmc down
+bindsym $mod+m exec --no-startup-id sh /home/pheonix/.i3/lmc mute
+
+# Start Rofi
+bindsym $mod+d exec "rofi -show drun" 
+#bindsym $mod+d exec "rofi -modi drun,run -show combi -sidebar-mode -lines 6 -eh 2 -opacity '80' -hide-scrollbar -bw 0 -color-window '#000000, #000000, #000000' -color-normal '#000000, $color, #000000, $color, #000000' -color-active '#000000, $color, #000000, $color, #000000' -color-urgent '#000000, $color, #000000, $color, #000000' -font 'San Francisco Display Light 10' -auto-select 'true'"
+
+##############################
+#}} USER BINDS END
+##############################
+
+##############################
+#{{ SYSTEM BINDS
+##############################
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r restart
+
+# exit i3 (logs you out of your X session)
+#bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3?' -b 'Yes, exit i3' 'i3-msg exit'"
+
+bindsym $mod+Shift+e exec perl /home/pheonix/.config/polybar/shutdown_menu.pl
+
+# resize window (you can also use the mouse for that)
+mode " resize " {
+        
+        bindsym j resize shrink width 10 px or 10 ppt
+        bindsym k resize grow height 10 px or 10 ppt
+        bindsym l resize shrink height 10 px or 10 ppt
+        bindsym semicolon resize grow width 10 px or 10 ppt
+
+        # same bindings, but for the arrow keys
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+
+        # back to normal: Enter or Escape or $mod+r
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+
+bindsym $mod+r mode " resize "
+
+##############################
+#}} SYSTEM BINDS END
+##############################
+
+##############################
+#{{ WINDOW BINDS
+##############################
+
+# change focus
+bindsym $mod+j focus left
+bindsym $mod+k focus down
+bindsym $mod+l focus up
+bindsym $mod+semicolon focus right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# move focused window
+bindsym $mod+Shift+j move left
+bindsym $mod+Shift+k move down
+bindsym $mod+Shift+l move up
+bindsym $mod+Shift+semicolon move right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# split in horizontal orientation
+bindsym $mod+h split h
+
+# split in vertical orientation
+bindsym $mod+v split v
+
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# focus the parent container
+bindsym $mod+a focus parent
+
+# focus the child container
+#bindsym $mod+d focus child
+
+##############################
+#}} WINDOW BINDS END
+##############################
+
+##############################
+#}}} KEYBINDS END
+##############################
+
+###############################################################
+#{{{ WORKSPACE SETTINGS
+###############################################################
+
+# Define names for default workspaces for which we configure key bindings later on.
+# We use variables to avoid repeating the names in multiple places.
+workspace_layout default
+
+set $ws1 "1 "
+set $ws2 "2 "
+set $ws3 "3 "
+set $ws4 "4 "
+set $ws5 "5 "
+set $ws6 "6 "
+set $ws7 "7 "
+set $ws8 "8 "
+set $ws9 "9 "
+set $ws10 "10 "
+
+# Force workspaces to be created on specific screens
+workspace $ws2 output "DisplayPort-0"
+workspace $ws4 output "DisplayPort-0"
+workspace $ws5 output "DisplayPort-0"
+workspace $ws6 output "DisplayPort-0"
+workspace $ws9 output "DisplayPort-0"
+
+
+workspace $ws1 output "HDMI-A-0"
+workspace $ws3 output "HDMI-A-0"
+workspace $ws7 output "HDMI-A-0"
+workspace $ws8 output "HDMI-A-0"
+workspace $ws10 output "HDMI-A-0"
+
+##############################
+#{{ WORKSPACE BINDS
+##############################
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9
+bindsym $mod+Shift+0 move container to workspace $ws10
+
+# switch to workspace
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+bindsym $mod+0 workspace $ws10
+
+##############################
+#}} WORKSPACE BINDS END
+##############################
+
+##############################
+#}}} WORKSPACE SETTINGS END
+##############################
+
+
+###############################################################
+#{{{ WINDOW SETTINGS
+###############################################################
+
+# Assign programs to open on specific workspaces
+assign [class="Firefox"] $ws1
+assign [class="Thunar"] $ws3
+assign [class="smplayer"] $ws4
+assign [class="Tixati"] $ws6
+assign [class="Steam"] $ws7
+assign [class="Subl3"] $ws8
+assign [class="jetbrains-studio"] $ws8
+assign [class="obs"] $ws9
+assign [title="bash"] $ws5
+
+# set specific programs to be in floating mode
+for_window [class="^.*"] border pixel 3
+for_window [class="Steam"] floating enable
+for_window [class="Gnome-calendar"] floating enable
+for_window [class="Tixati"] floating enable
+for_window [title="Welcome to Android Studio"] floating enable
+for_window [class="Thunar"] floating enable
+
+for_window [class="obs"] floating enable
+for_window [class="Nm-connection-editor"] floating enable
+for_window [class="Nm-connection-editor"] move position center
+for_window [class="Pavucontrol"] floating enable
+
+for_window [title="bash"] move position center
+for_window [title="bash"] floating enable
+
+for_window [title="thun"] move position center
+for_window [title="thun"] floating enable
+
+# Scratchpad
+for_window [title="scratch"] floating enable
+for_window [title="scratch"] move scratchpad
+
+for_window [class=".pl"] floating enable
+for_window [class=".py"] floating enable
+
+# force focus on opening programs
+for_window [class="Firefox"] focus
+for_window [class="Thunar"] focus
+for_window [class="smplayer"] focus
+for_window [class="Subl3"] focus
+for_window [class="obs"] focus
+for_window [class="Tixati"] focus
+for_window [class="Steam"] focus
+for_window [class="TelegramDesktop"] focus
+for_window [class="jetbrains-studio"] focus
+
+for_window [title="video0 - mpv"] floating enable
+for_window [title="video0 - mpv"] sticky enable
+for_window [title="video0 - mpv"] border pixel 0
+no_focus [title="video0 - mpv"]
+
+##############################
+#}}} WINDOW SETTINGS END
+##############################
+
+
+###############################################################
+#{{{ WINDOW MANAGER SETTINGS
+###############################################################
+
+# window colors
+#                       border              background          text            indicator
+client.urgent           $urgent-bg-color    $urgent-bg-color    $text-color     $inactive-bg-color
+client.unfocused 	$inactive-bg-color  $inactive-bg-color 	$text-color 	$inactive-bg-color
+client.focused_inactive $color	 	    $inactive-bg-color 	$text-color 	$inactive-bg-color
+client.focused 		$color		    $color		$text-color 	$inactive-bg-color
+
+##################################
+#}}} WINDOW MANAGER SETTINGS END
+##################################
+
+
+###############################################################
+#{{{ STARTUP ITEMS
+###############################################################
+exec --no-startup-id xrandr --output DisplayPort-0 --auto --output HDMI-A-0 --primary --left-of DisplayPort-0 &
+exec_always --no-startup-id sh /home/pheonix/.checkfeh &
+exec_always --no-startup-id compton -b --config "/home/pheonix/.compton.conf" &
+exec_always --no-startup-id /home/pheonix/.bin/pbar &
+exec --no-startup-id xrdb -merge /home/pheonix/.Xresources &
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+exec --no-startup-id dunst -config "/home/pheonix/.config/dunst/dunstrc" &
+exec --no-startup-id mpd &
+exec --no-startup-id start-pulseaudio-x11 &
+exec --no-startup-id nextcloud &
+exec --no-startup-id pamac-tray &
+exec --no-startup-id xfce4-power-manager &
+exec_always --no-startup-id numlockx on
+exec --no-startup-id urxvt -title scratch &
+
+####################
+#}} DISABLED STARTUPS
+####################
+#exec --no-startup-id xautolock -locker slock -time 4 -corners -+00 -cornerdelay 5 &
+#exec --no-startup-id nm-applet &
+#exec --no-startup-id volumeicon
+#exec --no-startup-id ~/.i3/startconky &
+#exec --no-startup-id insync start &
+
+##################################
+#}}} STATUP ITEMS END
+##################################
+# vim:filetype=i3

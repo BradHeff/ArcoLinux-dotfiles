@@ -1,0 +1,31 @@
+####################################################
+## this is example configuration file, copy it to ##
+## ~/.ncmpcpp/config and set up your preferences  ##
+####################################################
+#
+##### connection settings #####
+#
+## set it in order to make tag editor and renaming files work properly
+#
+mpd_host = "localhost"
+#
+mpd_port = "6600"
+#
+mpd_music_dir = "/home/pheonix/Music"
+
+progressbar_look = "━━╸"
+progressbar_color="white"
+progressbar_elapsed_color="yellow"
+user_interface = "classic"
+
+song_library_format = "{%n - }{%t}|{%f}"
+song_status_format = "{(%l) }{%a - }{%t}|{%f}"
+song_columns_list_format = "(7)[green]{l} (28)[cyan]{a} (28)[]{b} (50)[red]{t}"
+
+visualizer_fifo_path = "/tmp/mpd.fifo"
+visualizer_output_name = "my_fifo"
+visualizer_sync_interval = "30"
+visualizer_in_stereo = "no"
+visualizer_look = "●▋"
+#visualizer_type = "spectrum" (spectrum/wave)
+visualizer_type = "wave" (spectrum/wave)

@@ -1,0 +1,92 @@
+/* Hide Top Items on Bookmark Menu Button drop-down */
+#BMB_mobileBookmarks, 
+#BMB_mobileBookmarks + menuseparator {
+  display: none !important;
+}
+/* Tab bar below Navigation & Bookmarks Toolbars */
+#nav-bar { /* main toolbar */
+  -moz-box-ordinal-group: 1 !important;
+  box-shadow: none !important;
+}
+#PersonalToolbar { /* bookmarks toolbar */
+  -moz-box-ordinal-group: 2 !important;
+}
+#TabsToolbar { /* tab bar */
+  -moz-box-ordinal-group: 3 !important;
+  padding-top: 0 !important;
+}
+/* Clean up spacing */
+.titlebar-placeholder {
+  display: none !important;
+}
+toolbarbutton.bookmark-item {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+}
+
+/* Vertical space for min/max/close buttons above the main toolbar */
+/* On Mac, if not showing title bar, allow 20 pixels */
+#main-window[tabsintitlebar="true"]:not([inFullscreen="true"]) #toolbar-menubar:not([accesskey]) ~  #nav-bar {
+  margin-top: 20px !important;
+}
+/* On Windows, if not showing title bar or menu bar, allow 20 pixels */
+#main-window[tabsintitlebar="true"] #toolbar-menubar[autohide="true"][inactive="true"] ~ #nav-bar {
+  margin-top: 20px !important; /* More px may be better on Win10 */
+}
+/* Sorry, Linux users, I don't know the best approach for you! */
+
+/* Background for Light and Dark themes */
+#main-window[lwthemetextcolor="bright"] #TabsToolbar,
+#main-window[lwthemetextcolor="dark"] #TabsToolbar {
+  background-color: var(--chrome-secondary-background-color) !important;
+  background-image: none !important;
+}
+#main-window[lwthemetextcolor="dark"] .scrollbutton-up,
+#main-window[lwthemetextcolor="dark"] .scrollbutton-down,
+#main-window[lwthemetextcolor="dark"] .tabs-newtab-button,
+#main-window[lwthemetextcolor="dark"] #new-tab-button,
+#main-window[lwthemetextcolor="dark"] #alltabs-button {
+  fill: var(--lwt-text-color) !important;
+}
+/* Left and right borders on Win 7 & 8, but not on 10 and later: */
+@media (-moz-os-version: windows-win7), (-moz-os-version: windows-win8) {
+  /* Vertical toolbar border */
+  #main-window[sizemode=normal] #navigator-toolbox > toolbar#TabsToolbar {
+    border-left: 1px solid hsla(240,5%,5%,0.3) !important;;
+    border-right: 1px solid hsla(240,5%,5%,0.3) !important;;
+    background-clip: padding-box;
+  }
+}
+
+/* Override vertical shifts when moving a tab (9 Jan 2018) */
+#TabsToolbar[movingtab] {
+  padding-bottom: 0 !important;
+}
+#TabsToolbar[movingtab] > .tabbrowser-tabs {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+#TabsToolbar[movingtab] + #nav-bar {
+  margin-top: 0 !important;
+}
+
+input:not(.urlbar-input):not(.textbox-input):not(.form-control):not([type='checkbox']) {
+-moz-appearance: none !important;
+background-color: white;
+color: black;
+}
+
+#downloads-indicator-counter {
+color: white;
+}
+textarea {
+-moz-appearance: none !important;
+background-color: white;
+color: black;
+}
+
+select {
+-moz-appearance: none !important;
+background-color: white;
+color: black;
+}

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+pkill -f /dev/video || mpv --geometry=+1428+709 --autofit=25% /dev/video0

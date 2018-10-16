@@ -1,0 +1,27 @@
+#!/bin/bash
+
+FILE=$1
+OPTION=$2
+
+if [ $# -eq 2 ]; then
+	FILE=$2
+	OPTION=$1	
+fi
+
+if [[ -n "$FILE" ]]; then
+	if [[ -n "$OPTION" ]]; then
+		feh "$OPTION" --bg-scale "$FILE" &
+		echo "WITH OPTIONS"
+	else
+		feh --bg-scale "$FILE" &
+		echo "WITHOUT OPTIONS"
+	fi
+else
+	if [ ! -f /home/pheonix/.fehbg ]; then
+		feh --bg-scale "/home/pheonix/Pictures/Wallpapers/mcway-falls-in-big-sur-california-usa-wallpaper-for-1440x900-66-729.jpg" &
+		echo "NO FEHBG FILE"
+	else
+		sh /home/pheonix/.fehbg &
+		echo "WITH FEHBG FILE"
+	fi
+fi
