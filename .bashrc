@@ -185,10 +185,10 @@ alias gra="gitremote"
 gitremote() {
 	if [[ "$1" -eq "gh" ]]
 	then
-		git remote add origin https://BradHeff:a241d7f4c8038246d3fe67f1bb79f4fd6978b5d0@github.com/BradHeff/"$2".git
+		git remote add origin https://github.com/BradHeff/"$2".git
 	elif [[ "$1" -eq "gl" ]]
 	then
-		git remote add origin https://BradHeff:5ggxv8Maw6s4HRYyk_6E@gitlab.com/BradHeff/"$2".git
+		git remote add origin https://gitlab.com/BradHeff/"$2".git
 	fi	
 }
 alias sZ="source ~/.bashrc"
