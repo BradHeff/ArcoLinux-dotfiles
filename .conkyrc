@@ -1,0 +1,124 @@
+-- vim: ts=4 sw=4 noet ai cindent syntax=lua
+--[[
+Conky, a system monitor, based on torsmo
+
+Any original torsmo code is licensed under the BSD license
+
+All code written since the fork of torsmo is licensed under the GPL
+
+Please see COPYING for details
+
+Copyright (c) 2004, Hannu Saransaari and Lauri Hakkarainen
+Copyright (c) 2005-2012 Brenden Matthews, Philip Kovacs, et. al. (see AUTHORS)
+All rights reserved.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+]]
+
+--[[# Purple 9372d2]]
+conky.config = {
+    alignment = 'top_left',
+    background = false,
+    border_width = 0,
+    cpu_avg_samples = 2,
+	default_color = 'white',
+    default_outline_color = 'white',
+    default_shade_color = 'black',
+    draw_borders = false,
+    draw_graph_borders = true,
+    draw_outline = false,
+    draw_shades = true,
+    color1 = 'd37340',
+    color2 = '95c5f6',
+    color3 = 'F80E27',
+    color4 = '20dc3e',
+    use_xft = true,
+    xftalpha = 0.9,
+    total_run_times = 0,
+    font = 'San Francisco Text:size=11:style=Regular',
+    gap_x = 12,
+    gap_y = 20,
+    minimum_height = 5,
+	minimum_width = 5,
+    net_avg_samples = 2,
+    no_buffers = true,
+    double_buffer = true,
+    out_to_console = false,
+    out_to_stderr = false,
+    extra_newline = false,
+    own_window = true,
+    own_window_class = 'Conky',
+    own_window_type = 'override',
+    own_window_argb_visual = true,
+    own_window_argb_value = 0,
+    stippled_borders = 0,
+    update_interval = 1.0,
+    uppercase = false,
+    override_utf8_locale = false,
+    use_spacer = 'none',
+    show_graph_scale = false,
+    show_graph_range = false
+}
+
+conky.text = [[
+${color1}SYSTEM ${hr 3}${color}
+#${font OpenLogos:size=40}Q${font}
+System: $alignr${texeci 3600 lsb_release -si}/${texeci 3600 uname -s} $machine
+Kernel: $alignr${texeci 3600 uname -r}
+Uptime: $alignr$uptime
+Packages: $alignr${texeci 3600 ls -d /var/db/pkg/*/* | wc -l}
+Throtle: ${alignr}${freq} MHz
+Processes: ${alignr}$processes ($running_processes running)
+Load: ${alignr}$loadavg
+
+${color1}HARDWARE ${hr 1}${color}
+CPU1 ${alignr}${cpu cpu1}%
+${cpubar cpu1}
+CPU2 ${alignr}${cpu cpu2}%
+${cpubar cpu2}
+CPU3 ${alignr}${cpu cpu3}%
+${cpubar cpu3}
+CPU4 ${alignr}${cpu cpu4}%
+${cpubar cpu4}
+Ram ${alignr}$mem / $memmax ($memperc%)
+${membar 8}
+
+${color1}Top CPU${hr 1}${color}
+${top name 1}$alignr${top cpu 1}${top mem 1}
+${top name 2}$alignr${top cpu 2}${top mem 2}
+${top name 3}$alignr${top cpu 3}${top mem 3}
+${color1}Top MEM${hr 1}${color}
+${top_mem name 1}$alignr${top_mem cpu 1}${top_mem mem 1}
+${top_mem name 2}$alignr${top_mem cpu 2}${top_mem mem 2}
+${top_mem name 3}$alignr${top_mem cpu 3}${top_mem mem 3}
+
+${color1}FILESYSTEM ${hr 1}${color}
+Read:$alignr$diskio_read
+${diskiograph_read 25,240 797979 FFFFFF}
+Write:$alignr$diskio_write
+${diskiograph_write 25,240 797979 FFFFFF}
+Root: ${alignr}${fs_used /} / ${fs_size /}
+${fs_bar 4 /}
+Home: ${alignr}${fs_used /home} / ${fs_size /home}
+${fs_bar 4 /home}
+#SWAP${alignr}$swap / $swapmax 
+#${swapbar}
+
+${color1}NETWORK ${hr 1}${color}
+VPN Status${alignr}${execpi 10 perl ~/.vpn.pl stat} 
+VPN Server${alignr}${execpi 10 perl ~/.vpn.pl con} 
+
+Down ${downspeed eth0} ${alignr}Up ${upspeed eth0}
+${downspeedgraph eth0 25,107} ${alignr}${upspeedgraph eth0 25,107}
+Total ${totaldown eth0} ${alignr}Total ${totalup eth0}
+]]
