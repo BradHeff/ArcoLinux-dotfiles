@@ -2,7 +2,7 @@
 # ~/.bashrc
 #
 
-. /home/pheonix/.git-prompt.bash
+. ~/.git-prompt.bash
 
 precmd() {
     echo `git_prompt_precmd`
@@ -91,8 +91,9 @@ youtube() {
     fi
 }
 
-if [ -d "$HOME/.bin" ] ;
-	then PATH="$HOME/.bin:$PATH"
+if [ -d "$HOME/.bin" ];
+then
+	PATH="$HOME/.bin:$PATH"
 fi
 
 #list
@@ -182,6 +183,8 @@ alias gr="git rm"
 alias grd="git rm -r"
 alias gra="gitremote"
 
+alias serv="ssh brad@192.168.1.5"
+
 gitremote() {
 	if [[ "$1" -eq "gh" ]]
 	then
@@ -220,3 +223,4 @@ shopt -s expand_aliases # expand aliases
 #neofetch
 clear && ~/.i3/info
 EDITOR=vim
+

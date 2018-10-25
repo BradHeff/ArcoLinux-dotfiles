@@ -41,8 +41,6 @@ gaps outer 2
 ##############################
 
 # start a terminal
-#bindsym $mod+Return exec urxvt
-#bindsym $mod+Shift+x exec xfce4-terminal
 bindsym $mod+Return exec --no-startup-id urxvt;focus
 
 # start a Firefox
@@ -85,8 +83,8 @@ bindsym $mod+c exec --no-startup-id /home/pheonix/.i3/camtoggle
 
 # Open VPN Menu
 bindsym $mod+Shift+v exec --no-startup-id perl /home/pheonix/.config/polybar/vpn_menu.pl
-bindsym $mod+Control+v exec --no-startup-id urxvt -title bash -geometry 120x23 -e sudo openvpn --config /home/pheonix/Documents/purevpn/udp_nz.ovpn
-#bindsym $mod+Shift+v exec --no-startup-id urxvt -title bash -geometry 120x23 -e sudo openvpn --config /home/pheonix/Documents/purevpn/udp_ger.ovpn
+#bindsym $mod+Control+v exec --no-startup-id urxvt -title bash -geometry 120x23 -e sudo openvpn --config /home/pheonix/Documents/purevpn/udp_nz.ovpn
+
 # Volume Controls
 bindsym $mod+Shift+plus exec --no-startup-id sh /home/pheonix/.i3/lmc up
 bindsym $mod+Shift+minus exec --no-startup-id sh /home/pheonix/.i3/lmc down
@@ -94,7 +92,6 @@ bindsym $mod+m exec --no-startup-id sh /home/pheonix/.i3/lmc mute
 
 # Start Rofi
 bindsym $mod+d exec "rofi -show drun" 
-#bindsym $mod+d exec "rofi -modi drun,run -show combi -sidebar-mode -lines 6 -eh 2 -opacity '80' -hide-scrollbar -bw 0 -color-window '#000000, #000000, #000000' -color-normal '#000000, $color, #000000, $color, #000000' -color-active '#000000, $color, #000000, $color, #000000' -color-urgent '#000000, $color, #000000, $color, #000000' -font 'San Francisco Display Light 10' -auto-select 'true'"
 
 ##############################
 #}} USER BINDS END
@@ -112,7 +109,6 @@ bindsym $mod+Shift+r restart
 
 # exit i3 (logs you out of your X session)
 #bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3?' -b 'Yes, exit i3' 'i3-msg exit'"
-
 bindsym $mod+Shift+e exec perl /home/pheonix/.config/polybar/shutdown_menu.pl
 
 # resize window (you can also use the mouse for that)
@@ -162,6 +158,8 @@ bindsym $mod+Shift+j move left
 bindsym $mod+Shift+k move down
 bindsym $mod+Shift+l move up
 bindsym $mod+Shift+semicolon move right
+bindsym $mod+Shift+h move position center
+
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
@@ -279,11 +277,13 @@ bindsym $mod+0 workspace $ws10
 
 # Assign programs to open on specific workspaces
 assign [class="Firefox"] $ws1
+assign [class="Pragha"] $ws2
 assign [class="Thunar"] $ws3
 assign [class="smplayer"] $ws4
 assign [class="Tixati"] $ws6
 assign [class="Steam"] $ws7
 assign [class="Subl3"] $ws8
+assign [class="Atom"] $ws8
 assign [class="jetbrains-studio"] $ws8
 assign [class="obs"] $ws9
 assign [title="bash"] $ws5
@@ -319,6 +319,8 @@ for_window [title="scratch"] move scratchpad
 for_window [class=".pl"] floating enable
 for_window [class=".py"] floating enable
 
+for_window [class="Pragha"] floating enable
+
 # force focus on opening programs
 for_window [class="Firefox"] focus
 for_window [class="Thunar"] focus
@@ -329,6 +331,8 @@ for_window [class="Tixati"] focus
 for_window [class="Steam"] focus
 for_window [class="TelegramDesktop"] focus
 for_window [class="jetbrains-studio"] focus
+for_window [class="Atom"] focus
+for_window [class="Pragha"] focus
 
 for_window [title="video0 - mpv"] floating enable
 for_window [title="video0 - mpv"] sticky enable
@@ -346,7 +350,7 @@ no_focus [title="video0 - mpv"]
 
 # window colors
 #                       border              background          text            indicator
-client.urgent           $urgent-bg-color    $urgent-bg-color    $text-color     $inactive-bg-color
+client.urgent           $urbg-color    $urbg-color    $text-color     $inactive-bg-color
 client.unfocused 	$inactive-bg-color  $inactive-bg-color 	$text-color 	$inactive-bg-color
 client.focused_inactive $color	 	    $inactive-bg-color 	$text-color 	$inactive-bg-color
 client.focused 		$color		    $color		$text-color 	$inactive-bg-color
@@ -369,7 +373,7 @@ exec --no-startup-id dunst -config "/home/pheonix/.config/dunst/dunstrc" &
 exec --no-startup-id mpd &
 exec --no-startup-id start-pulseaudio-x11 &
 exec --no-startup-id nextcloud &
-exec --no-startup-id pamac-tray &
+exec --no-startup-id syncthing -no-browser &
 exec --no-startup-id xfce4-power-manager &
 exec_always --no-startup-id numlockx on
 exec --no-startup-id urxvt -title scratch &
@@ -382,6 +386,9 @@ exec --no-startup-id urxvt -title scratch &
 #exec --no-startup-id volumeicon
 #exec --no-startup-id ~/.i3/startconky &
 #exec --no-startup-id insync start &
+#exec --no-startup-id udiskie -2 -san &
+#exec --no-startup-id syncthing-gtk &
+#exec --no-startup-id pamac-tray &
 
 ##################################
 #}}} STATUP ITEMS END

@@ -68,8 +68,9 @@ URxvt*boldItalicFont:    	xft:Monospace:regular:size=12
 ! run :.!fc-list | grep <font-name>
 
 ! perl extensions
-URxvt*perl-ext-common:  default,clipboard,url-select,keyboard-select
+!URxvt*perl-ext-common:  default,clipboard,url-select,keyboard-select
 !URxvt*perl-ext-common:  default,clipboard,url-select,keyboard-select,tabbed,resize-font
+URxvt*perl-ext-common:  default,matcher,clipboard,url-select,keyboard-select,-tabbed,resize-font
 
 ! macros for clipboard and selection
 URxvt*copyCommand:      	xclip -i -selection clipboard
@@ -80,8 +81,18 @@ URxvt*keysym.M-C-v:     	perl:clipboard:paste_escaped
 URxvt*keysym.M-Escape:  	perl:keyboard-select:activate
 URxvt*keysym.M-s:       	perl:keyboard-select:search
 URxvt*keysym.M-u:       	perl:url-select:select_next
-URxvt*resize-font.smaller:	C-Down
-URxvt*resize-font.bigger:	C-Up
+
+!! Change font size on Control-Plus/Minus
+!URxvt.keysym.C-plus:     perl:resize-font:bigger
+!URxvt.keysym.C-minus:    perl:resize-font:smaller
+URxvt.keysym.Control-0x3d:    perl:resize-font:reset
+URxvt.keysym.Control-0x3f:    perl:resize-font:show
+
+URxvt.keysym.Control-0x2b: 	perl:resize-font:bigger
+URxvt.keysym.Control-0x2d: 	perl:resize-font:smaller
+
+!URxvt*resize-font.smaller:	C-Down
+!URxvt*resize-font.bigger:	C-Up
 URxvt*urlLauncher:      	firefox
 URxvt*underlineURLs:    	true
 URxvt*urlButton:        	1
@@ -96,7 +107,15 @@ URxvt*buffered:         	false
 URxvt*keysym.Control-Shift-C: 	perl:clipboard:copy
 URxvt*keysym.Control-Shift-V: 	perl:clipboard:paste
 
-
+!! Yeah, I am one of those, who use these keys in Vim :-(
+!!"\e[7~":beginning-of-line
+!!"\e[8~":end-of-line
+URxvt.keysym.Home:          \033[1~
+URxvt.keysym.End:           \033[4~
+URxvt.keysym.Control-Up:    \033[1;5A
+URxvt.keysym.Control-Down:  \033[1;5B
+URxvt.keysym.Control-Left:  \033[1;5D
+URxvt.keysym.Control-Right: \033[1;5C
 ! ------------------------------------------------------------------------------
 ! UXTerm standard arcolinux theme
 ! ------------------------------------------------------------------------------
