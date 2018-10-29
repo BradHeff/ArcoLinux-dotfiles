@@ -2,7 +2,7 @@
 # ~/.bashrc
 #
 
-. ~/.git-prompt.bash
+. /home/pheonix/.git-prompt.bash
 
 precmd() {
     echo `git_prompt_precmd`
@@ -182,16 +182,26 @@ alias gp="git push -u origin master"
 alias gr="git rm"
 alias grd="git rm -r"
 alias gra="gitremote"
+alias gcln="gitclone"
 
-alias serv="ssh brad@192.168.1.5"
+alias serv="ssh USER@LOCAL_IP"
 
+gitclone() {
+	if [[ "$1" -eq "gh" ]]
+	then
+		git clone https://USER:KEY@github.com/BradHeff/"$2".git
+	elif [[ "$1" -eq "gl" ]]
+	then
+		git clone https://USER:KEY@@gitlab.com/BradHeff/"$2".git
+	fi	
+}
 gitremote() {
 	if [[ "$1" -eq "gh" ]]
 	then
-		git remote add origin https://github.com/BradHeff/"$2".git
+		git remote add origin https://USER:KEY@@github.com/BradHeff/"$2".git
 	elif [[ "$1" -eq "gl" ]]
 	then
-		git remote add origin https://gitlab.com/BradHeff/"$2".git
+		git remote add origin https://USER:KEY@@gitlab.com/BradHeff/"$2".git
 	fi	
 }
 alias sZ="source ~/.bashrc"

@@ -10,13 +10,13 @@ floating_modifier $mod
 font pango:Terminus (TTF) 11
 
 # colors
-set $trans	 	         #00000000
-set $inactive-bg-color   #333333
-set $text-color          #f3f4f5
-set $urbg-color          #E53935
-set $color 		         #9e5630
-set $ws_color		     #d37340
-set $ws_bord		     #faa619
+set $trans	 	        #00000000
+set $inactive-bg-color   	#333333
+set $text-color			#f3f4f5
+set $urbg-color          	#E53935
+set $color 		        #9e5630
+set $ws_color		     	#d37340
+set $ws_bord		     	#faa619
 
 # set window borders
 new_window pixel 3
@@ -66,9 +66,6 @@ bindsym $mod+bracketleft move workspace to output left
 # switch workspaces
 bindsym $mod+n workspace next
 bindsym $mod+b workspace prev
-
-# Lock Screen
-#bindsym $mod+q exec slock
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -159,7 +156,6 @@ bindsym $mod+Shift+k move down
 bindsym $mod+Shift+l move up
 bindsym $mod+Shift+semicolon move right
 bindsym $mod+Shift+h move position center
-
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
@@ -277,21 +273,18 @@ bindsym $mod+0 workspace $ws10
 
 # Assign programs to open on specific workspaces
 assign [class="Firefox"] $ws1
-assign [class="Pragha"] $ws2
 assign [class="Thunar"] $ws3
 assign [class="smplayer"] $ws4
 assign [class="Tixati"] $ws6
 assign [class="Steam"] $ws7
 assign [class="Subl3"] $ws8
-assign [class="Atom"] $ws8
 assign [class="jetbrains-studio"] $ws8
 assign [class="obs"] $ws9
 assign [title="bash"] $ws5
 
 # set specific programs to be in floating mode
-for_window [class="^.*"] border pixel 3
-for_window [class="Steam"] floating enable
-for_window [class="Gnome-calendar"] floating enable
+
+#for_window [class="^.*"] border pixel 3
 for_window [class="Tixati"] floating enable
 for_window [title="Welcome to Android Studio"] floating enable
 for_window [class="Thunar"] floating enable
@@ -301,25 +294,24 @@ for_window [class="Nm-connection-editor"] floating enable
 for_window [class="Nm-connection-editor"] move position center
 for_window [class="Pavucontrol"] floating enable
 
-for_window [title="bash"] move position center
-for_window [title="bash"] floating enable
+for_window [class="URxvt" title="bash"] move position center
+for_window [class="URxvt" title="bash"] floating enable
 
-for_window [title="thun"] move position center
-for_window [title="thun"] floating enable
+for_window [class="URxvt" title="thun"] move position center
+for_window [class="URxvt" title="thun"] floating enable
 
 for_window [class="Pamac-updater"] move position center
 for_window [class="Pamac-updater"] floating enable
 
 for_window [class="Pamac-manager"] move position center
 for_window [class="Pamac-manager"] floating enable
+
 # Scratchpad
-for_window [title="scratch"] floating enable
-for_window [title="scratch"] move scratchpad
+for_window [class="URxvt" title="scratch"] floating enable
+for_window [class="URxvt" title="scratch"] move scratchpad
 
 for_window [class=".pl"] floating enable
 for_window [class=".py"] floating enable
-
-for_window [class="Pragha"] floating enable
 
 # force focus on opening programs
 for_window [class="Firefox"] focus
@@ -328,16 +320,12 @@ for_window [class="smplayer"] focus
 for_window [class="Subl3"] focus
 for_window [class="obs"] focus
 for_window [class="Tixati"] focus
-for_window [class="Steam"] focus
-for_window [class="TelegramDesktop"] focus
 for_window [class="jetbrains-studio"] focus
-for_window [class="Atom"] focus
-for_window [class="Pragha"] focus
 
-for_window [title="video0 - mpv"] floating enable
-for_window [title="video0 - mpv"] sticky enable
-for_window [title="video0 - mpv"] border pixel 0
-no_focus [title="video0 - mpv"]
+for_window [class="mpv" title="video0 - mpv"] floating enable
+for_window [class="mpv" title="video0 - mpv"] sticky enable
+for_window [class="mpv" title="video0 - mpv"] border pixel 0
+no_focus [class="mpv" title="video0 - mpv"]
 
 ##############################
 #}}} WINDOW SETTINGS END
@@ -372,7 +360,6 @@ exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 exec --no-startup-id dunst -config "/home/pheonix/.config/dunst/dunstrc" &
 exec --no-startup-id mpd &
 exec --no-startup-id start-pulseaudio-x11 &
-exec --no-startup-id nextcloud &
 exec --no-startup-id syncthing -no-browser &
 exec --no-startup-id xfce4-power-manager &
 exec_always --no-startup-id numlockx on
@@ -386,7 +373,7 @@ exec --no-startup-id urxvt -title scratch &
 #exec --no-startup-id volumeicon
 #exec --no-startup-id ~/.i3/startconky &
 #exec --no-startup-id insync start &
-#exec --no-startup-id udiskie -2 -san &
+#exec --no-startup-id nextcloud &
 #exec --no-startup-id syncthing-gtk &
 #exec --no-startup-id pamac-tray &
 
