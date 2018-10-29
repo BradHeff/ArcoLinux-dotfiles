@@ -1,0 +1,7 @@
+set colorscheme
+set colorscheme solarized
+set colorscheme snow
+
+set colorscheme default
+open_with 
+set colorscheme jungle
