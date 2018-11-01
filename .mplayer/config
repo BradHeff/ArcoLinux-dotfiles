@@ -1,0 +1,117 @@
+# Write your default config options here!
+
+#======
+# Video
+#======
+
+# Set video driver.
+vo=xv
+
+nodr=yes
+
+noslices=yes
+
+# Use double-buffering. (Recommended for xv with SUB/OSD usage)
+double=yes
+
+autoq=100
+vf=pp=de,hqdn3d
+
+vf-add=screenshot=/home/pheonix/Pictures/smplayer_screenshots/shot
+
+#======
+# Audio
+#======
+
+# Set audio driver.
+ao=alsa
+
+# Set mixer channel
+mixer-channel=Master
+
+# Ajust volume differences. *
+a52drc=1
+
+# Fix A/V sync problems. *
+mc=0.2
+
+af-add=scaletempo
+
+autosync=30
+
+softvol=yes
+softvol-max=110 
+
+#==========
+# Subtitles
+#==========
+
+# VobSubs
+#========
+
+# Align subs. (-1: as they want to align themselves)
+spualign=-1
+
+# Anti-alias subs. (4: best and slowest)
+spuaa=4
+
+# Set language.
+slang=fi,fin,en,eng
+
+# Text-based subtitles
+#=====================
+
+# Find subtitle files. (1: load all subs containing movie name)
+sub-fuzziness=1
+
+# Set font.
+font='/home/pheonix/.local/share/fonts/Corda W01 Regular.ttf'
+
+# Set font encoding.
+subfont-encoding=unicode
+
+# Set subtitle file encoding.
+unicode=yes
+utf8=yes
+
+# Resample the font alphamap. (1: narrow black outline)
+ffactor=1
+
+# Set subtitle position. (100: as low as possible)
+subpos=100
+
+# Set subtitle alignment at its position. (2: bottom)
+subalign=2
+
+# Set font size. (2: proportional to movie width)
+subfont-autoscale=2
+
+# Set font blur radius. (default: 2)
+subfont-blur=1.4
+
+# Set font outline thickness. (default: 2)
+subfont-outline=1.4
+
+# Set autoscale coefficient. (default: 5)
+subfont-text-scale=2.8
+
+# OSD
+#====
+
+# Set autoscale coefficient. (default: 6)
+subfont-osd-scale=4.4
+
+#===========
+# Appearance
+#===========
+
+# Disable screensaver.
+stop-xscreensaver=yes
+
+# Fullscreen window.
+fs=1
+progbar-align=80
+
+ontop=yes
+
+monitorpixelaspect=1
