@@ -4,6 +4,10 @@ killall polybar
 
 while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
 
-polybar Bar -r &
-polybar Bar2 -r &
-
+if [[ "$1" == 3 ]]; then
+	polybar Bar -r &
+	polybar Bar2 -r &
+else
+	polybar Bar_2bwm -r &
+	polybar Bar2_2bwm -r &
+fi
