@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=2bwm
+Comment=2bwm - A fast floating and keyboard driven window manager
+Exec=2bwm
+TryExec=2bwm
+Type=XSession
+X-LightDM-DesktopName=2bwm
+DesktopNames=2bwm
+Keywords=wm;windowmanager;window;manager;
