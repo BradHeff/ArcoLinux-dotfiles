@@ -10,7 +10,16 @@ my $color_window = "argb:D923262f, argb:F29e5630, argb:F29e5630";
 my $options = "-width -30 -location 5 -bw 1 -dmenu -i -p \"$title\" -lines 4 -color-window \'$color_window\' -color-normal \'$color_normal\' -font \'FontAwesome 5 Free 10\'";
 
 sub get_item {
-	my $items = "Shutdown\nReboot\nSuspend\nLogout";
+	my $RESULT = capture { system qq{sh /home/pheonix/.checksession} };
+	my $items = "";
+	chomp($RESULT);
+	
+	if($RESULT ne ""){
+		$items = "Shutdown\nReboot\nSuspend";
+	}else{
+		$items = "Shutdown\nReboot\nSuspend\nLogout";
+	}
+	
 		
 	my $var = capture { system qq{echo \"$items\" | sort | rofi $options}};
 	chomp $var;
@@ -23,8 +32,8 @@ sub handle_item {
 	chomp($selection);
 	
 	if($selection =~ /Logout/){ 
-		print "Logging Off\n";
-		system qq{i3-msg exit};
+		print "Logging Off\n";		
+		system qq{i3_exit};		
 	}
 	elsif($selection =~ /Reboot/){
 		print "Restarting\n";

@@ -23,7 +23,7 @@
 ;10% — 1A
 ;5% — 0D
 ;0% — 00
-
+   
 ;----------------------------------------------------------
 ;					G L O B A L S
 ;----------------------------------------------------------
@@ -45,7 +45,8 @@ ulr = #d7521a
 ulb = #568FC0
 ulg = #348c74
 ullb = #38d1b2
-bg = #2f343f
+;bg = #992f343f
+bg = #CC282A36
 bgr = #200100
 
 white = #d1d1d1
@@ -63,13 +64,14 @@ green = #aec795
 [bar/Bar]
 bottom = true
 ;dock = false
-wm-restack = i3
+
+;wm-restack = i3
 
 monitor = HDMI-A-0
 
 fixed-center = true
 
-border-size = 2
+border-size = 1
 border-color = ARGB:00000000
 
 width = 100%
@@ -91,7 +93,7 @@ padding-right = 2
 module-margin-right = 0
 module-margin-left = 0
 
-modules-right = mpd vpn weather trash volume
+modules-right = mpd vpn weather trash volume shutdown
 modules-center = date
 modules-left = i3 filesystem load memory cpu
 
@@ -117,15 +119,15 @@ font-1 = FontAwesome:size=10;1
 ;-----------------------
 ;  	    T R A Y
 ;-----------------------
-tray-position = right
-tray-padding = 1
-tray-detached = false
-tray-maxsize = 16
-tray-background = ${colors.bg}
-tray-offset-x = 0
-tray-offset-y = 0
+;tray-position = right
 ;tray-padding = 0
-tray-scale = 1.0
+;tray-detached = false
+;tray-maxsize = 16
+;tray-background = ${colors.bg}
+;tray-offset-x = 0
+;tray-offset-y = 0
+;tray-padding = 0
+;tray-scale = 1.0
 
 ;----------------------------------------------------------
 ;						B A R 2
@@ -133,13 +135,13 @@ tray-scale = 1.0
 [bar/Bar2]
 bottom = true
 ;dock = false
-wm-restack = i3
+;wm-restack = i3
 
 monitor = DisplayPort-0
 
 fixed-center = true
 
-border-size = 2
+border-size = 1
 border-color = #00aaaaaa
 
 width = 100%
@@ -161,9 +163,9 @@ padding-right = 2
 module-margin-right = 0
 module-margin-left = 0
 
-modules-right = mpd vpn trash shutdown
+;modules-right = mpd vpn trash shutdown
 modules-center = date
-modules-left = i3 filesystem load memory cpu
+modules-left = i3
 
 separator = "  "
 
@@ -183,6 +185,137 @@ font-1 = FontAwesome:size=10;1
 ;font-3 = Terminus (TTF):size=10;3
 ;font-3 = FontAwesome 5 Free:size=10:style=Solid;3
 ;font-4 = unifont:size=10;3
+
+
+;----------------------------------------------------------
+;						B A R 1 - 2 B W M
+;----------------------------------------------------------
+[bar/Bar_2bwm]
+bottom = true
+;dock = false
+
+;wm-restack = i3
+
+monitor = HDMI-A-0
+
+fixed-center = true
+
+border-size = 1
+border-color = ARGB:00000000
+
+width = 100%
+height = 28
+
+override-redirect = false
+;offset-x = 5%
+;offset-y = 1%
+radius = 1
+
+enable-ipc = false
+
+line-size = 2
+line-color = #D9000000
+
+padding-left = 1
+padding-right = 2
+
+module-margin-right = 0
+module-margin-left = 0
+
+modules-right = mpd vpn weather trash volume shutdown
+modules-center = date
+modules-left = 2bwm
+
+separator = "  "
+
+background = ${colors.bg}
+foreground = ${colors.fgy}
+
+;overline-size = 2
+;overline-color = ${colors.white}
+;underline-size = 4
+;underline-color = ${colors.fgy}
+
+;-----------------------
+;  	    F O N T S
+;-----------------------
+font-0 = Liberation Mono:size=10;1
+font-1 = FontAwesome:size=10;1
+;font-3 = Terminus (TTF):size=10;3
+;font-4 = FontAwesome 5 Free:size=10:style=Solid;3
+;font-5 = unifont:size=10;3
+
+;-----------------------
+;  	    T R A Y
+;-----------------------
+;tray-position = right
+;tray-padding = 0
+;tray-detached = false
+;tray-maxsize = 16
+;tray-background = ${colors.bg}
+;tray-offset-x = 0
+;tray-offset-y = 0
+;tray-padding = 0
+;tray-scale = 1.0
+
+;----------------------------------------------------------
+;						B A R 2 - 2 B W M
+;----------------------------------------------------------
+[bar/Bar2_2bwm]
+bottom = true
+;dock = false
+;wm-restack = i3
+
+monitor = DisplayPort-0
+
+fixed-center = true
+
+border-size = 1
+border-color = #00aaaaaa
+
+width = 100%
+height = 28
+
+override-redirect = false
+;offset-x = 5%
+;offset-y = 1%
+radius = 1
+
+line-size = 2
+line-color = #D9000000
+
+enable-ipc = false
+
+padding-left = 1
+padding-right = 2
+
+module-margin-right = 0
+module-margin-left = 0
+
+modules-right = filesystem load memory cpu
+modules-center = date
+modules-left = 2bwm
+
+separator = "  "
+
+background = ${colors.bg}
+foreground = ${colors.fgy}
+
+;overline-size = 2
+;overline-color = ${colors.white}
+;underline-size = 4
+;underline-color = ${colors.fgy}
+
+;-----------------------
+;  	    F O N T S
+;-----------------------
+font-0 = Liberation Mono:size=10;1
+font-1 = FontAwesome:size=10;1
+;font-3 = Terminus (TTF):size=10;3
+;font-3 = FontAwesome 5 Free:size=10:style=Solid;3
+;font-4 = unifont:size=10;3
+
+
 
 ;----------------------------------------------------------
 ;  	    		M O D U L E    L A Y O U T S
@@ -214,6 +347,21 @@ exec = perl /home/pheonix/.config/polybar/get_space.pl
 
 label = %output%
 
+
+;--------------------------------------------------
+;		     2 B W M   M O D U L E
+;--------------------------------------------------
+[module/2bwm]
+type = custom/script
+
+;label-underline = ${colors.ulr}
+;label-background = ${colors.bg}
+label-padding = 0
+
+exec = sh /home/pheonix/.config/polybar/2bws.sh
+interval = 0.01
+
+label = %output%
 
 ;--------------------------------------------------
 ;		I 3   M O D U L E
@@ -396,7 +544,7 @@ click-right = nm-connection-editor &
 ;		V O L U M E   M O D U L E
 ;--------------------------------------------------
 [module/volume]
-type = internal/volume
+type = internal/alsa
 interval = 2
 
 format-volume =   <label-volume>

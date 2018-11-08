@@ -59,12 +59,12 @@ URxvt*color14: #93e0e3
 URxvt*color15: #ffffff
 
 ! fonts
-URxvt*letterSpace: 	 	-2
-URxvt*font:                 	xft:Monospace:regular:size=12
-URxvt*imFont:               	xft:Monospace:regular:size=12
-URxvt*boldFont:             	xft:Monospace:bold:size=12
-URxvt*italicFont:           	xft:Monospace:italic:size=12
-URxvt*boldItalicFont:    	xft:Monospace:regular:size=12
+URxvt*letterSpace: 	 	1
+URxvt*font:                 	xft:iosevka:regular:size=12
+URxvt*imFont:               	xft:iosevka:regular:size=12
+URxvt*boldFont:             	xft:iosevka:bold:size=12
+URxvt*italicFont:           	xft:iosevka:italic:size=12
+URxvt*boldItalicFont:    	xft:iosevka:regular:size=12
 ! run :.!fc-list | grep <font-name>
 
 ! perl extensions
@@ -85,17 +85,18 @@ URxvt*keysym.M-u:       	perl:url-select:select_next
 !! Change font size on Control-Plus/Minus
 !URxvt.keysym.C-plus:     perl:resize-font:bigger
 !URxvt.keysym.C-minus:    perl:resize-font:smaller
-URxvt.keysym.Control-0x3d:    perl:resize-font:reset
+URxvt.keysym.Control-0x2f:    perl:resize-font:reset
 URxvt.keysym.Control-0x3f:    perl:resize-font:show
 
 URxvt.keysym.Control-0x2b: 	perl:resize-font:bigger
-URxvt.keysym.Control-0x2d: 	perl:resize-font:smaller
+URxvt.keysym.Control-0x5f: 	perl:resize-font:smaller
 
 !URxvt*resize-font.smaller:	C-Down
 !URxvt*resize-font.bigger:	C-Up
-URxvt*urlLauncher:      	firefox
+URxvt*urlLauncher:      	/usr/bin/firefox
 URxvt*underlineURLs:    	true
-URxvt*urlButton:        	1
+!URxvt*urlButton:        	1
+URxvt.matcher.button:        1
 URxvt*geometry: 		88x23
 
 ! tabbed
@@ -164,3 +165,14 @@ UXTerm*color15: rgb:fc/fc/fc
 UXTerm*boldMode: false
 UXTerm*colorBDMode: true
 UXTerm*colorBD: rgb:3f/3f/3f
+
+twobwm.border_width: 8
+twobwm.outer_border: 4
+twobwm.focus_color: #9e5630
+twobwm.unfocus_color: #282A36
+twobwm.fixed_color: #E0B053
+twobwm.unkill_color: #d7521a
+twobwm.outer_border_color: #282A36
+twobwm.fixed_unkill_color: #38d1b2
+twobwm.inverted_colors: false
+twobwm.enable_compton: true

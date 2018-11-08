@@ -1,0 +1,9 @@
+#!/bin/sh
+
+SERVICE="2bwm"
+ps_out=`ps -ef | grep ${SERVICE} | grep -v 'grep' | grep -v $0`
+res=$(echo $ps_out | grep ${SERVICE})
+
+res="${res%\\n}"
+
+echo $res
