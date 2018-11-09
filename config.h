@@ -5,7 +5,7 @@
 /* Move this many pixels when moving or resizing with keyboard unless the window has hints saying otherwise.
  *0)move step slow   1)move step fast
  *2)mouse slow       3)mouse fast     */
-static const uint16_t movements[] = {60,120,400,400};
+static const uint16_t movements[] = {60,120,400,800};
 /* resize by line like in mcwm -- jmbi */
 static const bool     resize_by_line          = true;
 /* the ratio used when resizing and keeping the aspect */
@@ -19,7 +19,7 @@ static const uint8_t offsets[] = {0,0,0,0};
  *2)fixedcol         3)unkilcol
  *4)fixedunkilcol    5)outerbordercol
  *6)emptycol         */
-static const char *colors[] = {"#9e5630","#282A36","#7a8c5c","#ff6666","#cc9933","#282A36","#9e5630"};
+static const char *colors[] = {"#9e5630","#282A36","#E0B053","#d7521a","#38d1b2","#282A36","#282A36","#282A36"};
 /* if this is set to true the inner border and outer borders colors will be swapped */
 static const bool inverted_colors = false;
 ///---Cursor---///
@@ -38,7 +38,7 @@ static const uint8_t borders[] = {6,7,25,1};
  * attribute of the window. You can test this using `xprop WM_NAME`
  */
 #define LOOK_INTO "WM_NAME"
-static const char *ignore_names[] = {"bar", "xclock"};
+static const char *ignore_names[] = {"bar", "xclock", "polybar-Bar_2bwm_HDMI-A-0", "polybar-Bar2_2bwm_DisplayPort-0"};
 ///--Menus and Programs---///
 static const char *thun[]   = { "thunar", NULL };
 static const char *term[]   = { "urxvt", NULL };
