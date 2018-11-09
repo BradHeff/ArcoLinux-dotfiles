@@ -21,18 +21,20 @@ my $num = @ARGV;
 sub check_condition {
 	my $str;
 	
-	if($_[0] =~ /Sunny/ || $_[0] =~ /Intermittent/ || $_ [0] =~ /Hazy/ || $_[0] =~ /Hot/) 
-	{ $str = ""; }
-	elsif($_[0] =~ /Cloudy/ || $_[0] =~ /Dreary (Overcast)/ || $_[0] =~ /Fog/) 
-	{ $str = ""; }
-	elsif( $_[0] =~ /Showers/ || $_[0] =~ /T-Storms/ || $_[0] =~ /Rain/)
+	if( $_[0] =~ /Showers/ || $_[0] =~ /Rain/ || $_[0] =~ /Flurries/ || $_[0] =~ /Snow/ || $_[0] =~ /Ice/ || $_[0] =~ /Sleet/ || $_[0] =~ /Cold/ )
 	{ $str= ""; }
-	elsif( $_[0] =~ /Windy/)
-	{ $str= ""; } 
-	elsif($_[0] =~ /Flurries/ || $_[0] =~ /Snow/ || $_[0] =~ /Ice/ || $_[0] =~ /Sleet/ || $_[0] =~ /Rain/ || $_[0] =~ /Cold/)
-	{ $str = ""; }
-	if($_[0] =~ /Clear/ || $_[0] =~ /Moonlight/ || $_[0] =~ /Intermittent/)
+	elsif( $_[0] =~ /T-Storms/ || $_[0] =~ /Thunderstorms/ )
+	{ $str = ""; }
+	elsif( $_[0] =~ /Sunny/ || $_[0] =~ /Intermittent/ || $_ [0] =~ /Hazy/ || $_[0] =~ /Hot/ || $_[0] =~ /Clear/ || $_[0] =~ /Sunshine/ ) 
+	{ $str = ""; }
+	elsif( $_[0] =~ /Moonlight/ || $_[0] =~ /Intermittent/ )
 	{ $str .= ""; }
+	elsif( $_[0] =~ /Cloudy/ || $_[0] =~ /Dreary/ || $_[0] =~ /Fog/ )
+	{ $str = ""; }
+	elsif( $_[0] =~ /Windy/ )
+	{ $str= ""; } 	
+	else
+	{ $str = ""; }
 	chomp($str);
 
 	return $str;
@@ -50,7 +52,8 @@ sub get_weather {
 	foreach my $title ($xml->findnodes('/rss/channel/item/title')) {
 		if($title =~ /Currently/){
 			my @arr = split(/:/, $title->to_literal());
-			$arr[1] =~ s/^\s+//;			
+			$arr[1] =~ s/^\s+//;
+			#print $arr[1] . "\n";
 			$str = join("", check_condition($arr[1]),$arr[2]);
 		}    	
 	}	

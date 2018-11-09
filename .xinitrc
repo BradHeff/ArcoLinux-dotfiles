@@ -20,21 +20,19 @@ fi
 #RESULT=$(echo $ps_out | grep ${SERVICE})
 RESULT=$(sh /home/pheonix/.checksession)
 
-xrandr --output DisplayPort-0 --auto --output HDMI-A-0 --primary --left-of DisplayPort-0 &
-xrdb -merge /home/pheonix/.Xresources &
-sh /home/pheonix/.checkfeh &
-compton -b --config "/home/pheonix/.compton.conf" &
 if [[ "$RESULT" != "" ]];then
+	xrandr --output DisplayPort-0 --auto --output HDMI-A-0 --primary --left-of DisplayPort-0 &
+	xrdb -merge /home/pheonix/.Xresources &
+	sh /home/pheonix/.checkfeh &
+	compton -b --config "/home/pheonix/.compton.conf" &
 	sh /home/pheonix/.bin/pbar 2 &
-else
-	sh /home/pheonix/.bin/pbar 3 &
+	/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+	dunst -config "/home/pheonix/.config/dunst/dunstrc" &
+	mpd &
+	redshift &
+	start-pulseaudio-x11 &
+	nextcloud &
+	syncthing -no-browser &
+	xfce4-power-manager &
+	#urxvt -title scratch &
 fi
-/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-dunst -config "/home/pheonix/.config/dunst/dunstrc" &
-mpd &
-redshift &
-start-pulseaudio-x11 &
-nextcloud &
-syncthing -no-browser &
-xfce4-power-manager &
-#urxvt -title scratch &

@@ -1,6 +1,7 @@
 ///---User configurable stuff---///
 ///---Modifiers---///
 #define MOD             XCB_MOD_MASK_4       /* Super/Windows key  or check xmodmap(1) with -pm  defined in /usr/include/xcb/xproto.h */
+//#define MOD             XCB_MOD_MASK_1 	 /* Alt_L (0x40),  Alt_R (0x6c),  Meta_L (0xcd) */
 ///--Speed---///
 /* Move this many pixels when moving or resizing with keyboard unless the window has hints saying otherwise.
  *0)move step slow   1)move step fast
@@ -38,7 +39,7 @@ static const uint8_t borders[] = {6,7,25,1};
  * attribute of the window. You can test this using `xprop WM_NAME`
  */
 #define LOOK_INTO "WM_NAME"
-static const char *ignore_names[] = {"bar", "xclock", "polybar-Bar_2bwm_HDMI-A-0", "polybar-Bar2_2bwm_DisplayPort-0"};
+static const char *ignore_names[] = {"bar", "xclock", "polybar-Bar_2bwm_eDP1", "polybar-Bar2_2bwm_eDP1"};
 ///--Menus and Programs---///
 static const char *thun[]   = { "thunar", NULL };
 static const char *term[]   = { "urxvt", NULL };
@@ -49,6 +50,8 @@ static const char *rofi[] = { "rofi", "-show", "drun", NULL };
 static const char *firefox[] = { "firefox", NULL };
 static const char *volup[] = { "sh", "/home/pheonix/.i3/lmc", "up", NULL };
 static const char *voldn[] = { "sh", "/home/pheonix/.i3/lmc", "down", NULL };
+static const char *bacdwn[] = { "xbacklight", "-5", NULL };
+static const char *bacup[] = { "xbacklight", "+5", NULL };
 
 #define WORKSPACES 5
 
@@ -196,8 +199,10 @@ static key keys[] = {
     {  MOD |SHIFT,        XK_a,          start,             {.com = ide}},
     {  MOD ,              XK_d,          start,             {.com = rofi}},
     {  MOD ,              XK_t,          start,             {.com = thun}},
-    {  MOD ,              XK_equal,     start,             {.com = volup}},
+    {  MOD ,              XK_equal,      start,             {.com = volup}},
     {  MOD ,              XK_minus,      start,             {.com = voldn}},
+    {  MOD |SHIFT,        XK_underscore, start,             {.com = bacdwn}},
+    {  MOD |SHIFT,        XK_plus,       start,             {.com = bacup}},
     // Exit or restart 2bwm
     {  MOD |CONTROL,      XK_q,          twobwm_exit,       {.i=0}},
     {  MOD |CONTROL,      XK_r,          twobwm_restart,    {.i=0}},
