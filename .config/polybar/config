@@ -46,7 +46,7 @@ ulb = #568FC0
 ulg = #348c74
 ullb = #38d1b2
 ;bg = #992f343f
-bg = #CC282A36
+bg = #E6282A36
 bgr = #200100
 
 white = #d1d1d1
@@ -192,7 +192,8 @@ font-1 = FontAwesome:size=10;1
 ;----------------------------------------------------------
 [bar/Bar_2bwm]
 bottom = true
-;dock = false
+
+dock = false
 
 ;wm-restack = i3
 
@@ -203,17 +204,17 @@ fixed-center = true
 border-size = 1
 border-color = ARGB:00000000
 
-width = 100%
-height = 28
+width = 98%
+height = 30
 
 override-redirect = false
-;offset-x = 5%
-;offset-y = 1%
-radius = 1
+offset-x = 0.9%
+offset-y = 0.5%
+radius = 7
 
 enable-ipc = false
 
-line-size = 2
+line-size = 1
 line-color = #D9000000
 
 padding-left = 1
@@ -226,7 +227,7 @@ modules-right = mpd vpn weather trash volume shutdown
 modules-center = date
 modules-left = 2bwm
 
-separator = "  "
+separator = " | "
 
 background = ${colors.bg}
 foreground = ${colors.fgy}
@@ -263,7 +264,7 @@ font-1 = FontAwesome:size=10;1
 ;----------------------------------------------------------
 [bar/Bar2_2bwm]
 bottom = true
-;dock = false
+dock = false
 ;wm-restack = i3
 
 monitor = DisplayPort-0
@@ -273,15 +274,15 @@ fixed-center = true
 border-size = 1
 border-color = #00aaaaaa
 
-width = 100%
-height = 28
+width = 98%
+height = 30
 
 override-redirect = false
-;offset-x = 5%
-;offset-y = 1%
-radius = 1
+offset-x = 0.9%
+offset-y = 0.5%
+radius = 7
 
-line-size = 2
+line-size = 1
 line-color = #D9000000
 
 enable-ipc = false
@@ -296,7 +297,7 @@ modules-right = filesystem load memory cpu
 modules-center = date
 modules-left = 2bwm
 
-separator = "  "
+separator = " | "
 
 background = ${colors.bg}
 foreground = ${colors.fgy}
@@ -358,8 +359,9 @@ type = custom/script
 ;label-background = ${colors.bg}
 label-padding = 0
 
-exec = sh /home/pheonix/.config/polybar/2bws.sh
-interval = 0.01
+;exec = sh /home/pheonix/.config/polybar/2bws.sh
+exec = perl /home/pheonix/.config/polybar/wm.pl
+interval = 0.3
 
 label = %output%
 
