@@ -37,17 +37,17 @@ conky.config = {
     draw_borders = false,
     draw_graph_borders = true,
     draw_outline = false,
-    draw_shades = true,
+    draw_shades = false,
     color1 = 'd37340',
     color2 = '95c5f6',
     color3 = 'F80E27',
     color4 = '20dc3e',
     use_xft = true,
-    xftalpha = 0.9,
+    xftalpha = 0.8,
     total_run_times = 0,
-    font = 'San Francisco Text:size=11:style=Regular',
+    font = 'Inconsolata for Powerline:size=12:style=Regular',
     gap_x = 12,
-    gap_y = 20,
+    gap_y = 105,
     minimum_height = 5,
 	minimum_width = 5,
     net_avg_samples = 2,
@@ -71,12 +71,12 @@ conky.config = {
 }
 
 conky.text = [[
-${color1}SYSTEM ${hr 3}${color}
-#${font OpenLogos:size=40}Q${font}
-System: $alignr${texeci 3600 lsb_release -si}/${texeci 3600 uname -s} $machine
-Kernel: $alignr${texeci 3600 uname -r}
-Uptime: $alignr$uptime
-Packages: $alignr${texeci 3600 ls -d /var/db/pkg/*/* | wc -l}
+${color1}SYSTEM ${hr 1}${color}
+${voffset 5}${font OpenLogos:size=36}B${font}
+${voffset -45}$alignr${texeci 3600 lsb_release -sir}
+${voffset 5}$alignr${texeci 3600 uname -r}
+${voffset 3}Uptime: $alignr$uptime
+Packages: $alignr${texeci 3600 pacman -Qq --color never | wc -l}
 Throtle: ${alignr}${freq} MHz
 Processes: ${alignr}$processes ($running_processes running)
 Load: ${alignr}$loadavg
@@ -107,18 +107,18 @@ Read:$alignr$diskio_read
 ${diskiograph_read 25,240 797979 FFFFFF}
 Write:$alignr$diskio_write
 ${diskiograph_write 25,240 797979 FFFFFF}
-Root: ${alignr}${fs_used /} / ${fs_size /}
-${fs_bar 4 /}
+#Root: ${alignr}${fs_used /} / ${fs_size /}
+#${fs_bar 4 /}
 Home: ${alignr}${fs_used /home} / ${fs_size /home}
 ${fs_bar 4 /home}
-#SWAP${alignr}$swap / $swapmax 
-#${swapbar}
+SWAP${alignr}$swap / $swapmax 
+${swapbar}
+#${color1}NETWORK ${hr 1}${color}
+#VPN Status${alignr}${execpi 10 perl ~/.vpn.pl stat} 
+#VPN Server${alignr}${execpi 10 perl ~/.vpn.pl con} 
 
 ${color1}NETWORK ${hr 1}${color}
-VPN Status${alignr}${execpi 10 perl ~/.vpn.pl stat} 
-VPN Server${alignr}${execpi 10 perl ~/.vpn.pl con} 
-
-Down ${downspeed eth0} ${alignr}Up ${upspeed eth0}
-${downspeedgraph eth0 25,107} ${alignr}${upspeedgraph eth0 25,107}
-Total ${totaldown eth0} ${alignr}Total ${totalup eth0}
+Down ${downspeed enp9s0} ${alignr}Up ${upspeed enp9s0}
+${downspeedgraph enp9s0 25,107} ${alignr}${upspeedgraph enp9s0 25,107}
+Total ${totaldown enp9s0} ${alignr}Total ${totalup enp9s0}
 ]]

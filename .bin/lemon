@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+RESULT=$(sh /home/pheonix/.checksession)
+
+if [[ "$RESULT" == "" ]];then
+	sh $HOME/.config/lemonbar/run_lemonbar2.sh &
+else
+	sh $HOME/.config/lemonbar/run_lemonbar.sh &
+fi
+
+exit

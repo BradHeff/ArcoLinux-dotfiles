@@ -18,7 +18,7 @@ if [[ -n "$FILE" ]]; then
 	fi
 else
 	if [ ! -f /home/pheonix/.fehbg ]; then
-		feh --bg-scale "~/Pictures/Wallpapers/starry-night-over-corsica-wallpaper-for-1440x900-66-986.jpg" &
+		feh --bg-scale "~/Pictures/Wallpapers/sunset-beautiful.jpg" &
 		echo "NO FEHBG FILE"
 	else
 		sh /home/pheonix/.fehbg &

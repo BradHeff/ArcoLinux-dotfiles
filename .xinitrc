@@ -11,28 +11,47 @@
 #  unset f
 #fi
 
+is_running() {
+	ps_out=`ps -ef | grep "$1" | grep -v 'grep' | grep -v $0`
+	result=$(echo $ps_out | grep "$1")	
+	if [[ "$result" != "" ]];then		
+	    return 0
+	else
+	    return 1
+	fi
+}
+
 if [ systemd-detect-virt = "oracle" ]; then
 	/usr/bin/VBoxClient-all
 fi
 
-#SERVICE="2bwm"
-#ps_out=`ps -ef | grep ${SERVICE} | grep -v 'grep' | grep -v $0`
-#RESULT=$(echo $ps_out | grep ${SERVICE})
 RESULT=$(sh /home/pheonix/.checksession)
 
-if [[ "$RESULT" != "" ]];then
+if [[ "$RESULT" != "" ]]; then
 	xrandr --output DisplayPort-0 --auto --output HDMI-A-0 --primary --left-of DisplayPort-0 &
 	xrdb -merge /home/pheonix/.Xresources &
-	sh /home/pheonix/.checkfeh &
-	compton -b --config "/home/pheonix/.compton.conf" &
-	sh /home/pheonix/.bin/pbar 2 &
-	/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-	dunst -config "/home/pheonix/.config/dunst/dunstrc" &
-	mpd &
-	redshift &
+	sh /home/pheonix/.checkfeh &	
+	( ! is_running 'compton' ) && compton -b --config "/home/pheonix/.compton.conf" &
+	( ! is_running "conky" ) && conky &
+
+	if ( ! is_running "lemonbar" ); then
+		/home/pheonix/.bin/lemon &
+	else
+		killall lemonbar
+		killall sleep
+		/home/pheonix/.bin/lemon &
+	fi
+	
+	( ! is_running "polkit-gnome-authentication-agent-1" ) && /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+	( ! is_running "dunst -config /home/pheonix/.config/dunst/dunstrc" ) && dunst -config "/home/pheonix/.config/dunst/dunstrc" &
+	( ! is_running "mpd --no-deamon" ) && mpd &
+	( ! is_running "redshift" ) && redshift &
 	start-pulseaudio-x11 &
-	nextcloud &
-	syncthing -no-browser &
-	xfce4-power-manager &
-	#urxvt -title scratch &
+	( ! is_running "./insync start" ) && insync start &
+	( ! is_running "nextcloud" ) && nextcloud &
+	( ! is_running "syncthing -no-browser" ) && syncthing -no-browser &
+	( ! is_running "xfce4-power-manager" ) && xfce4-power-manager &
+
 fi
+
+

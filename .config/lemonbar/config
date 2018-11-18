@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+#
+# A simple block-style bar using lemonbar
+# and named pipes to reduce resource footprint
+#
+# Normally, this file is split into seperate files
+# for colors and bar defaults, I have included them
+# all together here for simplicity
+#
+# Bar created by Joshua Ervin @ University of Washington
+# Contact: jlervin@posteo.net
+res_w=$(xrandr | grep "current" | awk '{print $8a}')
+
+WIDTH="${res_w}" # bar width
+HEIGHT=18 # bar height
+XOFF=0 # x offset
+YOFF=0 # y offset
+#BRDR=5 # border width
+#BRDRC=#00000000 # border color
+
+# color definitions 
+color_back="#FF282A36"              # Default background
+color_fore="#FFC5C8C6"              # Default foreground
+color_head="#FFB5BD68"              # Background for first element GREEN
+color_sec_b1="#FF282A2E"            # Background for section   DARK GREY
+color_sec_b2="#FF454A4F"            # Background for section 2 LIGHTISH GREY
+color_sec_b3="#FF60676E"            # Background for section 3 LIGHT GREY
+color_icon="#FF979997"              # For icons                 GREY
+color_pacman="#FFCE935F"              # Background color for mail alert
+color_yay="#FFCC6666"              # Background color for chat alert
+color_cpu="#FF5F819D"               # Background color for cpu alert
+color_vol_good="#FF5E8D87"          # Background color for volume OK
+color_vol_warn="#FFB5BD68"               # Background for volume WARN
+color_vol_alert="#FFCC6666"              # Background color for volume ALERT
+color_disable="#FF1D1F21"           # Foreground for disable elements
+color_wsp="#FF8C9440"               # Background for selected workspace
+color_sunset="#FFf59360"            # Background music
+
+BBG=${color_back} # bar background color
+BFG=${color_fore}
+
+if [ ${WIDTH} -gt 1024 ]; then
+  stab='  '
+else
+  stab=' '
+fi
+
+# Status constants
+# Change these to modify bar behavior
+DESKTOP_COUNT=5
+
+# Sleep constnats
+WORKSPACE_SLEEP=0.5
+VOLUME_SLEEP=1
+DATE_SLEEP=5
+TIME_SLEEP=1
+MUSIC_SLEEP=3
+MEM_SLEEP=3
+VPN_SLEEP=3
+UPDATE_SLEEP=60
+SPACE_SLEEP=5
+LOAD_SLEEP=3
+WEATHER_SLEEP=3600
+SYNC_SLEEP=5
+
+
+# Char glyps for powerline fonts
+sep_left=""                        # Powerline separator left
+sep_right=""                       # Powerline separator right
+sep_l_left=""                      # Powerline light separator left
+sep_l_right=""                     # Powerline light sepatator right
+
+icon_clock=""                      # Clock icon
+icon_date=""						# Date icon
+icon_cpu=""                        # CPU icon
+icon_mem=""                        # MEM icon
+icon_dl=""                         # Download icon
+icon_ul=""                         # Upload icon
+icon_vol=""                        # Volume icon
+icon_vol_mute=""                    # Volume Mute icon
+icon_hd=""                         # HD / icon
+icon_home=""                       # HD /home icon
+icon_music=""                      # Music icon
+icon_prog=""                      # Window icon
+icon_wsp=""                        # Workspace icon
+icon_update=""                    # Update Icon
+icon_pacman=""                     # Update Icon
+icon_vpn_off=""
+icon_vpn_on=""
+icon_space=""
+icon_load=""
+icon_synced=""
+icon_syncing=""
+icon_sync_error=""
+
+PANEL_FIFO=/tmp/panel-fifo
+FONTS="Inconsolata for Powerline:size=12"
+ICONFONTS="FontAwesome:size=11"
+GEOMETRY="${WIDTH}x${HEIGHT}+${XOFF}+${YOFF}"

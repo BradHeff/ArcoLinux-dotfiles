@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+get_updates(){
+    
+    if [[ -f "/usr/bin/pacman" ]]; then
+        updates=`pacman -Qu | wc -l`    
+    else
+        updates="0"
+    fi
+    echo "$updates"
+}
 
 get_packages(){
     has() { type -p "$1" >/dev/null && manager="$_"; }
@@ -117,10 +126,14 @@ get_uptime(){
     uptime="${uptime%', '}"
     uptime="${uptime:-${seconds} seconds}"
 
-    uptime="${uptime/minutes/mins}"
-    uptime="${uptime/minute/min}"
-    uptime="${uptime/seconds/secs}"
-
+    uptime="${uptime/ days/d}"
+    uptime="${uptime/ day/d}"
+    uptime="${uptime/ hours/h}"
+    uptime="${uptime/ hour/h}"
+    uptime="${uptime/ minutes/m}"
+    uptime="${uptime/ minute/m}"
+    uptime="${uptime/ seconds/s}"
+    uptime="${uptime//,}"
     echo "$uptime"
 }
 #}}}
@@ -131,24 +144,50 @@ get_gpu(){
                                               '/"Display|"3D|"VGA/ {a[$0] = $3 " " $4} END {for(i in a)
                                                {if(!seen[a[i]]++) print a[i]}}')"
     IFS=$'\n' read -d "" -ra gpus <<< "$gpu_cmd"
-    for gpu in "${gpus[@]}"; do
-        
-        brand="${gpu/*AMD*ATI*/AMD ATI}"
-        brand="${brand:-${gpu/*AMD*/AMD}}"
-        brand="${brand:-${gpu/*ATI*/ATi}}"
+    [[ "${gpus[0]}" == *Intel* && "${gpus[1]}" == *Intel* ]] && unset -v "gpus[0]"
 
-        gpu="${gpu/'[AMD/ATI]' }"
-        gpu="${gpu/'[AMD]' }"
-        gpu="${gpu/OEM }"
-        gpu="${gpu/Advanced Micro Devices, Inc.}"
-        gpu="${gpu/ \/ *}"
-        gpu="${gpu/*\[}"
-        gpu="${gpu/\]*}"
-        gpu="$brand $gpu"
-          
-        gpua="$gpu"
+    for gpu in "${gpus[@]}"; do        
+        case "$gpu" in
+            *"AMD"*)                
+                brand="${gpu/*AMD*ATI*/AMD ATI}"
+                brand="${brand:-${gpu/*AMD*/AMD}}"
+                brand="${brand:-${gpu/*ATI*/ATi}}"
+
+                gpu="${gpu/'[AMD/ATI]' }"
+                gpu="${gpu/'[AMD]' }"
+                gpu="${gpu/OEM }"
+                gpu="${gpu/Advanced Micro Devices, Inc.}"
+                gpu="${gpu/ \/ *}"
+                gpu="${gpu/*\[}"
+                gpu="${gpu/\]*}"
+                gpu="$brand $gpu"
+            ;;
+
+            *"nvidia"*)
+                gpu="${gpu/*\[}"
+                gpu="${gpu/\]*}"
+                gpu="NVIDIA $gpu"
+            ;;
+
+            *"intel"*)
+                gpu="${gpu/*Intel/Intel}"
+                gpu="${gpu/'(R)'}"
+                gpu="${gpu/'Corporation'}"
+                gpu="${gpu/ \(*}"
+                gpu="${gpu/Integrated Graphics Controller}"
+
+                [[ -z "$(trim "$gpu")" ]] && gpu="Intel Integrated Graphics"
+            ;;
+
+            *"virtualbox"*)
+                gpu="VirtualBox Graphics Adapter"
+            ;;
+        esac
     done
-    echo "$gpua"
+    gpu="${gpu/AMD }"
+    gpu="${gpu/NVIDIA }"
+    gpu="${gpu/Intel }"
+    echo "$gpu"
 }
 #gpu="$(glxinfo | grep -F 'OpenGL renderer string')"
 #gpu="${gpu/'OpenGL renderer string: '}"
@@ -191,6 +230,8 @@ get_shell(){
 
 get_cpu(){
     cpu_file="/proc/cpuinfo"
+    speed_type="bios_limit"
+    cpu_cores="physical"
 
     case "$kernel_machine" in
         "frv" | "hppa" | "m68k" | "openrisc" | "or"* | "powerpc" | "ppc"* | "sparc"*)
@@ -219,12 +260,6 @@ get_cpu(){
 
     speed_dir="/sys/devices/system/cpu/cpu0/cpufreq"
 
-    # Select the right temperature file.
-    for temp_dir in /sys/class/hwmon/*; do
-        [[ "$(< "${temp_dir}/name")" =~ (coretemp|fam15h_power|k10temp) ]] && \
-            { temp_dir="${temp_dir}/temp1_input"; break; }
-    done
-
     # Get CPU speed.
     if [[ -d "$speed_dir" ]]; then
         # Fallback to bios_limit if $speed_type fails.
@@ -238,10 +273,6 @@ get_cpu(){
         speed="$(awk -F ': |\\.' '/cpu MHz|^clock/ {printf $2; exit}' "$cpu_file")"
         speed="${speed/MHz}"
     fi
-
-    # Get CPU temp.
-    [[ -f "$temp_dir" ]] && \
-        deg="$(($(< "$temp_dir") * 100 / 10000))"
 
     # Get CPU cores.
     case "$cpu_cores" in
@@ -280,22 +311,19 @@ get_cpu(){
     cpu="${cpu/Core? Duo }"
     cpu="${cpu/Qualcomm }"    
 
-    # Add CPU cores to the output.
-    if [[ "$cores" ]]; then
-        cpu="$cpu ($cores)"
-    fi
-        
+    # Add CPU cores to the output.    
+    #cpu="$cpu ($cores)"  
 
     # Add CPU speed to the output.
-    if [[ "$speed" ]]; then
-        if (( speed < 1000 )); then
-            cpu="$cpu @ ${speed}MHz"
-        else
-            [[ "$speed_shorthand" == "on" ]] && speed="$((speed / 100))"
-            speed="${speed:0:1}.${speed:1}"
-            cpu="$cpu @ ${speed}GHz"
-        fi
-    fi
+    #if [[ "$speed" ]]; then
+    #    if (( speed < 1000 )); then
+    #        cpu="$cpu @ ${speed}MHz"
+    #    else
+    #        speed="$((speed / 100))"
+    #        speed="${speed:0:1}.${speed:1}"
+    #        cpu="$cpu @ ${speed}GHz"
+    #    fi
+    #fi
 
     echo "$cpu"
 }
@@ -440,55 +468,48 @@ get_termfn(){
 
 get_kernel(){
     IFS=" " read -ra uname <<< "$(uname -srm)"
+    unset IFS
     echo "${uname[1]}"
 }
+
+
 if [ -n "$DISPLAY" ]; then
+    res=$(get_res)
     wmname=$(get_wm)
-    res=$(get_res)    
     term=$(get_term)
     termfn=$(get_termfn)
-    systfn=`sed -n 's/^.*font.*"\(.*\)".*$/\1/p' ~/.gtkrc-2.0`
-    #wmname=`xprop -root _NET_WM_NAME|cut -d\" -f2`
-    #termfn=`xrdb -query | grep .font | cut -d':' -f3 | head -1`
-    #termfs=`xrdb -query | grep .font | cut -d':' -f4 | head -1 | cut -d'=' -f2` 
-    #res=`xrandr --nograb --current | grep 'primary' | awk '{print $4}' | cut -d' ' -f3 | sed 's/+0+0//g'`    
 else
     wmname="none"
+    res="none"
+    term="none"
     termfn="none"
-    systfn="none"
 fi
 
 #cpuspe="`sed -n '/model\ name/s/^.*:\ //p' /proc/cpuinfo | uniq` (x`nproc`)"
 
 system=`lsb_release -sir`
-arch=`uname -m`
-kname=`uname -s`
-#kernel=`uname -r`
-# | cut -d'-' -f1
-operating=`uname -o`
-#pkgnum=`ls -d /var/lib/eopkg/package/* | wc -l`
-#pkgnum=`pacman -Q | wc -l`
-
+system="${system/$'\n'/ }"
 birthd=`last | grep "begins" | sed 's/wtmp begins //g'`
 
 #}}}
 
-c00=$'\e[0;30m'
-c01=$'\e[0;31m'
-c02=$'\e[0;32m'
-c03=$'\e[0;33m'
-c04=$'\e[0;34m'
-c05=$'\e[0;35m'
-c06=$'\e[0;36m'
-c07=$'\e[0;37m'
-c08=$'\e[1;30m'
-c09=$'\e[1;31m'
-c10=$'\e[1;32m'
-c11=$'\e[1;33m'
-c12=$'\e[1;34m'
-c13=$'\e[1;35m'
-c14=$'\e[1;36m'
-c15=$'\e[1;37m'
+c00=$'\e[0;30m' #d black
+c01=$'\e[0;31m' #d red
+c02=$'\e[0;32m' #l green
+c03=$'\e[0;33m' #d tan
+c04=$'\e[0;34m' #d grey
+c05=$'\e[0;35m' #d pink
+c06=$'\e[0;36m' #d teal
+c07=$'\e[0;37m' #d white
+
+c08=$'\e[1;30m' #l black
+c09=$'\e[1;31m' #l red
+c10=$'\e[1;32m' #d brown
+c11=$'\e[1;33m' #l tan
+c12=$'\e[1;34m' #l blue
+c13=$'\e[1;35m' #l pink
+c14=$'\e[1;36m' #l teal
+c15=$'\e[1;37m' #l white
 
 f0=$'\e[1;30m'
 f1=$'\e[1;37m'
@@ -497,20 +518,20 @@ f2=$'\e[0;37m'
 cat << EOF
 ${c01}▉▉  | ${f1}System ${f0}....... $f2$system
 ${c09}  ▉▉| ${f1}Packages ${f0}..... $f2$(get_packages)
-${c07}▉▉  | ${f1}Uptime  ${f0}...... $f2$(get_uptime)
-${c15}  ▉▉| ${f1}Resolution  ${f0}.. $f2$res
-${c02}▉▉  |
-${c10}  ▉▉| ${f1}WM ${f0}........... $f2$wmname
-${c03}▉▉  | ${f1}Shell ${f0}........ $f2$(get_shell)
-${c11}  ▉▉| ${f1}Terminal ${f0}..... $f2$term
-${c04}▉▉  | ${f1}Term Font ${f0}.... $f2$termfn
-${c12}  ▉▉| ${f1}System Font ${f0}.. $f2$systfn
+${c07}▉▉  | ${f1}Updates ${f0}...... $f2$(get_updates)
+${c15}  ▉▉| ${f1}Uptime  ${f0}...... $f2$(get_uptime)
+${c02}▉▉  | ${f1}Resolution  ${f0}.. $f2$res
+${c10}  ▉▉| 
+${c03}▉▉  | ${f1}WM ${f0}........... $f2$wmname
+${c11}  ▉▉| ${f1}Shell ${f0}........ $f2$(get_shell)
+${c08}▉▉  | ${f1}Terminal ${f0}..... $f2$term
+${c12}  ▉▉| ${f1}Term Font ${f0}.... $f2$termfn
 ${c05}▉▉  | 
 ${c13}  ▉▉| ${f1}Kernel ${f0}....... $f2$(get_kernel)
 ${c06}▉▉  | ${f1}Processor ${f0}.... $f2$(get_cpu)
 ${c14}  ▉▉| ${f1}Gpu ${f0}.......... $f2$(get_gpu)
 ${c07}▉▉  |
 ${c15}  ▉▉| ${f1}Birthday ${f0}..... $f2$birthd
-${c08}▉▉  | ${f1}Memory ${f0}....... $f2$(get_mem)
+${c04}▉▉  | ${f1}Memory ${f0}....... $f2$(get_mem)
 
 EOF

@@ -1,16 +1,14 @@
-#!/bin/sh
-
-newvol="pkill -RTMIN+10 i3blocks"
-newmpd="pkill -RTMIN+11 i3blocks"
-newip="pkill -RTMIN+12 i3blocks"
-
+#!/usr/bin/env bash
+#pactl set-sink-volume @DEFAULT_SINK@ +5%
+#pactl set-sink-volume @DEFAULT_SINK@ -5%
+#pactl set-sink-mute @DEFAULT_SINK@ toggle
 case "$1" in
-	"up") pactl set-sink-volume @DEFAULT_SINK@ +5%; $newvol ;;
-	"down") pactl set-sink-volume @DEFAULT_SINK@ -5%; $newvol ;;
-	"mute") pactl set-sink-mute @DEFAULT_SINK@ toggle; $newvol ;;
-	"toggle") mpc toggle ; $newmpd ;;	
-	"next") mpc next ; $newmpd ;;
-	"prev") mpc prev ; $newmpd ;;
-	"con") perl ~/.i3/getip.pl; $newip;;
+	"up") amixer -qD pulse sset Master 5%+;;
+	"down") amixer -qD pulse sset Master 5%-;;
+	"mute") amixer -qD pulse sset Master toggle;;
+	"toggle") mpc toggle;;	
+	"next") mpc next;;
+	"prev") mpc prev;;
+	"con") perl ~/.i3/getip.pl;;
 esac
 exit

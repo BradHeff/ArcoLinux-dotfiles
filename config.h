@@ -39,12 +39,12 @@ static const uint8_t borders[] = {6,7,25,1};
  * attribute of the window. You can test this using `xprop WM_NAME`
  */
 #define LOOK_INTO "WM_NAME"
-static const char *ignore_names[] = {"bar", "xclock", "polybar-Bar_2bwm_eDP1", "polybar-Bar2_2bwm_eDP1"};
+static const char *ignore_names[] = {"bar", "xclock"};
 ///--Menus and Programs---///
 static const char *thun[]   = { "thunar", NULL };
 static const char *term[]   = { "urxvt", NULL };
-static const char *vpnmenu[]   = { "perl", "/home/pheonix/.config/polybar/vpn_menu.pl", NULL };
-static const char *exitmenu[]   = { "perl", "/home/pheonix/.config/polybar/shutdown_menu.pl", NULL };
+static const char *vpnmenu[]   = { "perl", "/home/pheonix/.config/lemonbar/vpn_menu.pl", NULL };
+static const char *exitmenu[]   = { "perl", "/home/pheonix/.config/lemonbar/shutdown_menu.pl", NULL };
 static const char *ide[]   = { "subl3", NULL };
 static const char *rofi[] = { "rofi", "-show", "drun", NULL };
 static const char *firefox[] = { "firefox", NULL };
@@ -54,6 +54,14 @@ static const char *bacdwn[] = { "xbacklight", "-5", NULL };
 static const char *bacup[] = { "xbacklight", "+5", NULL };
 
 #define WORKSPACES 5
+
+///--Custom foo---///
+static void killandfocus(const Arg *arg)
+{
+    deletewin(arg);
+    Arg arg3 = {.i=TWOBWM_FOCUS_PREVIOUS};
+    focusnext(&arg3);
+}
 
 ///--Custom foo---///
 static void halfandcentered(const Arg *arg)

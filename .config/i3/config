@@ -79,7 +79,7 @@ bindsym $mod+Shift+s scratchpad show
 bindsym $mod+c exec --no-startup-id /home/pheonix/.i3/camtoggle
 
 # Open VPN Menu
-bindsym $mod+Shift+v exec --no-startup-id perl /home/pheonix/.config/polybar/vpn_menu.pl
+bindsym $mod+Shift+v exec --no-startup-id perl /home/pheonix/.config/lemonbar/vpn_menu.pl
 #bindsym $mod+Control+v exec --no-startup-id urxvt -title bash -geometry 120x23 -e sudo openvpn --config /home/pheonix/Documents/purevpn/udp_nz.ovpn
 
 # Volume Controls
@@ -106,7 +106,7 @@ bindsym $mod+Shift+r restart
 
 # exit i3 (logs you out of your X session)
 #bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3?' -b 'Yes, exit i3' 'i3-msg exit'"
-bindsym $mod+Shift+e exec perl /home/pheonix/.config/polybar/shutdown_menu.pl
+bindsym $mod+Shift+e exec perl /home/pheonix/.config/lemonbar/shutdown_menu.pl
 
 # resize window (you can also use the mouse for that)
 mode " resize " {

@@ -1,0 +1,65 @@
+#!/bin/bash
+
+########################################################################
+# This script is designed to pull various cryptocurrency values
+########################################################################
+
+########################################################################
+# Wherein we establish our arrays. This way you can add or remove the
+# elements of your choice, or simply have the for-next loop skip those
+# particular elements.
+# The glyphs are if you have the crypocurrency font installed; that 
+# functionality isn't here quite yet.
+########################################################################
+
+ccname=( bitcoin zcash )
+ccsymbol=(   )
+ccglyph=( '\ue029' '\ue01B' '\ue029' '\ue04D' )
+
+JSONDATA=""
+CC_Price=""
+CC_1h=""
+CC_1d=""
+CC_7d=""
+CURRENCY=""
+SYMBOL=""
+GLYPH=""
+
+function get_cryptocurrency_data() {
+
+	curl_line="https://api.coinmarketcap.com/v1/ticker/$CURRENCY/?convert=AUD"
+	JSONDATA=$(curl -s "$curl_line")
+}
+
+function parse_cryptocurrency_data() {
+
+	CC_Price=$(echo "$JSONDATA"| grep "price_aud" | grep -oE "[0-9]*\..")
+	CC_1h=$(echo "$JSONDATA"| grep "percent_change_1h" | awk -F ':' '{ print $2 }' | awk -F '"' '{ print $2 }')
+	CC_1d=$(echo "$JSONDATA"| grep "percent_change_24h" | awk -F ':' '{ print $2 }' | awk -F '"' '{ print $2 }')
+	CC_7d=$(echo "$JSONDATA"| grep "percent_change_7d" | awk -F ':' '{ print $2 }' | awk -F '"' '{ print $2 }')
+}
+
+function output_cryptocurrency_data() {
+    #printf "%s %6s %4s %5s   $%s \n" $SYMBOL $CC_1h $CC_1d $CC_7d $CC_Price
+    #printf '%{F#FF454A4F}%{F- B#FF454A4F} %{T2}'"${SYMBOL}"'%{F- T1} $'"${CC_Price} %{F#FF454A4F} "
+    printf "%s $%s  " $SYMBOL $CC_Price
+}
+
+
+# get length of an array
+tLen=${#ccname[@]}
+crypto=""
+# use for loop read all nameservers
+for (( i=0; i<${tLen}; i++ ));
+do
+    CURRENCY=${ccname[$i]}
+    SYMBOL=${ccsymbol[$i]}
+    GLYPH=${ccglyph[$i]}
+    get_cryptocurrency_data
+    parse_cryptocurrency_data
+    crypto=${crypto}$(output_cryptocurrency_data)
+
+done
+crypt=($crypto)
+
+echo '%{F#FF454A4F}%{F- B#FF454A4F}%{F#FF979997 B#FF454A4F} %{T2}'"${crypt[0]}"'%{F- T1} '"${crypt[1]}"'  %{F#FF979997 B#FF454A4F} %{T2}'"${crypt[2]}"'%{F- T1} '"${crypt[3]}"' %{F#FF454A4F}%{F- B#FF454A4F}'

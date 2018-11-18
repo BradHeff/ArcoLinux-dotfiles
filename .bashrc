@@ -2,7 +2,7 @@
 # ~/.bashrc
 #
 
-. /home/pheonix/.git-prompt.bash
+. ~/.git-prompt.bash
 
 precmd() {
     echo `git_prompt_precmd`
@@ -91,6 +91,42 @@ youtube() {
     fi
 }
 
+deps() {
+  if [[ "$1" -eq "p" ]]
+  then
+    sudo pacman -Si "$2" |sed -n '/Depends\ On/,/:/p'|sed '$d'|cut -d: -f2
+  elif [[ "$1" -eq "y" ]]
+  then
+    yay -Si "$2" |sed -n '/Depends\ On/,/:/p'|sed '$d'|cut -d: -f2
+  fi  
+}
+gitclone() {
+  if [[ "$1" -eq "gh" ]]
+  then
+    git clone https://USER:KEY@github.com/USER/"$2".git
+  elif [[ "$1" -eq "gl" ]]
+  then
+    git clone https://USER:KEY@gitlab.com/USER/"$2".git
+  fi  
+}
+gitremote() {
+  if [[ "$1" -eq "gh" ]]
+  then
+    git remote add origin https://USER:KEY@github.com/USER/"$2".git
+  elif [[ "$1" -eq "gl" ]]
+  then
+    git remote add origin https://USER:KEY@gitlab.com/USER/"$2".git
+  fi  
+}
+dd() {
+  if [ $# -eq 2 ]; then
+    sudo dd status=progress if="$1" of="$2"
+  else
+    echo "Must take only 2 arguments"
+    echo "EXAMPLE:"
+    echo "dd /path/iso /dev/sd?"
+  fi
+}
 if [ -d "$HOME/.bin" ];
 then
 	PATH="$HOME/.bin:$PATH"
@@ -102,6 +138,8 @@ alias la='ls -a'
 alias ll='ls -la'
 alias l='ls' 					
 alias l.="ls -A | egrep '^\.'"      
+
+alias vtop='vtop -t wizard'
 
 #fix obvious typo's
 alias cd..="cd .."
@@ -144,16 +182,6 @@ alias yins="yay -S --color auto"
 alias ysr="yay -Ss --color auto"
 alias ydep="deps y"
 
-deps() {
-	if [[ "$1" -eq "p" ]]
-	then
-		sudo pacman -Si "$2" |sed -n '/Depends\ On/,/:/p'|sed '$d'|cut -d: -f2
-	elif [[ "$1" -eq "y" ]]
-	then
-		yay -Si "$2" |sed -n '/Depends\ On/,/:/p'|sed '$d'|cut -d: -f2
-	fi	
-}
-
 #ps
 alias ps="ps auxf"
 alias psgrep="ps aux | grep -v grep | grep -i -e VSZ -e"
@@ -184,26 +212,10 @@ alias grd="git rm -r"
 alias gra="gitremote"
 alias gcln="gitclone"
 
-alias serv="ssh USER@LOCAL_IP"
+alias serv="ssh brad@192.168.1.5"
+alias dd="dd"
 
-gitclone() {
-	if [[ "$1" -eq "gh" ]]
-	then
-		git clone https://USER:KEY@github.com/BradHeff/"$2".git
-	elif [[ "$1" -eq "gl" ]]
-	then
-		git clone https://USER:KEY@@gitlab.com/BradHeff/"$2".git
-	fi	
-}
-gitremote() {
-	if [[ "$1" -eq "gh" ]]
-	then
-		git remote add origin https://USER:KEY@@github.com/BradHeff/"$2".git
-	elif [[ "$1" -eq "gl" ]]
-	then
-		git remote add origin https://USER:KEY@@gitlab.com/BradHeff/"$2".git
-	fi	
-}
+
 alias sZ="source ~/.bashrc"
 alias eZ="vim ~/.bashrc"
 alias e3="vim ~/.config/i3/config"
@@ -220,7 +232,8 @@ alias cpd='cp -R'
 alias scp='sudo cp'
 alias scpd='sudo cp -R'
 
-alias lin='sudo ln -s'
+alias slin='sudo ln -s'
+alias lin='ln -s'
 
 #shopt
 shopt -s autocd # change to named directory
@@ -231,6 +244,7 @@ shopt -s histappend # do not overwrite history
 shopt -s expand_aliases # expand aliases
 
 #neofetch
+#clear && cowsay 'Welcome to ArcoLinuxD'
 clear && ~/.i3/info
 EDITOR=vim
 
