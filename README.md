@@ -2,7 +2,7 @@
 
 NOTE
 ----
-These are my dotfiles for my ArcoLinux install, it contains 2bwm and i3-gaps-next. the Screenshots below are of i3-gaps wm. my primary wm for my laptop is 2bwm.
+These are my dotfiles for my ArcoLinux install, it contains 2bwm and i3-gaps-next. the Screenshots below are of i3-gaps wm. my primary wm for my laptop and Desktop is 2bwm, i use i3-gaps-next for Android Studio as 2bwm seems to have issues running it.
 
 PROGRAMS
 ---
