@@ -48,11 +48,12 @@ static const char *exitmenu[]   = { "perl", "/home/pheonix/.config/lemonbar/shut
 static const char *ide[]   = { "subl3", NULL };
 static const char *rofi[] = { "rofi", "-show", "drun", NULL };
 static const char *firefox[] = { "firefox", NULL };
-static const char *volup[] = { "sh", "/home/pheonix/.i3/lmc", "up", NULL };
-static const char *voldn[] = { "sh", "/home/pheonix/.i3/lmc", "down", NULL };
-static const char *volm[] = { "sh", "/home/pheonix/.i3/lmc", "mute", NULL };
+static const char *volup[] = { "sh", "/home/pheonix/.2bwm/lmc", "up", NULL };
+static const char *voldn[] = { "sh", "/home/pheonix/.2bwm/lmc", "down", NULL };
+static const char *volm[] = { "sh", "/home/pheonix/.2bwm/lmc", "mute", NULL };
 static const char *bacdwn[] = { "xbacklight", "-5", NULL };
 static const char *bacup[] = { "xbacklight", "+5", NULL };
+static const char *scrot[] = { "sh", "/home/pheonix/.2bwm/scrot", NULL };
 
 #define WORKSPACES 5
 
@@ -213,6 +214,7 @@ static key keys[] = {
     {  MOD ,              XK_m,          start,             {.com = volm}},
     {  MOD |SHIFT,        XK_underscore, start,             {.com = bacdwn}},
     {  MOD |SHIFT,        XK_plus,       start,             {.com = bacup}},
+    {  0 ,                XK_Print,      start,             {.com = scrot}},
     // Exit or restart 2bwm
     {  MOD |CONTROL,      XK_q,          twobwm_exit,       {.i=0}},
     {  MOD |CONTROL,      XK_r,          twobwm_restart,    {.i=0}},

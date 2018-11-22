@@ -1,0 +1,538 @@
+#!/usr/bin/env bash
+
+get_updates(){
+    
+    if [[ -f "/usr/bin/pacman" ]]; then
+        updates=`pacman -Qu | wc -l`    
+    else
+        updates="0"
+    fi
+    echo "$updates"
+}
+
+get_packages(){
+    has() { type -p "$1" >/dev/null && manager="$_"; }
+    dir() { ((packages+=$#)); pac "$#"; }
+    pac() { (($1 > 0)) && { managers+=("$1 (${manager})"); manager_string+="${manager}, "; }; }
+    tot() { IFS=$'\n' read -d "" -ra pkgs < <("$@");((packages+="${#pkgs[@]}"));pac "${#pkgs[@]}"; }
+    # Package Manager Programs.
+    has "pacman-key" && tot pacman -Qq --color never
+    has "dpkg"       && tot dpkg-query -f '.\n' -W
+    has "rpm"        && tot rpm -qa
+    has "xbps-query" && tot xbps-query -l
+    has "apk"        && tot apk info
+    has "opkg"       && tot opkg list-installed
+    has "pacman-g2"  && tot pacman-g2 -Q
+    has "lvu"        && tot lvu installed
+    has "tce-status" && tot tce-status -i
+    has "pkg_info"   && tot pkg_info
+    has "tazpkg"     && tot tazpkg list && ((packages-=6))
+    has "sorcery"    && tot gaze installed
+    has "alps"       && tot alps showinstalled
+    has "butch"      && tot butch list
+
+    # Counting files/dirs.
+    has "emerge"     && dir /var/db/pkg/*/*/
+    has "nix-env"    && dir /nix/store/*/
+    has "guix"       && dir /gnu/store/*/
+    has "Compile"    && dir /Programs/*/
+    has "eopkg"      && dir /var/lib/eopkg/package/*
+    has "crew"       && dir /usr/local/etc/crew/meta/*.filelist
+    has "pkgtool"    && dir /var/log/packages/*
+    has "cave"       && dir /var/db/paludis/repositories/cross-installed/*/data/*/ \
+                            /var/db/paludis/repositories/installed/data/*/
+
+    # Other (Needs complex command)
+    has "kpm-pkg" && ((packages+="$(kpm  --get-selections | grep -cv deinstall$)"))
+
+    case "$kernel_name" in
+        "FreeBSD") has "pkg"     && tot pkg info ;;
+        "SunOS")   has "pkginfo" && tot pkginfo -i ;;
+        *)
+            has "pkg" && dir /var/db/pkg/*
+
+            ((packages == 0)) && \
+                has "pkg" && tot pkg list
+        ;;
+    esac
+
+    # List these last as they accompany regular package managers.
+    has "flatpak" && tot flatpak list
+
+    # Snap hangs if the command is run without the daemon running.
+    # Only run snap if the daemon is also running.
+    has "snap" && ps -e | grep -qFm 1 "snapd" >/dev/null && tot snap list && ((packages-=1))
+
+    if ((packages == 0)); then
+        unset packages
+    else
+        packages+=" (${manager_string%,*})"
+    fi
+
+    packages="${packages/pacman-key/pacman}"
+    packages="${packages/nix-env/nix}"
+
+    echo "$packages"
+}
+
+#{{{ MEMORY
+get_mem(){
+    while IFS=":" read -r a b; do
+    	case "$a" in
+    		"MemTotal") mem_used="$((mem_used+=${b/kB}))"; mem_total="${b/kB}" ;;
+    		"Shmem") mem_used="$((mem_used+=${b/kB}))"  ;;
+    		"MemFree" | "Buffers" | "Cached" | "SReclaimable")
+    			mem_used="$((mem_used-=${b/kB}))"
+    		;;
+    	esac
+    done < /proc/meminfo
+
+    mem_used="$((mem_used / 1024))"
+    mem_total="$((mem_total / 1024))"
+    memory="${mem_used}${mem_label:-MiB} / ${mem_total}${mem_label:-MiB}"
+    echo "$memory"
+}
+#}}}
+
+#{{{ UPTIME
+
+strip_date() {
+        case "$1" in
+        	"0 "*) unset "${1/* }" ;;
+                "1 "*) printf "%s" "${1/s}" ;;
+                *)     printf "%s" "$1" ;;
+	esac
+}
+
+get_uptime(){
+    seconds=`< /proc/uptime`
+    seconds="${seconds/.*}"
+    days="$((seconds / 60 / 60 / 24)) days"
+    hours="$((seconds / 60 / 60 % 24)) hours"
+    mins="$((seconds / 60 % 60)) minutes"
+
+
+    # Remove plural if < 2.
+    ((${days/ *} == 1))  && days="${days/s}"
+    ((${hours/ *} == 1)) && hours="${hours/s}"
+    ((${mins/ *} == 1))  && mins="${mins/s}"
+
+    # Hide empty fields.
+    ((${days/ *} == 0))  && unset days
+    ((${hours/ *} == 0)) && unset hours
+    ((${mins/ *} == 0))  && unset mins
+
+    uptime="${days:+$days, }${hours:+$hours, }${mins}"
+    uptime="${uptime%', '}"
+    uptime="${uptime:-${seconds} seconds}"
+
+    uptime="${uptime/ days/d}"
+    uptime="${uptime/ day/d}"
+    uptime="${uptime/ hours/h}"
+    uptime="${uptime/ hour/h}"
+    uptime="${uptime/ minutes/m}"
+    uptime="${uptime/ minute/m}"
+    uptime="${uptime/ seconds/s}"
+    uptime="${uptime//,}"
+    echo "$uptime"
+}
+#}}}
+
+#{{{ GPU
+get_gpu(){
+    gpu_cmd="$(lspci -mm | awk -F '\\"|\\" \\"|\\(' \
+                                              '/"Display|"3D|"VGA/ {a[$0] = $3 " " $4} END {for(i in a)
+                                               {if(!seen[a[i]]++) print a[i]}}')"
+    IFS=$'\n' read -d "" -ra gpus <<< "$gpu_cmd"
+    [[ "${gpus[0]}" == *Intel* && "${gpus[1]}" == *Intel* ]] && unset -v "gpus[0]"
+
+    for gpu in "${gpus[@]}"; do        
+        case "$gpu" in
+            *"AMD"*)                
+                brand="${gpu/*AMD*ATI*/AMD ATI}"
+                brand="${brand:-${gpu/*AMD*/AMD}}"
+                brand="${brand:-${gpu/*ATI*/ATi}}"
+
+                gpu="${gpu/'[AMD/ATI]' }"
+                gpu="${gpu/'[AMD]' }"
+                gpu="${gpu/OEM }"
+                gpu="${gpu/Advanced Micro Devices, Inc.}"
+                gpu="${gpu/ \/ *}"
+                gpu="${gpu/*\[}"
+                gpu="${gpu/\]*}"
+                gpu="$brand $gpu"
+            ;;
+
+            *"nvidia"*)
+                gpu="${gpu/*\[}"
+                gpu="${gpu/\]*}"
+                gpu="NVIDIA $gpu"
+            ;;
+
+            *"intel"*)
+                gpu="${gpu/*Intel/Intel}"
+                gpu="${gpu/'(R)'}"
+                gpu="${gpu/'Corporation'}"
+                gpu="${gpu/ \(*}"
+                gpu="${gpu/Integrated Graphics Controller}"
+
+                [[ -z "$(trim "$gpu")" ]] && gpu="Intel Integrated Graphics"
+            ;;
+
+            *"virtualbox"*)
+                gpu="VirtualBox Graphics Adapter"
+            ;;
+        esac
+    done
+    gpu="${gpu/AMD }"
+    gpu="${gpu/NVIDIA }"
+    gpu="${gpu/Intel }"
+    echo "$gpu"
+}
+#gpu="$(glxinfo | grep -F 'OpenGL renderer string')"
+#gpu="${gpu/'OpenGL renderer string: '}"
+#gpu="${gpu/(*}"
+
+#}}}
+
+#{{{ SYSTEM
+
+get_shell(){
+    shell="${SHELL##*/} "
+    case "${shell_name:=${SHELL##*/}}" in
+        "bash") shell+="${BASH_VERSION/-*}" ;;
+        "sh" | "ash" | "dash") ;;
+
+        "mksh" | "ksh")
+            shell+="$("$SHELL" -c "printf %s \$KSH_VERSION")"
+            shell="${shell/ * KSH}"
+            shell="${shell/version}"
+        ;;
+
+        "tcsh")
+            shell+="$("$SHELL" -c "printf %s \$tcsh")"
+        ;;
+
+        *)
+            shell+="$("$SHELL" --version 2>&1)"
+            shell="${shell/ "${shell_name}"}"
+        ;;
+    esac
+
+    # Remove unwanted info.
+    shell="${shell/, version}"
+    shell="${shell/xonsh\//xonsh }"
+    shell="${shell/options*}"
+    shell="${shell/\(*\)}"
+
+    echo "$shell"
+}
+
+get_cpu(){
+    cpu_file="/proc/cpuinfo"
+    speed_type="bios_limit"
+    cpu_cores="physical"
+
+    case "$kernel_machine" in
+        "frv" | "hppa" | "m68k" | "openrisc" | "or"* | "powerpc" | "ppc"* | "sparc"*)
+            cpu="$(awk -F':' '/^cpu\t|^CPU/ {printf $2; exit}' "$cpu_file")"
+        ;;
+
+        "s390"*)
+            cpu="$(awk -F'=' '/machine/ {print $4; exit}' "$cpu_file")"
+        ;;
+
+        "ia64" | "m32r")
+            cpu="$(awk -F':' '/model/ {print $2; exit}' "$cpu_file")"
+            [[ -z "$cpu" ]] && cpu="$(awk -F':' '/family/ {printf $2; exit}' "$cpu_file")"
+        ;;
+
+        *)
+            cpu="$(awk -F ': | @' '/model name|Processor|^cpu model|chip type|^cpu type/ {
+                                       printf $2;
+                                       exit
+                                   }' "$cpu_file")"
+
+            [[ "$cpu" == *"processor rev"* ]] && \
+                cpu="$(awk -F':' '/Hardware/ {print $2; exit}' "$cpu_file")"
+        ;;
+    esac
+
+    speed_dir="/sys/devices/system/cpu/cpu0/cpufreq"
+
+    # Get CPU speed.
+    if [[ -d "$speed_dir" ]]; then
+        # Fallback to bios_limit if $speed_type fails.
+        speed="$(< "${speed_dir}/${speed_type}")" ||\
+        speed="$(< "${speed_dir}/bios_limit")" ||\
+        speed="$(< "${speed_dir}/scaling_max_freq")" ||\
+        speed="$(< "${speed_dir}/cpuinfo_max_freq")"
+        speed="$((speed / 1000))"
+
+    else
+        speed="$(awk -F ': |\\.' '/cpu MHz|^clock/ {printf $2; exit}' "$cpu_file")"
+        speed="${speed/MHz}"
+    fi
+
+    # Get CPU cores.
+    case "$cpu_cores" in
+        "logical" | "on") cores="$(grep -c "^processor" "$cpu_file")" ;;
+        "physical") cores="$(awk '/^core id/&&!a[$0]++{++i} END {print i}' "$cpu_file")" ;;
+    esac
+
+    # Remove un-needed patterns from cpu output.
+    cpu="${cpu//(TM)}"
+    cpu="${cpu//(tm)}"
+    cpu="${cpu//(R)}"
+    cpu="${cpu//(r)}"
+    cpu="${cpu//CPU}"
+    cpu="${cpu//Processor}"
+    cpu="${cpu//Dual-Core}"
+    cpu="${cpu//Quad-Core}"
+    cpu="${cpu//Six-Core}"
+    cpu="${cpu//Eight-Core}"
+    cpu="${cpu//, * Compute Cores}"
+    cpu="${cpu//Core / }"
+    cpu="${cpu//(\"AuthenticAMD\"*)}"
+    cpu="${cpu//with Radeon * Graphics}"
+    cpu="${cpu//, altivec supported}"
+    cpu="${cpu//FPU*}"
+    cpu="${cpu//Chip Revision*}"
+    cpu="${cpu//Technologies, Inc}"
+    cpu="${cpu//Core2/Core 2}"
+
+    # Trim spaces from core and speed output
+    cores="${cores//[[:space:]]}"
+    speed="${speed//[[:space:]]}"
+
+    # Remove CPU brand from the output.
+    cpu="${cpu/AMD }"
+    cpu="${cpu/Intel }"
+    cpu="${cpu/Core? Duo }"
+    cpu="${cpu/Qualcomm }"    
+
+    # Add CPU cores to the output.    
+    #cpu="$cpu ($cores)"  
+
+    # Add CPU speed to the output.
+    #if [[ "$speed" ]]; then
+    #    if (( speed < 1000 )); then
+    #        cpu="$cpu @ ${speed}MHz"
+    #    else
+    #        speed="$((speed / 100))"
+    #        speed="${speed:0:1}.${speed:1}"
+    #        cpu="$cpu @ ${speed}GHz"
+    #    fi
+    #fi
+
+    echo "$cpu"
+}
+
+#}}}
+
+#{{{ ENVIROMENT
+
+get_res(){
+    if type -p xrandr >/dev/null; then
+
+        resolution="$(xrandr --nograb --current |\
+                      awk -F 'connected |\\+|\\(' \
+                             '/ connected/ && $2 {printf $2 ", "}')"
+        resolution="${resolution/primary }"
+        resolution="${resolution//\*}"
+
+    elif type -p xwininfo >/dev/null; then
+        read -r w h \
+            < <(xwininfo -root | awk -F':' '/Width|Height/ {printf $2}')
+        resolution="${w}x${h}"
+
+    elif type -p xdpyinfo >/dev/null; then
+        resolution="$(xdpyinfo | awk '/dimensions:/ {printf $2}')"
+    fi
+
+    resolution="${resolution%,*}"
+
+    echo "$resolution"
+}
+get_wm(){
+    ((wm_run == 1)) && return
+    if [[ "$DISPLAY" ]]; then    
+        id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
+        id="${id##* }"
+        if [[ "$id" != "found." ]]; then
+            wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t)"
+            wm="${wm/*WM_NAME = }"
+            wm="${wm/\"}"
+            wm="${wm/\"*}"
+        fi
+
+        # Window Maker does not set _NET_WM_NAME
+        [[ "$wm" =~ "WINDOWMAKER" ]] && wm="wmaker"
+
+        # Fallback for non-EWMH WMs.
+        [[ -z "$wm" ]] && \
+            wm="$(ps -e | grep -m 1 -o -F \
+                               -e "catwm" \
+                               -e "dwm" \
+                               -e "2bwm" \
+                               -e "monsterwm" \
+                               -e "tinywm")"
+    fi
+    wm_run=1
+    echo "$wm"
+
+}
+trim() {
+    set -f
+    # shellcheck disable=2048,2086
+    set -- $*
+    printf '%s\n' "${*//[[:space:]]/ }"
+    set +f
+}
+
+get_ppid() {
+    # Get parent process ID of PID.
+    ppid="$(grep -i -F "PPid:" "/proc/${1:-$PPID}/status")"
+    ppid="$(trim "${ppid/PPid:}")"
+    printf "%s" "$ppid"
+}
+get_process_name() {
+    # Get PID name.
+    name="$(< "/proc/${1:-$PPID}/comm")"
+    printf "%s" "$name"
+}
+
+get_term(){
+    while [[ -z "$term" ]]; do
+        parent="$(get_ppid "$parent")"
+        [[ -z "$parent" ]] && break
+        name="$(get_process_name "$parent")"
+
+        case "${name// }" in
+            "${SHELL/*\/}"|*"sh"|"screen"|"su"*) ;;
+
+            "login"*|*"Login"*|"init"|"(init)")
+                term="$(tty)"
+            ;;
+
+            "ruby"|"1"|"systemd"|"sshd"*|"python"*|"USER"*"PID"*|"kdeinit"*|"launchd"*)
+                break
+            ;;
+
+            "gnome-terminal-") term="gnome-terminal" ;;
+            *"nvim")           term="Neovim Terminal" ;;
+            *"NeoVimServer"*)  term="VimR Terminal" ;;
+            *"tmux"*)          term="tmux" ;;
+            *)                 term="${name##*/}" ;;
+        esac
+    done
+
+    # Log that the function was run.
+    term_run=1
+    echo "$term"
+}
+
+get_termfn(){
+    xrdb="$(xrdb -query)"
+    term_font="$(grep -i "${term/d}"'\**\.*font' <<< "$xrdb")"
+    term_font="${term_font/*"*font:"}"
+    term_font="${term_font/*".font:"}"
+    term_font="${term_font/*"*.font:"}"
+    term_font="$(trim "$term_font")"
+
+    [[ -z "$term_font" && "$term" == "xterm" ]] && \
+        term_font="$(grep '^XTerm.vt100.faceName' <<< "$xrdb")"
+
+    term_font="$(trim "${term_font/*"faceName:"}")"
+
+    # xft: isn't required at the beginning so we prepend it if it's missing
+    [[ "${term_font:0:1}" != "-" && \
+       "${term_font:0:4}" != "xft:" ]] && \
+        term_font="xft:$term_font"
+
+    # Xresources has two different font formats, this checks which
+    # one is in use and formats it accordingly.
+    case "$term_font" in
+        *"xft:"*)
+            term_font="${term_font/xft:}"
+            term_font="${term_font/:*}"
+        ;;
+
+        "-"*)
+            IFS=- read -r _ _ term_font _ <<< "$term_font"
+        ;;
+    esac
+
+    echo "$term_font"
+}
+
+get_kernel(){
+    IFS=" " read -ra uname <<< "$(uname -srm)"
+    unset IFS
+    echo "${uname[1]}"
+}
+
+
+if [ -n "$DISPLAY" ]; then
+    res=$(get_res)
+    wmname=$(get_wm)
+    term=$(get_term)
+    termfn=$(get_termfn)
+else
+    wmname="none"
+    res="none"
+    term="none"
+    termfn="none"
+fi
+
+#cpuspe="`sed -n '/model\ name/s/^.*:\ //p' /proc/cpuinfo | uniq` (x`nproc`)"
+
+system=`lsb_release -sir`
+system="${system/$'\n'/ }"
+birthd=`last | grep "begins" | sed 's/wtmp begins //g'`
+
+#}}}
+
+c00=$'\e[0;30m' #d black
+c01=$'\e[0;31m' #d red
+c02=$'\e[0;32m' #l green
+c03=$'\e[0;33m' #d tan
+c04=$'\e[0;34m' #d grey
+c05=$'\e[0;35m' #d pink
+c06=$'\e[0;36m' #d teal
+c07=$'\e[0;37m' #d white
+
+c08=$'\e[1;30m' #l black
+c09=$'\e[1;31m' #l red
+c10=$'\e[1;32m' #d brown
+c11=$'\e[1;33m' #l tan
+c12=$'\e[1;34m' #l blue
+c13=$'\e[1;35m' #l pink
+c14=$'\e[1;36m' #l teal
+c15=$'\e[1;37m' #l white
+
+f0=$'\e[0;32m'
+f1=$'\e[1;37m'
+f2=$'\e[0;37m'
+
+
+cat << EOF
+${c01}▉▉  | ${f1}System ${f0}....... $f2$system
+${c09}  ▉▉| ${f1}Packages ${f0}..... $f2$(get_packages)
+${c07}▉▉  | ${f1}Updates ${f0}...... $f2$(get_updates)
+${c15}  ▉▉| ${f1}Uptime  ${f0}...... $f2$(get_uptime)
+${c02}▉▉  | ${f1}Resolution  ${f0}.. $f2$res
+${c10}  ▉▉| 
+${c03}▉▉  | ${f1}WM ${f0}........... $f2$wmname
+${c11}  ▉▉| ${f1}Shell ${f0}........ $f2$(get_shell)
+${c08}▉▉  | ${f1}Terminal ${f0}..... $f2$term
+${c12}  ▉▉| ${f1}Term Font ${f0}.... $f2$termfn
+${c05}▉▉  | 
+${c13}  ▉▉| ${f1}Kernel ${f0}....... $f2$(get_kernel)
+${c06}▉▉  | ${f1}Processor ${f0}.... $f2$(get_cpu)
+${c14}  ▉▉| ${f1}Gpu ${f0}.......... $f2$(get_gpu)
+${c07}▉▉  |
+${c15}  ▉▉| ${f1}Birthday ${f0}..... $f2$birthd
+${c04}▉▉  | ${f1}Memory ${f0}....... $f2$(get_mem)
+
+EOF

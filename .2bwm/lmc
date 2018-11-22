@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#pactl set-sink-volume @DEFAULT_SINK@ +5%
+#pactl set-sink-volume @DEFAULT_SINK@ -5%
+#pactl set-sink-mute @DEFAULT_SINK@ toggle
+case "$1" in
+	"up") amixer -qD pulse sset Master 5%+;;
+	"down") amixer -qD pulse sset Master 5%-;;
+	"mute") amixer -qD pulse sset Master toggle;;
+	"toggle") mpc toggle;;	
+	"next") mpc next;;
+	"prev") mpc prev;;
+	"con") perl ~/.i3/getip.pl;;
+esac
+exit

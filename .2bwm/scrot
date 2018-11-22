@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+scrot -q 100 -e 'mv $f ~/Pictures/screenshots/'
+
+notify-send -u normal "Screenshot"
+exit

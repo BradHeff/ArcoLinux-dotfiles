@@ -2,7 +2,7 @@
 
 NOTE
 ----
-These are my dotfiles for my ArcoLinux install, it contains 2bwm and i3-gaps-next. the Screenshots below are of i3-gaps wm. my primary wm for my laptop and Desktop is 2bwm, i use i3-gaps-next for Android Studio as 2bwm seems to have issues running it.
+These are my dotfiles for my ArcoLinux install, it contains 2bwm and i3-gaps-next. my primary wm for my laptop and Desktop is 2bwm, i use i3-gaps-next for Android Studio as 2bwm seems to have issues running it.
 
 PROGRAMS
 ---
@@ -21,7 +21,20 @@ PROGRAMS
 * MPlayer (Video Player)
 
 
+I3WM
+---
+
 ![Screenshot](Screenshot/screen1.png)
 
 ![Screenshot](Screenshot/screen2.png)
 
+2BWM
+---
+
+![Screenshot](Screenshot/screen_2b1.png)
+
+![Screenshot](Screenshot/screen_2b2.png)
+
+![Screenshot](Screenshot/screen_2b3.png)
+
+![Screenshot](Screenshot/screen_2b4.png)
