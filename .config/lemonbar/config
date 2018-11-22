@@ -1,18 +1,9 @@
 #!/usr/bin/env bash
-#
-# A simple block-style bar using lemonbar
-# and named pipes to reduce resource footprint
-#
-# Normally, this file is split into seperate files
-# for colors and bar defaults, I have included them
-# all together here for simplicity
-#
-# Bar created by Joshua Ervin @ University of Washington
-# Contact: jlervin@posteo.net
+
 res_w=$(xrandr | grep "current" | awk '{print $8a}')
 
 WIDTH="${res_w}" # bar width
-HEIGHT=18 # bar height
+HEIGHT=20 # bar height
 XOFF=0 # x offset
 YOFF=0 # y offset
 #BRDR=5 # border width
@@ -21,7 +12,7 @@ YOFF=0 # y offset
 # color definitions 
 color_back="#FF282A36"              # Default background
 color_fore="#FFC5C8C6"              # Default foreground
-color_head="#FFB5BD68"              # Background for first element GREEN
+color_wsp="#FFB5BD68"              # Background for first element GREEN
 color_sec_b1="#FF282A2E"            # Background for section   DARK GREY
 color_sec_b2="#FF454A4F"            # Background for section 2 LIGHTISH GREY
 color_sec_b3="#FF60676E"            # Background for section 3 LIGHT GREY
@@ -33,7 +24,7 @@ color_vol_good="#FF5E8D87"          # Background color for volume OK
 color_vol_warn="#FFB5BD68"               # Background for volume WARN
 color_vol_alert="#FFCC6666"              # Background color for volume ALERT
 color_disable="#FF1D1F21"           # Foreground for disable elements
-color_wsp="#FF8C9440"               # Background for selected workspace
+color_head="#FFa3be8c"               # Background for selected workspace 8C9440
 color_sunset="#FFf59360"            # Background music
 
 BBG=${color_back} # bar background color

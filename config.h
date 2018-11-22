@@ -50,6 +50,7 @@ static const char *rofi[] = { "rofi", "-show", "drun", NULL };
 static const char *firefox[] = { "firefox", NULL };
 static const char *volup[] = { "sh", "/home/pheonix/.i3/lmc", "up", NULL };
 static const char *voldn[] = { "sh", "/home/pheonix/.i3/lmc", "down", NULL };
+static const char *volm[] = { "sh", "/home/pheonix/.i3/lmc", "mute", NULL };
 static const char *bacdwn[] = { "xbacklight", "-5", NULL };
 static const char *bacup[] = { "xbacklight", "+5", NULL };
 
@@ -150,7 +151,7 @@ static key keys[] = {
     //Full screen window without borders overiding offsets
     {  MOD |SHIFT ,       XK_x,          maximize,          {.i=TWOBWM_FULLSCREEN_OVERRIDE_OFFSETS}},
     // Maximize vertically
-    {  MOD ,              XK_m,          maxvert_hor,       {.i=TWOBWM_MAXIMIZE_VERTICALLY}},
+    {  MOD |CONTROL,      XK_m,          maxvert_hor,       {.i=TWOBWM_MAXIMIZE_VERTICALLY}},
     // Maximize horizontally
     {  MOD |SHIFT,        XK_m,          maxvert_hor,       {.i=TWOBWM_MAXIMIZE_HORIZONTALLY}},
     // Maximize and move
@@ -209,6 +210,7 @@ static key keys[] = {
     {  MOD ,              XK_t,          start,             {.com = thun}},
     {  MOD ,              XK_equal,      start,             {.com = volup}},
     {  MOD ,              XK_minus,      start,             {.com = voldn}},
+    {  MOD ,              XK_m,          start,             {.com = volm}},
     {  MOD |SHIFT,        XK_underscore, start,             {.com = bacdwn}},
     {  MOD |SHIFT,        XK_plus,       start,             {.com = bacup}},
     // Exit or restart 2bwm

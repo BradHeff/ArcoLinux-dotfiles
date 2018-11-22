@@ -31,15 +31,15 @@ conky.config = {
     background = false,
     border_width = 0,
     cpu_avg_samples = 2,
-	default_color = 'white',
-    default_outline_color = 'white',
+	default_color = '1b1d24',
+    default_outline_color = '1b1d24',
     default_shade_color = 'black',
     draw_borders = false,
     draw_graph_borders = true,
     draw_outline = false,
     draw_shades = false,
-    color1 = 'd37340',
-    color2 = '95c5f6',
+    color1 = 'aac692',
+    color2 = 'ffffff',
     color3 = 'F80E27',
     color4 = '20dc3e',
     use_xft = true,
@@ -47,7 +47,7 @@ conky.config = {
     total_run_times = 0,
     font = 'Inconsolata for Powerline:size=12:style=Regular',
     gap_x = 12,
-    gap_y = 105,
+    gap_y = 70,
     minimum_height = 5,
 	minimum_width = 5,
     net_avg_samples = 2,
@@ -83,15 +83,15 @@ Load: ${alignr}$loadavg
 
 ${color1}HARDWARE ${hr 1}${color}
 CPU1 ${alignr}${cpu cpu1}%
-${cpubar cpu1}
+${color2}${cpubar cpu1}${color}
 CPU2 ${alignr}${cpu cpu2}%
-${cpubar cpu2}
+${color2}${cpubar cpu2}${color}
 CPU3 ${alignr}${cpu cpu3}%
-${cpubar cpu3}
+${color2}${cpubar cpu3}${color}
 CPU4 ${alignr}${cpu cpu4}%
-${cpubar cpu4}
+${color2}${cpubar cpu4}${color}
 Ram ${alignr}$mem / $memmax ($memperc%)
-${membar 8}
+${color2}${membar 8}${color}
 
 ${color1}Top CPU${hr 1}${color}
 ${top name 1}$alignr${top cpu 1}${top mem 1}
@@ -104,21 +104,25 @@ ${top_mem name 3}$alignr${top_mem cpu 3}${top_mem mem 3}
 
 ${color1}FILESYSTEM ${hr 1}${color}
 Read:$alignr$diskio_read
-${diskiograph_read 25,240 797979 FFFFFF}
+${color2}${diskiograph_read 25,240 797979 FFFFFF}${color}
 Write:$alignr$diskio_write
-${diskiograph_write 25,240 797979 FFFFFF}
+${color2}${diskiograph_write 25,240 797979 FFFFFF}${color}
 #Root: ${alignr}${fs_used /} / ${fs_size /}
 #${fs_bar 4 /}
 Home: ${alignr}${fs_used /home} / ${fs_size /home}
-${fs_bar 4 /home}
+${color2}${fs_bar 4 /home}${color}
 SWAP${alignr}$swap / $swapmax 
-${swapbar}
+${color2}${swapbar}${color}
 #${color1}NETWORK ${hr 1}${color}
 #VPN Status${alignr}${execpi 10 perl ~/.vpn.pl stat} 
 #VPN Server${alignr}${execpi 10 perl ~/.vpn.pl con} 
 
+${color1}CRYPTO ${hr 1}${color}
+Bitcoin${alignr}${texeci 300 sh /home/pheonix/.config/lemonbar/crypto BTC bitcoin}
+Zcash${alignr}${texeci 300 sh /home/pheonix/.config/lemonbar/crypto ZEC zcash}
+
 ${color1}NETWORK ${hr 1}${color}
 Down ${downspeed enp9s0} ${alignr}Up ${upspeed enp9s0}
-${downspeedgraph enp9s0 25,107} ${alignr}${upspeedgraph enp9s0 25,107}
+${color2}${downspeedgraph enp9s0 25,107 797979 FFFFFF} ${alignr}${upspeedgraph enp9s0 25,107 797979 FFFFFF}${color}
 Total ${totaldown enp9s0} ${alignr}Total ${totalup enp9s0}
 ]]

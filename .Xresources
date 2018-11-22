@@ -23,7 +23,7 @@ URxvt*iconFile:  	/usr/share/icons/Sardi-Mono/scalable/apps/terminal.svg
 !URxvt*background:        rgba:0000/0000/0000/AAAA
 !URxvt*background:        [80]#404552
 !URxvt*background:        [70]#3F424A
-URxvt*background:        [98]#282A36
+URxvt*background:        #282A36
 URxvt*foreground:        #F8F8FF
 URxvt*underlineColor:    #4682B4
 URxvt*highlightColor:    #4682B4
@@ -33,8 +33,8 @@ URxvt*scrollBar:         false
 URxvt*scrollTtyOutput:   false
 URxvt*scrollWithBuffer:  true
 URxvt*scrollTtyKeypress: true
-URxvt*internalBorder:    18
-URxvt*externalBorder:    8
+URxvt*internalBorder:    30
+URxvt*externalBorder:    18
 URxvt*colorIT:      	 #87af5f
 URxvt*colorBD:      	 #c5c8c6
 URxvt*colorUL:      	 #87afd7
@@ -59,12 +59,12 @@ URxvt*color14: #93e0e3
 URxvt*color15: #ffffff
 
 ! fonts
-URxvt*letterSpace: 	 	1
-URxvt*font:                 	xft:iosevka:regular:size=12
-URxvt*imFont:               	xft:iosevka:regular:size=12
-URxvt*boldFont:             	xft:iosevka:bold:size=12
-URxvt*italicFont:           	xft:iosevka:italic:size=12
-URxvt*boldItalicFont:    	xft:iosevka:regular:size=12
+URxvt*letterSpace: 	 	0
+URxvt*font:                 	xft:Inconsolata for Powerline:regular:size=12
+URxvt*imFont:               	xft:Inconsolata for Powerline:regular:size=12
+URxvt*boldFont:             	xft:Inconsolata for Powerline:bold:size=12
+URxvt*italicFont:           	xft:Inconsolata for Powerline:italic:size=12
+URxvt*boldItalicFont:    	xft:Inconsolata for Powerline:regular:size=12
 ! run :.!fc-list | grep <font-name>
 
 ! perl extensions
@@ -129,7 +129,8 @@ UXTerm*termName: 	   xterm-256color
 
 UXTerm*cursorColor:        white
 UXTerm*VT100.geometry:     88x23
-UXTerm*font:               Monospace
+UXTerm*font:               Inconsolata for Powerline
+!Monospace
 UXTerm*faceSize:	   12
 UXTerm*dynamicColors:      true
 UXTerm*utf8:               2
@@ -166,13 +167,13 @@ UXTerm*boldMode: false
 UXTerm*colorBDMode: true
 UXTerm*colorBD: rgb:3f/3f/3f
 
-twobwm.border_width: 8
+twobwm.border_width: 6
 twobwm.outer_border: 4
-twobwm.focus_color: #9e5630
-twobwm.unfocus_color: #282A36
-twobwm.fixed_color: #E0B053
-twobwm.unkill_color: #d7521a
-twobwm.outer_border_color: #282A36
+twobwm.focus_color: #ffffff
+twobwm.unfocus_color: #6b7a85
+twobwm.fixed_color: #a3be8c
+twobwm.unkill_color: #CE935F
+twobwm.outer_border_color: #2b303b
 twobwm.fixed_unkill_color: #38d1b2
 twobwm.inverted_colors: false
 twobwm.enable_compton: true

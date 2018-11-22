@@ -511,9 +511,10 @@ c13=$'\e[1;35m' #l pink
 c14=$'\e[1;36m' #l teal
 c15=$'\e[1;37m' #l white
 
-f0=$'\e[1;30m'
+f0=$'\e[0;32m'
 f1=$'\e[1;37m'
 f2=$'\e[0;37m'
+
 
 cat << EOF
 ${c01}▉▉  | ${f1}System ${f0}....... $f2$system

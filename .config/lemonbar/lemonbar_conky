@@ -36,7 +36,7 @@ conky.config = {
 	total_run_times = 0,
 	override_utf8_locale = true,
 	short_units = true,
-	font = 'Roboto Mono for Powerline:size=10',
+	font = 'Inconsolata for Powerline:size=12',
 	uppercase = false,
 	out_to_console = true,
 	out_to_x = false,
@@ -45,10 +45,10 @@ conky.config = {
 }
 
 conky.text = [[
-#CPU ${cpu}%
-#MEM ${memperc}%
-#FREE ${fs_free /home}
+CPU ${cpu}%
+MEM ${memperc}%
+FREE ${fs_free /home}
 #CONWIFI ${if_up wlp3s0}${downspeedf wlp3s0} ${upspeedf wlp3s0} ${else}down down${endif} 
 #CONETO ${if_up enp9s0}${downspeedf enp9s0} ${upspeedf enp9s0} ${else}down down${endif} 
-MARKET ${texeci 300 sh /home/pheonix/.config/lemonbar/crypto} 
+#MARKET ${texeci 300 sh /home/pheonix/.config/lemonbar/crypto} 
 ]]

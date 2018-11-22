@@ -32,7 +32,7 @@ if [[ "$RESULT" != "" ]]; then
 	xrdb -merge /home/pheonix/.Xresources &
 	sh /home/pheonix/.checkfeh &	
 	( ! is_running 'compton' ) && compton -b --config "/home/pheonix/.compton.conf" &
-	( ! is_running "conky" ) && conky &
+	#( ! is_running "conky" ) && conky &
 
 	if ( ! is_running "lemonbar" ); then
 		/home/pheonix/.bin/lemon &

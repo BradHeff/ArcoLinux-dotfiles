@@ -32,17 +32,18 @@ rofi.width:                          30
 rofi.columns:                        1
 rofi.modi:                           drun,run
 rofi.lines:                          6
-!rofi.font:                           San Francisco Display Light 10
+!rofi.font:                           Inconsolata for Powerline 10
 !rofi.font:                           UW Ttyp0 10
 rofi.font:                           Liberation Mono 10
 rofi.bw:                             1
 rofi.case-sensitive:                 false
+rofi.terminal: 						 urxvtc
 rofi.eh:                             1
 rofi.auto-select:                    false
 rofi.hide-scrollbar:                 true
-rofi.color-urgent:                   argb:0023262f, argb:F2e0b053, argb:0023262f, argb:F2e0b053, argb:F223262f
-rofi.color-active:                   argb:0023262f, argb:F2e0b053, argb:0023262f, argb:F2e0b053, argb:F223262f
-rofi.color-normal:                   argb:0023262f, argb:F2e0b053, argb:0023262f, argb:F2e0b053, argb:F223262f
-rofi.color-window:                   argb:D923262f, argb:F29e5630, argb:F29e5630
+rofi.color-urgent:                   argb:0023262f, argb:F2a3be8c, argb:0023262f, argb:F2a3be8c, argb:F223262f
+rofi.color-active:                   argb:0023262f, argb:F2a3be8c, argb:0023262f, argb:F2a3be8c, argb:F223262f
+rofi.color-normal:                   argb:0023262f, argb:F2a3be8c, argb:0023262f, argb:F2a3be8c, argb:F223262f
+rofi.color-window:                   argb:D923262f, argb:F2ffffff, argb:F2ffffff
 rofi.fake-transparency:              true
 rofi.oppacity:                       100

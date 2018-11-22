@@ -8,21 +8,11 @@ if [ -e "${PANEL_FIFO}" ]; then
 fi
 mkfifo "${PANEL_FIFO}"
 
-#conky -c $(dirname $0)/lemonbar_conky > "${PANEL_FIFO}" &
+conky -c $(dirname $0)/lemonbar_conky > "${PANEL_FIFO}" &
 
 xprop -spy -root _NET_ACTIVE_WINDOW | sed -un 's/.*\(0x.*\)/WIN\1/p' > "${PANEL_FIFO}" &
 
-space() {
-    while true; do
-        spce=$(df -h | grep '/sdb2' | awk '{print $4}')
-        spce="${spce%?}"
-
-        echo "SPACE %{F${color_sec_b2}}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_space}%{F- T1} ${spce} GB"
-
-        sleep ${SPACE_SLEEP}
-    done
-}
-#space > "${PANEL_FIFO}" &
+cnt=0
 
 music() {
     while true; do
@@ -43,14 +33,14 @@ music() {
             str="${pause}"
         fi
 
-        echo "MUSIC %{F${color_sec_b2}}${sep_left}%{B${color_sec_b2}}%{F${color_sec_b1}}${sep_left}%{F${color_icon} B${color_sec_b1}} %{T2}${icon_music}%{F- T1} ${str}"
-        
+        #echo "MUSIC %{F${color_sec_b2}}${sep_left}%{B${color_sec_b2}}%{F${color_sec_b1}}${sep_left}%{F${color_icon} B${color_sec_b1}} %{T2}${icon_music}%{F- T1} ${str}"
+        echo "MUSIC %{F${color_sec_b1}}${sep_left}%{F${color_icon} B${color_sec_b1}} %{T2}${icon_music}%{F- T1} ${str}"
         sleep ${MUSIC_SLEEP}
     done
 }
+
 music > "${PANEL_FIFO}" &
 
-cnt=0
 get_updates(){
     while true; do
         if (( ${cnt} == 300 )); then
@@ -82,30 +72,17 @@ get_updates > "${PANEL_FIFO}" &
 work(){
     while true; do
         local ws=$(xprop -root _NET_CURRENT_DESKTOP | sed -e 's/_NET_CURRENT_DESKTOP(CARDINAL) = //' )
-        local seq="%{F${color_back} B${color_wsp} T1} "
+        local seq="%{F${color_back} B${color_sec_b1} T1} "
         local total=${DESKTOP_COUNT}
         
         for ((i=0;i<total;i++)); do
             if [[ "$i" -eq "$ws" ]]; then            
-                seq="${seq}%{F${color_wsp} B${color_head}}${sep_right}%{F${color_back} B${color_head} T1}  %{F${color_head} B${color_wsp}}${sep_right}"
+                seq="${seq}%{F${color_sec_b1} B${color_head}}${sep_right}%{F${color_back} B${color_head} T1}  %{F${color_head} B${color_sec_b1}}${sep_right}"
             else            
-                seq="${seq}%{F${color_disable} T1} • "
+                seq="${seq}%{F- T1} • "
             fi
-        #case "$SPACE_NUM" in
-         #   "0")
-          #      WORKSPACE='  •  •  •  •';;
-          #  "1")
-          ##      WORKSPACE='•    •  •  •';; #WORKSPACE='◦ • ◦ ◦ ◦ ◦';;
-           # "2")
-           #     WORKSPACE='•  •    •  •';; #WORKSPACE='◦ ◦ • ◦ ◦ ◦';;
-           # "3")
-           #     WORKSPACE='•  •  •    •';; #WORKSPACE='◦ ◦ ◦ • ◦ ◦';;
-           # "4")
-           #     WORKSPACE='•  •  •  •  ';; #WORKSPACE='◦ ◦ ◦ ◦ • ◦';;            
-
-        #esac
         done
-        echo "WORKSPACES ${seq}%{F${color_wsp} B${color_sec_b2}}${sep_right}%{F- B- T1}"
+        echo "WORKSPACES ${seq}%{F${color_sec_b1} B${color_sec_b2}}${sep_right}%{F- B- T1}"
         sleep ${WORKSPACE_SLEEP}
     done
 }
@@ -134,7 +111,7 @@ clock()
     while true; do        
         local time="$(date +'%_I:%M%P')"
         # time
-        echo "CLOCK %{F${color_cpu}}${sep_left}%{F${color_back} B${color_cpu}} %{T2}${icon_clock} %{T1}${time} %{F- B- T1}"
+        echo "CLOCK %{F${color_cpu} B${color_sec_b1}}${sep_left}%{F${color_back} B${color_cpu}} %{T2}${icon_clock} %{T1}${time} %{F- B- T1}"
         sleep ${TIME_SLEEP}
     done
 }
@@ -145,7 +122,7 @@ datez()
 {
     while true; do
         local dates="$(date +'%a %d %b')"        
-        echo "DATE %{F${color_sec_b1}}${sep_left}%{F${color_icon} B${color_sec_b1}} %{T2}${icon_date} %{F- T1}${dates}%{F- B- T1}"
+        echo "DATE %{F${color_sec_b1} B${color_sec_b1}}${sep_left}%{F${color_icon} B${color_sec_b1}} %{T2}${icon_date} %{F- T1}${dates}"
         sleep ${DATE_SLEEP}
     done
 }
@@ -161,17 +138,17 @@ volume()
         local mut="$(amixer get Master | grep -E -o 'off' | head -1)"
 
         if [[ ${mut} == "off" ]]; then
-            echo "VOLUME %{F${color_yay}}${sep_left}%{F${color_back} B${color_yay}} %{T2}${icon_vol_mute} %{T1}MUTE %{F${color_sec_b1} B${color_yay}}${sep_left}%{F- B- T1} "
+            echo "VOLUME %{F${color_yay} B${color_back}}${sep_left}%{F${color_back} B${color_yay}} %{T2}${icon_vol_mute} %{T1}MUTE %{F${color_sec_b1} B${color_yay}}${sep_left}%{F- B- T1} "
         elif (( vol == 0 )); then
-            echo "VOLUME %{F${color_yay}}${sep_left}%{F${color_back} B${color_yay}} %{T2}${icon_vol_mute} %{T1}${vol}% %{F${color_sec_b1} B${color_yay}}${sep_left}%{F- B- T1} "
+            echo "VOLUME %{F${color_yay} B${color_back}}${sep_left}%{F${color_back} B${color_yay}} %{T2}${icon_vol_mute} %{T1}${vol}% %{F${color_sec_b1} B${color_yay}}${sep_left}%{F- B- T1} "
         elif (( vol > 70 )); then
-            echo "VOLUME %{F${color_vol_alert}}${sep_left}%{F${color_back} B${color_vol_alert}} %{T2}${icon_vol} %{T1}${vol}% %{F${color_sec_b1} B${color_vol_alert}}${sep_left}%{F- B- T1} "
+            echo "VOLUME %{F${color_vol_alert} B${color_back}}${sep_left}%{F${color_back} B${color_vol_alert}} %{T2}${icon_vol} %{T1}${vol}% %{F${color_sec_b1} B${color_vol_alert}}${sep_left}%{F- B- T1} "
         elif (( vol > 55 )); then
-            echo "VOLUME %{F${color_vol_warn}}${sep_left}%{F${color_back} B${color_vol_warn}} %{T2}${icon_vol} %{T1}${vol}% %{F${color_sec_b1} B${color_vol_warn}}${sep_left}%{F- B- T1} "
+            echo "VOLUME %{F${color_vol_warn} B${color_back}}${sep_left}%{F${color_back} B${color_vol_warn}} %{T2}${icon_vol} %{T1}${vol}% %{F${color_sec_b1} B${color_vol_warn}}${sep_left}%{F- B- T1} "
         elif (( vol > 10 )); then
-            echo "VOLUME %{F${color_vol_good}}${sep_left}%{F${color_back} B${color_vol_good}} %{T2}${icon_vol} %{T1}${vol}% %{F${color_sec_b1} B${color_vol_good}}${sep_left}%{F- B- T1} "
+            echo "VOLUME %{F${color_vol_good} B${color_back}}${sep_left}%{F${color_back} B${color_vol_good}} %{T2}${icon_vol} %{T1}${vol}% %{F${color_sec_b1} B${color_vol_good}}${sep_left}%{F- B- T1} "
         else
-            echo "VOLUME %{F${color_sec_b2}}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_vol}%{F- T1} ${vol}% %{F${color_sec_b1} B${color_sec_b2} T1}${sep_left}%{F- B- T1} "
+            echo "VOLUME %{F${color_sec_b2} B${color_back}}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_vol}%{F- T1} ${vol}% %{F${color_sec_b1} B${color_sec_b2} T1}${sep_left}%{F- B- T1} "
         fi
 
         sleep ${VOLUME_SLEEP} 
@@ -200,11 +177,11 @@ get_insync(){
         command=$(insync get_status)
 
         if [[ "${command}" == "SYNCED" ]]; then
-            status="%{F${color_cpu}}${sep_left}%{F${color_back} B${color_cpu}} %{T2}${icon_synced} %{F- T1}%{F${color_sec_b2} B${color_cpu}}${sep_left}%{F- B${color_sec_b2} T1}"
+            status="%{F${color_cpu}}${sep_left}%{F${color_back} B${color_cpu} T2} ${icon_synced} %{F${color_back} B${color_cpu}}${sep_left}%{F- B- T1}"
         elif [[ "${command}" == "SYNCING" ]]; then
-            status="%{F${color_sunset}}${sep_left}%{F${color_back} B${color_sunset}} %{T2}${icon_syncing} %{F- T1}%{F${color_sec_b2} B${color_sunset}}${sep_left}%{F- B${color_sec_b2} T1}"
+            status="%{F${color_sunset}}${sep_left}%{F${color_back} B${color_sunset} T2} ${icon_syncing} %{F${color_back} B${color_sunset}}${sep_left}%{F- B- T1}"
         else
-            status="%{F${color_vol_alert}}${sep_left}%{F${color_back} B${color_vol_alert}} %{T2}${icon_sync_error} %{F- T1}%{F${color_sec_b2} B${color_vol_alert}}${sep_left}%{F- B${color_sec_b2} T1}"
+            status="%{F${color_vol_alert}}${sep_left}%{F${color_back} B${color_vol_alert} T2} ${icon_sync_error} %{F${color_back} B${color_vol_alert}}${sep_left}%{F- B- T1}"
         fi
 
         echo "SYNC ${status}"
@@ -214,29 +191,6 @@ get_insync(){
 }
 
 get_insync > "${PANEL_FIFO}" &
-
-get_load(){
-    while true; do
-        load=$(uptime | awk '{print $(NF-2)}')
-        load="${load//,}"
-
-        if (( $(echo "$load < 2.8" | bc -l) ));
-        then
-            usage="%{F${color_sec_b2}}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_load}%{F- T1} ${load} %{F${color_sec_b2} B${color_sec_b2}}${sep_left}"
-        elif (( $(echo "$load < 4.8" | bc -l) ));
-        then
-            usage="%{F${color_head}}${sep_left}%{F${color_back} B${color_head}} %{T2}${icon_load} %{T1}${load} %{F${color_sec_b2} B${color_head}}${sep_left}"        
-        else
-            usage="%{F${color_pacman}}${sep_left}%{F${color_back} B${color_pacman}} %{T2}${icon_load} %{T1}${load} %{F${color_sec_b2} B${color_pacman}}${sep_left}"        
-        fi
-        echo "LOAD ${usage}%{F- B${color_sec_b2} T1}"
-
-        sleep ${LOAD_SLEEP}
-    done
-
-}
-
-#get_load > "${PANEL_FIFO}" &
 
 while read -r line; do
     case $line in
@@ -264,26 +218,20 @@ while read -r line; do
         VPN*)
             fn_vpn="${line#VPN }"
             ;;
-        LOAD*)
-            fn_load="${line#LOAD }"
-            ;;
         WEATHER*)
             fn_weather="${line#WEATHER }"
             ;;
         MEM*)
-            fn_mem="%{F${color_sec_b2}}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_mem}%{F- T1} ${line#MEM }"
+            fn_mem="%{F${color_sec_b2}}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_mem}%{F- T1} ${line#MEM } "
             ;;
         CPU*)
-            fn_cpu="%{F${color_sec_b2}}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_cpu}%{F- T1} ${line#CPU }"
+            fn_cpu="%{F${color_sec_b2}}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_cpu}%{F- T1} ${line#CPU } "
             ;;
         FREE*)
-            fn_space="%{F${color_sec_b2}}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_space}%{F- T1} ${line#FREE }"
+            fn_space="%{F${color_sec_b2}}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_space}%{F- T1} ${line#FREE } "
             ;;
         MARKET*)
-            #fn_crpt="%{F${color_sec_b2}}${sep_left}%{F- B${color_sec_b2} T1} ${line#MARKET } "
-            fn_crpt="${line#MARKET }"            
-            #fn_crpt="${fn_crpt/%'|'/}"
-            #fn_crpt="${fn_crpt//'|'/}"
+            fn_crpt="${line#MARKET }"
             ;;
         WIN*)            
             num_title=$(xprop -id ${line#???} | awk '/_NET_WM_NAME/{$1=$2="";print}' | cut -d'"' -f2 | wc -c)
@@ -297,5 +245,5 @@ while read -r line; do
             ;;
     esac
     #printf "%s\n" "%{l}${fn_work}${title}%{S1}${fn_work}${title} %{S0}%{r}${fn_music}${stab}${fn_space}${stab}${fn_mem}${stab}${fn_cpu}${stab}${fn_load}${fn_vpn}${fn_weather}${fn_update}${fn_sync}${fn_vol}${fn_date}${stab}${fn_time}%{S1}${fn_crpt}${fn_vol}${fn_date}${stab}${fn_time}"
-    printf "%s\n" "%{l}${fn_work}${title}%{S1}${fn_work}${title} %{S0}%{r}${fn_music}${stab}${fn_vpn}${fn_weather}${fn_update}${fn_sync}${fn_vol}${fn_date}${stab}${fn_time}%{S1}${fn_vol}${fn_date}${stab}${fn_time}"
+    printf "%s\n" "%{l}${fn_work}${title}%{S1}${fn_work}${title} %{S0}%{r}${fn_music}${stab}${fn_vpn}${fn_space}${fn_mem}${fn_cpu}${fn_weather}${fn_update}${fn_sync}${fn_vol}${fn_date}${stab}${fn_time}%{S1}${fn_vol}${fn_date}${stab}${fn_time}"
 done < "${PANEL_FIFO}" | lemonbar -d -f "${FONTS}" -f "${ICONFONTS}" -g "${GEOMETRY}" -B "${BBG}" -F "${BFG}" | sh > /dev/null
