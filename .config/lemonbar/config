@@ -1,16 +1,43 @@
 #!/usr/bin/env bash
 
+#----------------------------------------------------------
+#				T R A N S P A R E N C Y
+#----------------------------------------------------------
+#100% — FF
+#95% — F2
+#90% — E6
+#85% — D9
+#80% — CC
+#75% — BF
+#70% — B3
+#65% — A6
+#60% — 99
+#55% — 8C
+#50% — 80
+#45% — 73
+#40% — 66
+#35% — 59
+#30% — 4D
+#25% — 40
+#20% — 33
+#15% — 26
+#10% — 1A
+#5% — 0D
+#0% — 00
+
 res_w=$(xrandr | grep "current" | awk '{print $8a}')
 
 WIDTH="${res_w}" # bar width
-HEIGHT=20 # bar height
+HEIGHT=22 # bar height
 XOFF=0 # x offset
 YOFF=0 # y offset
 #BRDR=5 # border width
 #BRDRC=#00000000 # border color
 
 # color definitions 
-color_back="#FF282A36"              # Default background
+# 82a4b3
+color_back="#99282A36"              # Default background
+color_trans="#00282A36"              # Default background
 color_fore="#FFC5C8C6"              # Default foreground
 color_wsp="#FFB5BD68"              # Background for first element GREEN
 color_sec_b1="#FF282A2E"            # Background for section   DARK GREY
@@ -22,10 +49,12 @@ color_yay="#FFCC6666"              # Background color for chat alert
 color_cpu="#FF5F819D"               # Background color for cpu alert
 color_vol_good="#FF5E8D87"          # Background color for volume OK
 color_vol_warn="#FFB5BD68"               # Background for volume WARN
-color_vol_alert="#FFCC6666"              # Background color for volume ALERT
+color_vol_alert="#FFf59360"              # Background color for volume ALERT
 color_disable="#FF1D1F21"           # Foreground for disable elements
-color_head="#FFa3be8c"               # Background for selected workspace 8C9440
+#color_head="#FFa3be8c"               # Background for selected workspace 8C9440
+color_head="#FF82a4b3"               # Background for selected workspace 8C9440
 color_sunset="#FFf59360"            # Background music
+color_share="#FFa3be8c"            # Background music
 
 BBG=${color_back} # bar background color
 BFG=${color_fore}
@@ -83,8 +112,10 @@ icon_load=""
 icon_synced=""
 icon_syncing=""
 icon_sync_error=""
+icon_sync_share=""
 
 PANEL_FIFO=/tmp/panel-fifo
-FONTS="Inconsolata for Powerline:size=12"
+FONTS_P="Inconsolata for Powerline:size=13"
+FONTS="Iosevka:size=11"
 ICONFONTS="FontAwesome:size=11"
 GEOMETRY="${WIDTH}x${HEIGHT}+${XOFF}+${YOFF}"

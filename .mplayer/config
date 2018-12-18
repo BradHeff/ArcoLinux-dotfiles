@@ -5,19 +5,23 @@
 #======
 
 # Set video driver.
-vo=xv
+vo=gl
 
 nodr=yes
+use-filename-title=yes
 
 noslices=yes
+geometry=50%:50%
+
+nomouseinput=yes
 
 # Use double-buffering. (Recommended for xv with SUB/OSD usage)
 double=yes
 
-autoq=100
 vf=pp=de,hqdn3d
-
-vf-add=screenshot=/home/pheonix/Pictures/smplayer_screenshots/shot
+vfm=ffmpeg
+vf-add=screenshot=/home/pheonix/Pictures/screenshots
+autoq=100
 
 #======
 # Audio
@@ -35,12 +39,17 @@ a52drc=1
 # Fix A/V sync problems. *
 mc=0.2
 
-af-add=scaletempo
+af-add=scaletempo=stride=30:overlap=.50:search=10
+af-add=volume=8.1:1
+#af-add=equalizer=0:0:0:0:0:0:0:0:0:0
+#af-add=volnorm=2
 
 autosync=30
 
 softvol=yes
-softvol-max=110 
+softvol-max=200 
+
+volume=75
 
 #==========
 # Subtitles
@@ -56,7 +65,9 @@ spualign=-1
 spuaa=4
 
 # Set language.
-slang=fi,fin,en,eng
+slang=en,eng
+
+noass=yes
 
 # Text-based subtitles
 #=====================
@@ -87,10 +98,10 @@ subalign=2
 subfont-autoscale=2
 
 # Set font blur radius. (default: 2)
-subfont-blur=1.4
+subfont-blur=1.6
 
 # Set font outline thickness. (default: 2)
-subfont-outline=1.4
+subfont-outline=1.6
 
 # Set autoscale coefficient. (default: 5)
 subfont-text-scale=2.8
@@ -99,7 +110,9 @@ subfont-text-scale=2.8
 #====
 
 # Set autoscale coefficient. (default: 6)
-subfont-osd-scale=4.4
+osdlevel=1
+
+subfont-osd-scale=2.8
 
 #===========
 # Appearance
@@ -109,7 +122,7 @@ subfont-osd-scale=4.4
 stop-xscreensaver=yes
 
 # Fullscreen window.
-fs=1
+#fs=1
 progbar-align=80
 
 ontop=yes

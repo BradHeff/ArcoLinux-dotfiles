@@ -1,14 +1,49 @@
 #!/usr/bin/env bash
 
-get_updates(){
-    
-    if [[ -f "/usr/bin/pacman" ]]; then
-        updates=`pacman -Qu | wc -l`    
-    else
-        updates="0"
-    fi
-    echo "$updates"
+##########################################################################
+#{{{ CUSTOM FUNCTIONS
+##########################################################################
+
+trim() {
+    set -f
+    # shellcheck disable=2048,2086
+    set -- $*
+    printf '%s\n' "${*//[[:space:]]/ }"
+    set +f
 }
+
+get_ppid() {
+    # Get parent process ID of PID.
+    ppid="$(grep -i -F "PPid:" "/proc/${1:-$PPID}/status")"
+    ppid="$(trim "${ppid/PPid:}")"
+    printf "%s" "$ppid"
+}
+get_process_name() {
+    # Get PID name.
+    name="$(< "/proc/${1:-$PPID}/comm")"
+    printf "%s" "$name"
+}
+trim_quotes() {
+    trim_output="${1//\'}"
+    trim_output="${trim_output//\"}"
+    printf "%s" "$trim_output"
+}
+#}}}
+
+##########################################################################
+#{{{ KERNEL
+##########################################################################
+
+get_kernel(){
+    IFS=" " read -ra uname <<< "$(uname -srm)"
+    unset IFS
+    echo "${uname[1]}"
+}
+#}}}
+
+##########################################################################
+#{{{ PACKAGE MANAGER
+##########################################################################
 
 get_packages(){
     has() { type -p "$1" >/dev/null && manager="$_"; }
@@ -74,8 +109,12 @@ get_packages(){
 
     echo "$packages"
 }
+#}}}
 
+##########################################################################
 #{{{ MEMORY
+##########################################################################
+
 get_mem(){
     while IFS=":" read -r a b; do
     	case "$a" in
@@ -94,15 +133,9 @@ get_mem(){
 }
 #}}}
 
+##########################################################################
 #{{{ UPTIME
-
-strip_date() {
-        case "$1" in
-        	"0 "*) unset "${1/* }" ;;
-                "1 "*) printf "%s" "${1/s}" ;;
-                *)     printf "%s" "$1" ;;
-	esac
-}
+##########################################################################
 
 get_uptime(){
     seconds=`< /proc/uptime`
@@ -138,11 +171,12 @@ get_uptime(){
 }
 #}}}
 
+##########################################################################
 #{{{ GPU
+##########################################################################
+
 get_gpu(){
-    gpu_cmd="$(lspci -mm | awk -F '\\"|\\" \\"|\\(' \
-                                              '/"Display|"3D|"VGA/ {a[$0] = $3 " " $4} END {for(i in a)
-                                               {if(!seen[a[i]]++) print a[i]}}')"
+    gpu_cmd="$(lspci -mm | awk -F '\\"|\\" \\"|\\(' '/"Display|"3D|"VGA/ {a[$0] = $3 " " $4} END {for(i in a){if(!seen[a[i]]++) print a[i]}}')"
     IFS=$'\n' read -d "" -ra gpus <<< "$gpu_cmd"
     [[ "${gpus[0]}" == *Intel* && "${gpus[1]}" == *Intel* ]] && unset -v "gpus[0]"
 
@@ -189,13 +223,11 @@ get_gpu(){
     gpu="${gpu/Intel }"
     echo "$gpu"
 }
-#gpu="$(glxinfo | grep -F 'OpenGL renderer string')"
-#gpu="${gpu/'OpenGL renderer string: '}"
-#gpu="${gpu/(*}"
-
 #}}}
 
-#{{{ SYSTEM
+##########################################################################
+#{{{ SHELL
+##########################################################################
 
 get_shell(){
     shell="${SHELL##*/} "
@@ -227,6 +259,11 @@ get_shell(){
 
     echo "$shell"
 }
+#}}}
+
+##########################################################################
+#{{{ CPU
+##########################################################################
 
 get_cpu(){
     cpu_file="/proc/cpuinfo"
@@ -311,26 +348,13 @@ get_cpu(){
     cpu="${cpu/Core? Duo }"
     cpu="${cpu/Qualcomm }"    
 
-    # Add CPU cores to the output.    
-    #cpu="$cpu ($cores)"  
-
-    # Add CPU speed to the output.
-    #if [[ "$speed" ]]; then
-    #    if (( speed < 1000 )); then
-    #        cpu="$cpu @ ${speed}MHz"
-    #    else
-    #        speed="$((speed / 100))"
-    #        speed="${speed:0:1}.${speed:1}"
-    #        cpu="$cpu @ ${speed}GHz"
-    #    fi
-    #fi
-
     echo "$cpu"
 }
-
 #}}}
 
-#{{{ ENVIROMENT
+##########################################################################
+#{{{ RESOLUTION
+##########################################################################
 
 get_res(){
     if type -p xrandr >/dev/null; then
@@ -349,11 +373,17 @@ get_res(){
     elif type -p xdpyinfo >/dev/null; then
         resolution="$(xdpyinfo | awk '/dimensions:/ {printf $2}')"
     fi
-
+    
     resolution="${resolution%,*}"
 
     echo "$resolution"
 }
+#}}}
+
+##########################################################################
+#{{{ WINDOW MANAGER
+##########################################################################
+
 get_wm(){
     ((wm_run == 1)) && return
     if [[ "$DISPLAY" ]]; then    
@@ -382,25 +412,11 @@ get_wm(){
     echo "$wm"
 
 }
-trim() {
-    set -f
-    # shellcheck disable=2048,2086
-    set -- $*
-    printf '%s\n' "${*//[[:space:]]/ }"
-    set +f
-}
+#}}}
 
-get_ppid() {
-    # Get parent process ID of PID.
-    ppid="$(grep -i -F "PPid:" "/proc/${1:-$PPID}/status")"
-    ppid="$(trim "${ppid/PPid:}")"
-    printf "%s" "$ppid"
-}
-get_process_name() {
-    # Get PID name.
-    name="$(< "/proc/${1:-$PPID}/comm")"
-    printf "%s" "$name"
-}
+##########################################################################
+#{{{ TERMINAL
+##########################################################################
 
 get_term(){
     while [[ -z "$term" ]]; do
@@ -431,6 +447,11 @@ get_term(){
     term_run=1
     echo "$term"
 }
+#}}}
+
+##########################################################################
+#{{{ TERMINAL FONT
+##########################################################################
 
 get_termfn(){
     xrdb="$(xrdb -query)"
@@ -444,7 +465,7 @@ get_termfn(){
         term_font="$(grep '^XTerm.vt100.faceName' <<< "$xrdb")"
 
     term_font="$(trim "${term_font/*"faceName:"}")"
-
+    
     # xft: isn't required at the beginning so we prepend it if it's missing
     [[ "${term_font:0:1}" != "-" && \
        "${term_font:0:4}" != "xft:" ]] && \
@@ -465,13 +486,76 @@ get_termfn(){
 
     echo "$term_font"
 }
+#}}}
 
-get_kernel(){
-    IFS=" " read -ra uname <<< "$(uname -srm)"
-    unset IFS
-    echo "${uname[1]}"
+##########################################################################
+#{{{ GTK THEME
+##########################################################################
+
+get_theme() {
+    # Fix weird output when the function is run multiple times.
+    unset gtk2_theme gtk3_theme theme path
+ 
+    # Check for general GTK2 Theme.
+
+    if [[ -f "${GTK2_RC_FILES:-${HOME}/.gtkrc-2.0}" ]]; then
+        gtk2_theme="$(grep "gtk-theme-name" "${GTK2_RC_FILES:-${HOME}/.gtkrc-2.0}")"
+
+    elif [[ -f "/etc/gtk-2.0/gtkrc" ]]; then
+        gtk2_theme="$(grep "^[^#]*${name}" /etc/gtk-2.0/gtkrc)"
+
+    elif [[ -f "/usr/share/gtk-2.0/gtkrc" ]]; then
+        gtk2_theme="$(grep "^[^#]*${name}" /usr/share/gtk-2.0/gtkrc)"
+
+    fi
+
+    gtk2_theme="${gtk2_theme/gtk-theme-name=}"
+    
+
+    # Check for general GTK3 Theme.
+    
+    if [[ -f "${HOME}/.config/gtk-3.0/settings.ini" ]]; then
+        gtk3_theme="$(grep "gtk-theme-name" "${HOME}/.config/gtk-3.0/settings.ini")"
+
+    elif type -p gsettings >/dev/null; then
+        gtk3_theme="$(gsettings get org.gnome.desktop.interface "$gsettings")"
+
+    elif [[ -f "/usr/share/gtk-3.0/settings.ini" ]]; then
+        gtk3_theme="$(grep "^[^#]*$name" /usr/share/gtk-3.0/settings.ini)"
+
+    elif [[ -f "/etc/gtk-3.0/settings.ini" ]]; then
+        gtk3_theme="$(grep "^[^#]*$name" /etc/gtk-3.0/settings.ini)"
+    fi
+    #echo ${gtk3_theme}
+
+    gtk3_theme="${gtk3_theme/gtk-theme-name=}"
+
+
+    # Trim whitespace.
+    gtk2_theme="$(trim "$gtk2_theme")"
+    gtk3_theme="$(trim "$gtk3_theme")"
+    
+
+    # Remove quotes.
+    gtk2_theme="$(trim_quotes "$gtk2_theme")"
+    gtk3_theme="$(trim_quotes "$gtk3_theme")"
+
+    # Format the string based on which themes exist.
+    if [[ "$gtk2_theme" == "$gtk3_theme" ]]; then
+        #gtk3_theme+=" [GTK2/3]"
+        unset gtk2_theme
+    fi
+    
+    theme="${kde_theme}${gtk2_theme}${gtk3_theme}"
+    theme="${theme%, }"    
+    
+    echo "${theme}"
 }
+#}}}
 
+##########################################################################
+#{{{ ENVIROMENT
+##########################################################################
 
 if [ -n "$DISPLAY" ]; then
     res=$(get_res)
@@ -485,13 +569,15 @@ else
     termfn="none"
 fi
 
-#cpuspe="`sed -n '/model\ name/s/^.*:\ //p' /proc/cpuinfo | uniq` (x`nproc`)"
-
 system=`lsb_release -sir`
 system="${system/$'\n'/ }"
 birthd=`last | grep "begins" | sed 's/wtmp begins //g'`
 
 #}}}
+
+##########################################################################
+#{{{ COLORS
+##########################################################################
 
 c00=$'\e[0;30m' #d black
 c01=$'\e[0;31m' #d red
@@ -515,18 +601,23 @@ f0=$'\e[0;32m'
 f1=$'\e[1;37m'
 f2=$'\e[0;37m'
 
+#}}}
+
+##########################################################################
+#{{{ FETCH
+##########################################################################
 
 cat << EOF
 ${c01}▉▉  | ${f1}System ${f0}....... $f2$system
 ${c09}  ▉▉| ${f1}Packages ${f0}..... $f2$(get_packages)
-${c07}▉▉  | ${f1}Updates ${f0}...... $f2$(get_updates)
-${c15}  ▉▉| ${f1}Uptime  ${f0}...... $f2$(get_uptime)
-${c02}▉▉  | ${f1}Resolution  ${f0}.. $f2$res
-${c10}  ▉▉| 
-${c03}▉▉  | ${f1}WM ${f0}........... $f2$wmname
-${c11}  ▉▉| ${f1}Shell ${f0}........ $f2$(get_shell)
-${c08}▉▉  | ${f1}Terminal ${f0}..... $f2$term
-${c12}  ▉▉| ${f1}Term Font ${f0}.... $f2$termfn
+${c07}▉▉  | ${f1}Uptime  ${f0}...... $f2$(get_uptime)
+${c15}  ▉▉| ${f1}Resolution  ${f0}.. $f2$res
+${c02}▉▉  | 
+${c10}  ▉▉| ${f1}WM ${f0}........... $f2$wmname
+${c03}▉▉  | ${f1}Shell ${f0}........ $f2$(get_shell)
+${c11}  ▉▉| ${f1}Terminal ${f0}..... $f2$term
+${c08}▉▉  | ${f1}Term Font ${f0}.... $f2$termfn
+${c12}  ▉▉| ${f1}Gtk Theme ${f0}.... $f2$(get_theme)
 ${c05}▉▉  | 
 ${c13}  ▉▉| ${f1}Kernel ${f0}....... $f2$(get_kernel)
 ${c06}▉▉  | ${f1}Processor ${f0}.... $f2$(get_cpu)
@@ -536,3 +627,6 @@ ${c15}  ▉▉| ${f1}Birthday ${f0}..... $f2$birthd
 ${c04}▉▉  | ${f1}Memory ${f0}....... $f2$(get_mem)
 
 EOF
+
+#}}}
+

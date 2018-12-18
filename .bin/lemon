@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+#sh $HOME/.config/lemonbar/run_lemonbar2.sh &
 RESULT=$(sh /home/pheonix/.checksession)
 
 if [[ "$RESULT" == "" ]];then

@@ -13,7 +13,7 @@
 ########################################################################
 
 ccname=( bitcoin zcash )
-ccsymbol=(   )
+#ccsymbol=(   )
 ccglyph=( '\ue029' '\ue01B' '\ue029' '\ue04D' )
 
 JSONDATA=""
@@ -42,24 +42,29 @@ function parse_cryptocurrency_data() {
 function output_cryptocurrency_data() {
     #printf "%s %6s %4s %5s   $%s \n" $SYMBOL $CC_1h $CC_1d $CC_7d $CC_Price
     #printf '%{F#FF454A4F}%{F- B#FF454A4F} %{T2}'"${SYMBOL}"'%{F- T1} $'"${CC_Price} %{F#FF454A4F} "
-    printf "%s $%s  " $SYMBOL $CC_Price
+    #printf "%s $%s\n" $SYMBOL $CC_Price
+    printf "$%s\n" $CC_Price
 }
 
 
 # get length of an array
-tLen=${#ccname[@]}
+#tLen=${#ccname[@]}
 crypto=""
 # use for loop read all nameservers
-for (( i=0; i<${tLen}; i++ ));
-do
-    CURRENCY=${ccname[$i]}
-    SYMBOL=${ccsymbol[$i]}
-    GLYPH=${ccglyph[$i]}
-    get_cryptocurrency_data
-    parse_cryptocurrency_data
-    crypto=${crypto}$(output_cryptocurrency_data)
+#for (( i=0; i<${tLen}; i++ ));
+#do
+#CURRENCY=${ccname[$i]}
+#SYMBOL=${ccsymbol[$i]}
+SYMBOL="$1"
+CURRENCY="$2"
+#GLYPH=${ccglyph[$i]}
+get_cryptocurrency_data
+parse_cryptocurrency_data
+#crypto=${crypto}$(output_cryptocurrency_data)
+output_cryptocurrency_data
 
-done
-crypt=($crypto)
+#done
+#crypt=($crypto)
 
-echo '%{F#FF454A4F}%{F- B#FF454A4F}%{F#FF979997 B#FF454A4F} %{T2}'"${crypt[0]}"'%{F- T1} '"${crypt[1]}"'  %{F#FF979997 B#FF454A4F} %{T2}'"${crypt[2]}"'%{F- T1} '"${crypt[3]}"' %{F#FF454A4F}%{F- B#FF454A4F}'
+#echo '%{F#FF454A4F}%{F- B#FF454A4F}%{F#FF979997 B#FF454A4F} %{T2}'"${crypt[0]}"'%{F- T1} '"${crypt[1]}"'  %{F#FF979997 B#FF454A4F} %{T2}'"${crypt[2]}"'%{F- T1} '"${crypt[3]}"' %{F#FF454A4F}%{F- B#FF454A4F}'
+

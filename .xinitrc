@@ -25,13 +25,13 @@ if [ systemd-detect-virt = "oracle" ]; then
 	/usr/bin/VBoxClient-all
 fi
 
-RESULT=$(sh /home/pheonix/.checksession)
+RESULT=$(sh $HOME/.checksession)
 
 if [[ "$RESULT" != "" ]]; then
 	xrandr --output DisplayPort-0 --auto --output HDMI-A-0 --primary --left-of DisplayPort-0 &
 	xrdb -merge /home/pheonix/.Xresources &
 	sh /home/pheonix/.checkfeh &	
-	( ! is_running 'compton' ) && compton -b --config "/home/pheonix/.compton.conf" &
+	( ! is_running 'compton' ) && compton -b --config "$HOME/.compton.conf" &
 	#( ! is_running "conky" ) && conky &
 
 	if ( ! is_running "lemonbar" ); then
@@ -43,13 +43,13 @@ if [[ "$RESULT" != "" ]]; then
 	fi
 	
 	( ! is_running "polkit-gnome-authentication-agent-1" ) && /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-	( ! is_running "dunst -config /home/pheonix/.config/dunst/dunstrc" ) && dunst -config "/home/pheonix/.config/dunst/dunstrc" &
-	( ! is_running "mpd --no-deamon" ) && mpd &
+	( ! is_running "dunst" ) && dunst -config "$HOME/.config/dunst/dunstrc" &
+	( ! is_running "mpd" ) && mpd &
 	( ! is_running "redshift" ) && redshift &
 	start-pulseaudio-x11 &
-	( ! is_running "./insync start" ) && insync start &
-	( ! is_running "nextcloud" ) && nextcloud &
-	( ! is_running "syncthing -no-browser" ) && syncthing -no-browser &
+	#( ! is_running "insync" ) && insync start &
+	#( ! is_running "nextcloud" ) && nextcloud &
+	( ! is_running "syncthing" ) && syncthing -no-browser &
 	( ! is_running "xfce4-power-manager" ) && xfce4-power-manager &
 
 fi

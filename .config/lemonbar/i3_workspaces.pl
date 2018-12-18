@@ -14,7 +14,7 @@
 # Based in i3-wsbar of Michael Stapelberg -> http://code.stapelberg.de/git/i3/tree/contrib/i3-wsbar
 #
 # 16 feb 2015 - Electro7
-
+use open ':std', ':encoding(UTF-8)';
 use strict;
 use warnings;
 use AnyEvent::I3;
@@ -121,7 +121,7 @@ sub update_output {
             $state = "ACT" if $ws->{visible};
             $state = "URG" if $ws->{urgent};
             $state = "FOC" if $ws->{focused};
-            my $name = '%{T2}' . $ws->{name};
+            my $name = $ws->{name};
             $out .= qq|$state$name |;
         }
 

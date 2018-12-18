@@ -2,24 +2,80 @@
 ## this is example configuration file, copy it to ##
 ## ~/.ncmpcpp/config and set up your preferences  ##
 ####################################################
-#
+## For a song format you can use:
+##
+## %l - length
+## %f - filename
+## %D - directory
+## %a - artist
+## %A - album artist
+## %t - title
+## %b - album
+## %y - date
+## %n - track number (01/12 -> 01)
+## %N - full track info (01/12 -> 01/12)
+## %g - genre
+## %c - composer
+## %p - performer
+## %d - disc
+## %C - comment
+## %P - priority
+## $R - begin right alignment
+##
+## If you want to make sure that a part of the format is displayed only when
+## certain tags are present, you can archieve it by grouping them with brackets,
+## e.g. '{%a - %t}' will be evaluated to 'ARTIST - TITLE' if both tags are
+## present or '' otherwise.  It is also possible to define a list of
+## alternatives by providing several groups and separating them with '|',
+## e.g. '{%t}|{%f}' will be evaluated to 'TITLE' or 'FILENAME' if the former is
+## not present.
+##
+## Note: If you want to set limit on maximal length of a tag, just put the
+## appropriate number between % and character that defines tag type, e.g. to
+## make album take max. 20 terminal cells, use '%20b'.
+##
+## In addition, formats support markers used for text attributes.  They are
+## followed by character '$'. After that you can put:
+##
+## - 0 - default window color (discards all other colors)
+## - 1 - black
+## - 2 - red
+## - 3 - green
+## - 4 - yellow
+## - 5 - blue
+## - 6 - magenta
+## - 7 - cyan
+## - 8 - white
+## - 9 - end of current color
+## - b - bold text
+## - u - underline text
+## - r - reverse colors
+## - a - use alternative character set
+##
+## If you don't want to use a non-color attribute anymore, just put it again,
+## but this time insert character '/' between '$' and attribute character,
+## e.g. {$b%t$/b}|{$r%f$/r} will display bolded title tag or filename with
+## reversed colors.
+
 ##### connection settings #####
-#
-## set it in order to make tag editor and renaming files work properly
-#
+
 mpd_host = "localhost"
-#
 mpd_port = "6600"
-#
-mpd_music_dir = "/home/pheonix/Music"
+mpd_music_dir = "/run/media/pheonix/storage/Music"
+
+
+##### color settings #####
 
 colors_enabled = "yes"
 volume_color = "white"
-state_line_color = "white"
+state_line_color = "green"
 state_flags_color = "white"
 main_window_color = "white"
 header_window_color = "white"
 statusbar_color = "white"
+autocenter_mode = "yes"
+window_border_color = "green"
+alternative_ui_separator_color = "green"
 
 #active_column_color = "yellow"
 empty_tag_color = "yellow"
@@ -27,31 +83,34 @@ empty_tag_color = "yellow"
 color1 = "white"
 color2 = "green"
 
-current_item_prefix = "$(green)$r"
-current_item_suffix = "$/r$(end)"
+current_item_prefix = "$3$r"
+current_item_suffix = "$/r$9"
 
 progressbar_look = "━━╸"
 progressbar_color = "white"
 progressbar_elapsed_color="green"
 
-user_interface = "classic"
+user_interface = "alternative"
 
 ##song_library_format = "{%n - }{%t}|{%f}"
 ##song_status_format = "{(%l) }{%a - }{%t}|{%f}"
 ##song_columns_list_format = "(7)[green]{l} (28)[cyan]{a} (28)[]{b} (50)[red]{t}"
+
+alternative_header_first_line_format = "$3$aqqu$/a$9 $4{%40f}|{%t}$9 $3$atqq$/a$9"
+alternative_header_second_line_format = "$3$aqqu$/a$9 $5$b{%a}|{%D}$/b$9 $3$atqq$/a$9"
 
 current_item_inactive_column_prefix="yellow"
 current_item_inactive_column_suffix="yellow"
 
 song_list_format = "{$4%a$9 - }{$8%t$9}|{$0%f$9} - {$7(%l)$9}"
 song_library_format = "{$4%n$9 - }{$0%t$9}|{$4%f$9}"
-browser_playlist_prefix = "$8playlist$9 "
+browser_playlist_prefix = "$7playlist$9 "
 selected_item_prefix = "$0"
 selected_item_suffix = "$9"
 
 song_status_format = "{(%l) }{%a - }{%t}|{%f}"
-song_window_title_format = "{%a - }{%t}|{%f}"
-song_columns_list_format = "(6f)[blue]{l} (25)[red]{a} (40)[green]{t|f} (30)[yellow]{b}"
+song_window_title_format = "{$4%a - }{%t}|{%f}"
+song_columns_list_format = "(7f)[blue]{l} (15)[red]{a} (55)[green]{t|f} (30)[yellow]{b}"
 
 playlist_display_mode = "columns" (classic/columns)
 browser_display_mode = "classic" (classic/columns)

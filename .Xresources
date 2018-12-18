@@ -33,7 +33,7 @@ URxvt*scrollBar:         false
 URxvt*scrollTtyOutput:   false
 URxvt*scrollWithBuffer:  true
 URxvt*scrollTtyKeypress: true
-URxvt*internalBorder:    30
+URxvt*internalBorder:    54
 URxvt*externalBorder:    18
 URxvt*colorIT:      	 #87af5f
 URxvt*colorBD:      	 #c5c8c6
@@ -59,12 +59,12 @@ URxvt*color14: #93e0e3
 URxvt*color15: #ffffff
 
 ! fonts
-URxvt*letterSpace: 	 	0
-URxvt*font:                 	xft:Inconsolata for Powerline:regular:size=12
-URxvt*imFont:               	xft:Inconsolata for Powerline:regular:size=12
-URxvt*boldFont:             	xft:Inconsolata for Powerline:bold:size=12
-URxvt*italicFont:           	xft:Inconsolata for Powerline:italic:size=12
-URxvt*boldItalicFont:    	xft:Inconsolata for Powerline:regular:size=12
+URxvt*letterSpace: 	 			1
+URxvt*font:                 	xft:Iosevka Light:Regular:size=11
+URxvt*imFont:               	xft:Iosevka:Regular:size=11
+URxvt*boldFont:             	xft:Iosevka:Regular:size=11
+URxvt*italicFont:           	xft:Iosevka:Regular:size=11
+URxvt*boldItalicFont:    		xft:Iosevka:Regular:size=11
 ! run :.!fc-list | grep <font-name>
 
 ! perl extensions
@@ -73,10 +73,10 @@ URxvt*boldItalicFont:    	xft:Inconsolata for Powerline:regular:size=12
 URxvt*perl-ext-common:  default,matcher,clipboard,url-select,keyboard-select,-tabbed,resize-font
 
 ! macros for clipboard and selection
-URxvt*copyCommand:      	xclip -i -selection clipboard
-URxvt*pasteCommand:     	xclip -o -selection clipboard
+URxvt*copyCommand:	      	xclip -i -selection clipboard
+URxvt*pasteCommand:	     	xclip -o -selection clipboard
 URxvt*keysym.M-c:       	perl:clipboard:copy
-URxvt*keysym.m-v:       	perl:clipboard:paste
+URxvt*keysym.M-v:       	perl:clipboard:paste
 URxvt*keysym.M-C-v:     	perl:clipboard:paste_escaped
 URxvt*keysym.M-Escape:  	perl:keyboard-select:activate
 URxvt*keysym.M-s:       	perl:keyboard-select:search
@@ -97,7 +97,7 @@ URxvt*urlLauncher:      	/usr/bin/firefox
 URxvt*underlineURLs:    	true
 !URxvt*urlButton:        	1
 URxvt.matcher.button:        1
-URxvt*geometry: 		88x23
+URxvt*geometry: 		64x18
 
 ! tabbed
 URxvt*tabbed.tabbar-fg: 	4
@@ -167,13 +167,17 @@ UXTerm*boldMode: false
 UXTerm*colorBDMode: true
 UXTerm*colorBD: rgb:3f/3f/3f
 
+
+!Emacs.font: Iosevka Light:Regular:size=14
+
+
 twobwm.border_width: 6
 twobwm.outer_border: 4
 twobwm.focus_color: #ffffff
 twobwm.unfocus_color: #6b7a85
-twobwm.fixed_color: #a3be8c
+twobwm.fixed_color: #82a4b3
 twobwm.unkill_color: #CE935F
 twobwm.outer_border_color: #2b303b
-twobwm.fixed_unkill_color: #38d1b2
+twobwm.fixed_unkill_color: #B5BD68
 twobwm.inverted_colors: false
 twobwm.enable_compton: true

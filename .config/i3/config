@@ -7,16 +7,16 @@ set $mod Mod4
 floating_modifier $mod
 
 # font
-font pango:Terminus (TTF) 11
+font pango:Iosevka 10
 
 # colors
 set $trans	 	        #00000000
-set $inactive-bg-color   	#333333
+set $inactive-bg-color   	#6b7a85
 set $text-color			#f3f4f5
-set $urbg-color          	#E53935
-set $color 		        #9e5630
+set $urbg-color          	#CE935FX
+set $color 		        #ffffff
 set $ws_color		     	#d37340
-set $ws_bord		     	#faa619
+set $ws_bord		     	#ffffff
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.

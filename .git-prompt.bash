@@ -65,7 +65,7 @@ git_branch_is_pushed() {
 git_prompt_precmd() {
     GITINFO=""
     if [ ! -z `git_current_branch` ]; then
-        GITINFO=" -[`git_current_branch`"
+        GITINFO="<`git_current_branch`"
         if ! git_status_is_clean; then
             GITINFO="$GITINFO**"
         fi
@@ -84,7 +84,7 @@ git_prompt_precmd() {
 	if ! git_single_remote; then
             GITINFO="$GITINFO®"
         fi
-	GITINFO="$GITINFO]"
+	GITINFO="$GITINFO> "
     fi
     echo $GITINFO
 }

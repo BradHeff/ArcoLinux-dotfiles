@@ -1,12 +1,11 @@
 ///---User configurable stuff---///
 ///---Modifiers---///
 #define MOD             XCB_MOD_MASK_4       /* Super/Windows key  or check xmodmap(1) with -pm  defined in /usr/include/xcb/xproto.h */
-//#define MOD             XCB_MOD_MASK_1 	 /* Alt_L (0x40),  Alt_R (0x6c),  Meta_L (0xcd) */
 ///--Speed---///
 /* Move this many pixels when moving or resizing with keyboard unless the window has hints saying otherwise.
  *0)move step slow   1)move step fast
  *2)mouse slow       3)mouse fast     */
-static const uint16_t movements[] = {60,120,400,800};
+static const uint16_t movements[] = {22,120,400,1000};
 /* resize by line like in mcwm -- jmbi */
 static const bool     resize_by_line          = true;
 /* the ratio used when resizing and keeping the aspect */
@@ -14,7 +13,7 @@ static const float    resize_keep_aspect_ratio= 1.03;
 ///---Offsets---///
 /*0)offsetx          1)offsety
  *2)maxwidth         3)maxheight */
-static const uint8_t offsets[] = {0,0,0,0};
+static const uint8_t offsets[] = {0,22,0,22};
 ///---Colors---///
 /*0)focuscol         1)unfocuscol
  *2)fixedcol         3)unkilcol
@@ -39,20 +38,19 @@ static const uint8_t borders[] = {6,7,25,1};
  * attribute of the window. You can test this using `xprop WM_NAME`
  */
 #define LOOK_INTO "WM_NAME"
-static const char *ignore_names[] = {"bar", "xclock"};
+static const char *ignore_names[] = {"bar", "xclock", "Dunst", "rofi"};
 ///--Menus and Programs---///
 static const char *thun[]   = { "thunar", NULL };
 static const char *term[]   = { "urxvt", NULL };
-static const char *vpnmenu[]   = { "perl", "/home/pheonix/.config/lemonbar/vpn_menu.pl", NULL };
-static const char *exitmenu[]   = { "perl", "/home/pheonix/.config/lemonbar/shutdown_menu.pl", NULL };
+static const char *vpnmenu[]   = { "perl", "/home/pheonix/.2bwm/vpn_menu.pl", NULL };
+static const char *exitmenu[]   = { "perl", "/home/pheonix/.2bwm/shutdown_menu.pl", NULL };
+static const char *weather[]   = { "perl", "/home/pheonix/.2bwm/weather_menu.pl", NULL };
 static const char *ide[]   = { "subl3", NULL };
 static const char *rofi[] = { "rofi", "-show", "drun", NULL };
 static const char *firefox[] = { "firefox", NULL };
 static const char *volup[] = { "sh", "/home/pheonix/.2bwm/lmc", "up", NULL };
 static const char *voldn[] = { "sh", "/home/pheonix/.2bwm/lmc", "down", NULL };
 static const char *volm[] = { "sh", "/home/pheonix/.2bwm/lmc", "mute", NULL };
-static const char *bacdwn[] = { "xbacklight", "-5", NULL };
-static const char *bacup[] = { "xbacklight", "+5", NULL };
 static const char *scrot[] = { "sh", "/home/pheonix/.2bwm/scrot", NULL };
 
 #define WORKSPACES 5
@@ -65,7 +63,12 @@ static void killandfocus(const Arg *arg)
     focusnext(&arg3);
 }
 
-///--Custom foo---///
+static void fixandunkillable(const Arg *arg)
+{
+    unkillable(arg);
+    fix(arg);
+}
+
 static void halfandcentered(const Arg *arg)
 {
 	Arg arg2 = {.i=TWOBWM_MAXHALF_VERTICAL_LEFT};
@@ -73,6 +76,7 @@ static void halfandcentered(const Arg *arg)
 	Arg arg3 = {.i=TWOBWM_TELEPORT_CENTER};
 	teleport(&arg3);
 }
+
 ///---Shortcuts---///
 /* Check /usr/include/X11/keysymdef.h for the list of all keys
  * 0x000000 is for no modkey
@@ -108,7 +112,8 @@ static key keys[] = {
     {  MOD ,              XK_Tab,        focusnext,         {.i=TWOBWM_FOCUS_NEXT}},
     {  MOD |SHIFT,        XK_Tab,        focusnext,         {.i=TWOBWM_FOCUS_PREVIOUS}},
     // Kill a window
-    {  MOD ,              XK_q,          deletewin,         {}},
+    //{  MOD ,              XK_q,          deletewin,         {}},
+    {  MOD ,              XK_q,          killandfocus,      {.i=TWOBWM_FOCUS_PREVIOUS}},
     // Resize a window
     {  MOD |SHIFT,        XK_k,          resizestep,        {.i=TWOBWM_RESIZE_UP}},
     {  MOD |SHIFT,        XK_j,          resizestep,        {.i=TWOBWM_RESIZE_DOWN}},
@@ -138,8 +143,10 @@ static key keys[] = {
     {  MOD |CONTROL,      XK_g,          teleport,          {.i=TWOBWM_TELEPORT_CENTER_X}},
     // Top left:
     {  MOD ,              XK_y,          teleport,          {.i=TWOBWM_TELEPORT_TOP_LEFT}},
+    //{  MOD ,              XK_y,          topleft,           {.i=0}},
     // Top right:
     {  MOD ,              XK_u,          teleport,          {.i=TWOBWM_TELEPORT_TOP_RIGHT}},
+    //{  MOD ,              XK_u,          topright,          {.i=0}},
     // Bottom left:
     {  MOD ,              XK_b,          teleport,          {.i=TWOBWM_TELEPORT_BOTTOM_LEFT}},
     // Bottom right:
@@ -173,8 +180,8 @@ static key keys[] = {
     //unfold horizontally
     {  MOD |SHIFT|CONTROL,XK_n,          maxhalf,           {.i=TWOBWM_MAXHALF_UNFOLD_HORIZONTAL}},
     // Next/Previous screen
-    {  MOD ,              XK_comma,      changescreen,      {.i=TWOBWM_NEXT_SCREEN}},
-    {  MOD ,              XK_period,     changescreen,      {.i=TWOBWM_PREVIOUS_SCREEN}},
+    {  MOD ,              XK_period,     changescreen,      {.i=TWOBWM_NEXT_SCREEN}},
+    {  MOD ,              XK_comma,      changescreen,      {.i=TWOBWM_PREVIOUS_SCREEN}},
     // Raise or lower a window
     {  MOD ,              XK_r,          raiseorlower,      {}},
     // Next/Previous workspace
@@ -188,19 +195,20 @@ static key keys[] = {
     // Make the window unkillable
     {  MOD ,              XK_a,          unkillable,        {}},
     // Make the window appear always on top
-    //{  MOD,               XK_t,          always_on_top,     {}},
+    {  MOD |SHIFT,        XK_t,          always_on_top,     {}},
     // Make the window stay on all workspaces
     {  MOD ,              XK_f,          fix,               {}},
+    {  MOD |SHIFT,        XK_f,          fixandunkillable,      {}},
     // Move the cursor
-    {  MOD ,              XK_Up,         cursor_move,       {.i=TWOBWM_CURSOR_UP_SLOW}},
-    {  MOD ,              XK_Down,       cursor_move,       {.i=TWOBWM_CURSOR_DOWN_SLOW}},
-    {  MOD ,              XK_Right,      cursor_move,       {.i=TWOBWM_CURSOR_RIGHT_SLOW}},
-    {  MOD ,              XK_Left,       cursor_move,       {.i=TWOBWM_CURSOR_LEFT_SLOW}},
+    {  MOD ,              XK_Up,         cursor_move,       {.i=TWOBWM_CURSOR_UP}},
+    {  MOD ,              XK_Down,       cursor_move,       {.i=TWOBWM_CURSOR_DOWN}},
+    {  MOD ,              XK_Right,      cursor_move,       {.i=TWOBWM_CURSOR_RIGHT}},    
+    {  MOD ,              XK_Left,       cursor_move,       {.i=TWOBWM_CURSOR_LEFT}},
     // Move the cursor faster
-    {  MOD |SHIFT,        XK_Up,         cursor_move,       {.i=TWOBWM_CURSOR_UP}},
-    {  MOD |SHIFT,        XK_Down,       cursor_move,       {.i=TWOBWM_CURSOR_DOWN}},
-    {  MOD |SHIFT,        XK_Right,      cursor_move,       {.i=TWOBWM_CURSOR_RIGHT}},
-    {  MOD |SHIFT,        XK_Left,       cursor_move,       {.i=TWOBWM_CURSOR_LEFT}},
+    {  MOD |SHIFT,        XK_Up,         cursor_move,       {.i=TWOBWM_CURSOR_UP_SLOW}},
+    {  MOD |SHIFT,        XK_Down,       cursor_move,       {.i=TWOBWM_CURSOR_DOWN_SLOW}},
+    {  MOD |SHIFT,        XK_Right,      cursor_move,       {.i=TWOBWM_CURSOR_RIGHT_SLOW}},
+    {  MOD |SHIFT,        XK_Left,       cursor_move,       {.i=TWOBWM_CURSOR_LEFT_SLOW}},
     // Start programs
     {  MOD |SHIFT,        XK_w,          start,             {.com = firefox}},
     {  MOD ,              XK_Return,     start,             {.com = term}},
@@ -212,9 +220,8 @@ static key keys[] = {
     {  MOD ,              XK_equal,      start,             {.com = volup}},
     {  MOD ,              XK_minus,      start,             {.com = voldn}},
     {  MOD ,              XK_m,          start,             {.com = volm}},
-    {  MOD |SHIFT,        XK_underscore, start,             {.com = bacdwn}},
-    {  MOD |SHIFT,        XK_plus,       start,             {.com = bacup}},
     {  0 ,                XK_Print,      start,             {.com = scrot}},
+    {  MOD ,              XK_w,          start,             {.com = weather}},
     // Exit or restart 2bwm
     {  MOD |CONTROL,      XK_q,          twobwm_exit,       {.i=0}},
     {  MOD |CONTROL,      XK_r,          twobwm_restart,    {.i=0}},
@@ -225,17 +232,17 @@ static key keys[] = {
        DESKTOPCHANGE(     XK_3,                             2)
        DESKTOPCHANGE(     XK_4,                             3)
        DESKTOPCHANGE(     XK_5,                             4)
-       DESKTOPCHANGE(     XK_6,                             5)
-       DESKTOPCHANGE(     XK_7,                             6)
-       DESKTOPCHANGE(     XK_8,                             7)
-       DESKTOPCHANGE(     XK_9,                             8)
-       DESKTOPCHANGE(     XK_0,                             9)
+       //DESKTOPCHANGE(     XK_6,                             5)
+       //DESKTOPCHANGE(     XK_7,                             6)
+       //DESKTOPCHANGE(     XK_8,                             7)
+       //DESKTOPCHANGE(     XK_9,                             8)
+       //DESKTOPCHANGE(     XK_0,                             9)
 };
 // the last argument makes it a root window only event
 static Button buttons[] = {
     {  MOD        ,XCB_BUTTON_INDEX_1,     mousemotion,   {.i=TWOBWM_MOVE}, false},
     {  MOD        ,XCB_BUTTON_INDEX_3,     mousemotion,   {.i=TWOBWM_RESIZE}, false},
-    {  0          ,XCB_BUTTON_INDEX_3,     start,         {.com = rofi}, true},
+    //{  0          ,XCB_BUTTON_INDEX_3,     start,         {.com = rofi}, true},
     {  MOD|SHIFT,  XCB_BUTTON_INDEX_1,     changeworkspace, {.i=0}, false},
     {  MOD|SHIFT,  XCB_BUTTON_INDEX_3,     changeworkspace, {.i=1}, false},
     {  MOD|ALT,    XCB_BUTTON_INDEX_1,     changescreen,    {.i=1}, false},

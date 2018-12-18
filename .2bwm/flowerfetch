@@ -1,0 +1,593 @@
+#!/bin/bash
+#
+# Simple posix fetch script.
+#
+# Based on Neofetch.
+#
+# Created by Dylan Araps
+
+# GAP BETWEEN ASCII AND TEXT.
+GAP=16
+
+art="
+\\033c\\033[31m  .--.---.
+ ( \\'--'/ )
+( '..-...' )
+ '.'-._.'.'
+ \\033[34m <'-.,.->
+     \`\\(  _
+     < \\ / \\
+     __ \\\\|_/
+    /  \\ \\\\
+    '--'--\\ >
+           \\\\\\033[0m
+"
+
+get_title() {
+    info "${USER:-$(whoami)}@$(hostname)"
+}
+
+get_model(){
+    MODEL=$(cat /sys/devices/virtual/dmi/id/board_{name,vendor} | awk '!(NR%2){print$1,p}{p=$0}')
+    info "\\033[33m${MODEL}"   
+}
+
+get_distro() {
+    if [[ -f "/etc/redstar-release" ]]; then
+                distro="Red Star OS"
+
+    elif [[ -f "/etc/siduction-version" ]]; then
+        distro="Siduction"
+
+    elif type -p lsb_release >/dev/null; then
+        lsb_flags="-sir"
+        distro="$(lsb_release "$lsb_flags")"
+
+    elif [[ -f "/etc/GoboLinuxVersion" ]]; then
+        distro="GoboLinux"
+
+    elif type -p guix >/dev/null; then
+        distro="GuixSD"
+
+    elif type -p crux >/dev/null; then
+        distro="$(crux)"
+        distro="${distro//version}"
+
+    elif type -p tazpkg >/dev/null; then
+        distro="SliTaz $(< /etc/slitaz-release)"
+
+    elif type -p kpt >/dev/null && \
+         type -p kpm >/dev/null; then
+        distro="KSLinux"
+
+    elif [[ -d "/system/app/" && -d "/system/priv-app" ]]; then
+        distro="Android $(getprop ro.build.version.release)"
+
+    # Chrome OS doesn't conform to the /etc/*-release standard.
+    # While the file is a series of variables they can't be sourced
+    # by the shell since the values aren't quoted.
+    elif [[ -f /etc/lsb-release && "$(< /etc/lsb-release)" == *CHROMEOS* ]]; then
+        distro="$(awk -F '=' '/NAME|VERSION/ {printf $2 " "}' /etc/lsb-release)"
+
+    elif [[ -f "/etc/os-release" || \
+            -f "/usr/lib/os-release" || \
+            -f "/etc/openwrt_release" ]]; then
+        files=("/etc/os-release" "/usr/lib/os-release" "/etc/openwrt_release")
+
+        # Source the os-release file
+        for file in "${files[@]}"; do
+            source "$file" && break
+        done
+
+        # Format the distro name.
+        distro="${NAME:-${DISTRIB_ID}} ${VERSION_ID:-${DISTRIB_RELEASE}}"
+
+        # Workarounds for distros that go against the os-release standard.
+        [[ -z "${distro// }" ]] && distro="$(awk '/BLAG/ {print $1; exit}')" "${files[@]}"
+        [[ -z "${distro// }" ]] && distro="$(awk -F'=' '{print $2; exit}')"  "${files[@]}"
+
+    else
+        for release_file in /etc/*-release; do
+            distro+="$(< "$release_file")"
+        done
+
+        if [[ -z "$distro" ]]; then
+            distro="$kernel_name"
+            distro="${distro/DragonFly/DragonFlyBSD}"
+
+            # Workarounds for FreeBSD based distros.
+            [[ -f "/etc/pcbsd-lang" ]] && distro="PCBSD"
+            [[ -f "/etc/trueos-lang" ]] && distro="TrueOS"
+
+            # /etc/pacbsd-release is an empty file
+            [[ -f "/etc/pacbsd-release" ]] && distro="PacBSD"
+        fi
+    fi
+
+    if [[ "$(< /proc/version)" == *"Microsoft"* ||
+          "$kernel_version" == *"Microsoft"* ]]; then
+        distro+=" [Windows 10]"
+
+    elif [[ "$(< /proc/version)" == *"chrome-bot"* || -f "/dev/cros_ec" ]]; then
+        distro+=" [Chrome OS]"                
+    fi
+
+    distro="$(trim_quotes "$distro")"
+    distro="${distro/'NAME='}"
+
+    info "OS" "${distro}"
+}
+
+get_packages(){
+    has() { type -p "$1" >/dev/null && manager="$_"; }
+    dir() { ((packages+=$#)); pac "$#"; }
+    pac() { (($1 > 0)) && { managers+=("$1 (${manager})"); manager_string+="${manager}, "; }; }
+    tot() { IFS=$'\n' read -d "" -ra pkgs < <("$@");((packages+="${#pkgs[@]}"));pac "${#pkgs[@]}"; }
+    # Package Manager Programs.
+    has "pacman-key" && tot pacman -Qq --color never
+    has "dpkg"       && tot dpkg-query -f '.\n' -W
+    has "rpm"        && tot rpm -qa
+    has "xbps-query" && tot xbps-query -l
+    has "apk"        && tot apk info
+    has "opkg"       && tot opkg list-installed
+    has "pacman-g2"  && tot pacman-g2 -Q
+    has "lvu"        && tot lvu installed
+    has "tce-status" && tot tce-status -i
+    has "pkg_info"   && tot pkg_info
+    has "tazpkg"     && tot tazpkg list && ((packages-=6))
+    has "sorcery"    && tot gaze installed
+    has "alps"       && tot alps showinstalled
+    has "butch"      && tot butch list
+
+    # Counting files/dirs.
+    has "emerge"     && dir /var/db/pkg/*/*/
+    has "nix-env"    && dir /nix/store/*/
+    has "guix"       && dir /gnu/store/*/
+    has "Compile"    && dir /Programs/*/
+    has "eopkg"      && dir /var/lib/eopkg/package/*
+    has "crew"       && dir /usr/local/etc/crew/meta/*.filelist
+    has "pkgtool"    && dir /var/log/packages/*
+    has "cave"       && dir /var/db/paludis/repositories/cross-installed/*/data/*/ \
+                            /var/db/paludis/repositories/installed/data/*/
+
+    # Other (Needs complex command)
+    has "kpm-pkg" && ((packages+="$(kpm  --get-selections | grep -cv deinstall$)"))
+
+    case "$kernel_name" in
+        "FreeBSD") has "pkg"     && tot pkg info ;;
+        "SunOS")   has "pkginfo" && tot pkginfo -i ;;
+        *)
+            has "pkg" && dir /var/db/pkg/*
+
+            ((packages == 0)) && \
+                has "pkg" && tot pkg list
+        ;;
+    esac
+
+    # List these last as they accompany regular package managers.
+    has "flatpak" && tot flatpak list
+
+    # Snap hangs if the command is run without the daemon running.
+    # Only run snap if the daemon is also running.
+    has "snap" && ps -e | grep -qFm 1 "snapd" >/dev/null && tot snap list && ((packages-=1))
+
+    if ((packages == 0)); then
+        unset packages
+    else
+        packages+=" (${manager_string%,*})"
+    fi
+
+    packages="${packages/pacman-key/pacman}"
+    packages="${packages/nix-env/nix}"
+
+    info "Packages" "$packages"
+}
+
+
+get_uptime() {
+    secs="$(cat /proc/uptime)"
+    secs="${secs%%.*}"
+
+    days="$((secs / 60 / 60 / 24))d"
+    hours="$((secs / 60 / 60 % 24))h"
+    mins="$((secs / 60 % 60))m"
+
+    [ "$days" = 0d ] &&  unset days
+    [ "$hours" = 0h ] && unset hours
+    [ "$mins" = 0m ] &&  unset mins
+
+    uptime="${days:+$days }${hours:+$hours }${mins}"
+    uptime="${uptime:-${secs}s}"
+
+    info "Uptime" "$uptime"
+}
+
+
+get_kernel() {
+    IFS="-" read -ra uname <<< "$(uname -srm | awk '{print $2}')"
+    unset IFS    
+    info "Kernel" "${uname[0]}"
+}
+
+get_memory() {
+    while IFS=":" read -r a b; do
+        case "$a" in
+            "MemTotal")
+                mem_used="$((mem_used+=${b%kB}))"; mem_total="${b%kB}"
+            ;;
+
+            "Shmem")
+                mem_used="$((mem_used+=${b%kB}))"
+            ;;
+
+            "MemFree" | "Buffers" | "Cached" | "SReclaimable")
+                mem_used="$((mem_used-=${b%kB}))"
+            ;;
+        esac
+    done < /proc/meminfo
+
+    mem_used="$((mem_used / 1024))MiB"
+    mem_total="$((mem_total / 1024))MiB"
+
+    info "Memory" "$mem_used / $mem_total"
+}
+
+
+get_wm() {
+     id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
+     id="${id##* }"
+     if [[ "$id" != "found." ]]; then
+         wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t)"
+         wm="${wm/*WM_NAME = }"
+         wm="${wm/\"}"
+         wm="${wm/\"*}"
+     fi
+
+     # Window Maker does not set _NET_WM_NAME
+     [[ "$wm" =~ "WINDOWMAKER" ]] && wm="wmaker"
+
+     # Fallback for non-EWMH WMs.
+     [[ -z "$wm" ]] && \
+         wm="$(ps -e | grep -m 1 -o -F \
+                  -e "catwm" \
+                  -e "dwm" \
+                  -e "2bwm" \
+                  -e "monsterwm" \
+                  -e "tinywm")"
+
+    #wm_run=1
+    #echo "$wm"
+    #id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
+    #id="${id##* }"
+    #wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t |awk '{gsub(/\"/,"")}NR==2{print $3}' )"
+    #wm="${wm%\"*}"
+    #wm="${wm#*\"}"
+
+    info "WM" "$wm"
+}
+
+
+##########################################################################
+#{{{ SHELL
+##########################################################################
+
+get_shell(){
+    shell="${SHELL##*/} "
+    case "${shell_name:=${SHELL##*/}}" in
+        "bash") shell+="${BASH_VERSION/-*}" ;;
+        "sh" | "ash" | "dash") ;;
+
+        "mksh" | "ksh")
+            shell+="$("$SHELL" -c "printf %s \$KSH_VERSION")"
+            shell="${shell/ * KSH}"
+            shell="${shell/version}"
+        ;;
+
+        "tcsh")
+            shell+="$("$SHELL" -c "printf %s \$tcsh")"
+        ;;
+
+        *)
+            shell+="$("$SHELL" --version 2>&1)"
+            shell="${shell/ "${shell_name}"}"
+        ;;
+    esac
+
+    # Remove unwanted info.
+    shell="${shell/, version}"
+    shell="${shell/xonsh\//xonsh }"
+    shell="${shell/options*}"
+    shell="${shell/\(*\)}"
+
+    info "Shell" "$shell"
+}
+#}}}
+
+##########################################################################
+#{{{ CPU
+##########################################################################
+
+get_cpu(){
+    cpu_file="/proc/cpuinfo"
+    speed_type="bios_limit"
+    cpu_cores="physical"
+
+    case "$kernel_machine" in
+        "frv" | "hppa" | "m68k" | "openrisc" | "or"* | "powerpc" | "ppc"* | "sparc"*)
+            cpu="$(awk -F':' '/^cpu\t|^CPU/ {printf $2; exit}' "$cpu_file")"
+        ;;
+
+        "s390"*)
+            cpu="$(awk -F'=' '/machine/ {print $4; exit}' "$cpu_file")"
+        ;;
+
+        "ia64" | "m32r")
+            cpu="$(awk -F':' '/model/ {print $2; exit}' "$cpu_file")"
+            [[ -z "$cpu" ]] && cpu="$(awk -F':' '/family/ {printf $2; exit}' "$cpu_file")"
+        ;;
+
+        *)
+            cpu="$(awk -F ': | @' '/model name|Processor|^cpu model|chip type|^cpu type/ {
+                                       printf $2;
+                                       exit
+                                   }' "$cpu_file")"
+
+            [[ "$cpu" == *"processor rev"* ]] && \
+                cpu="$(awk -F':' '/Hardware/ {print $2; exit}' "$cpu_file")"
+        ;;
+    esac
+
+    speed_dir="/sys/devices/system/cpu/cpu0/cpufreq"
+
+    # Get CPU speed.
+    if [[ -d "$speed_dir" ]]; then
+        # Fallback to bios_limit if $speed_type fails.
+        speed="$(< "${speed_dir}/${speed_type}")" ||\
+        speed="$(< "${speed_dir}/bios_limit")" ||\
+        speed="$(< "${speed_dir}/scaling_max_freq")" ||\
+        speed="$(< "${speed_dir}/cpuinfo_max_freq")"
+        speed="$((speed / 1000))"
+
+    else
+        speed="$(awk -F ': |\\.' '/cpu MHz|^clock/ {printf $2; exit}' "$cpu_file")"
+        speed="${speed/MHz}"
+    fi
+
+    # Get CPU cores.    
+    cores="$(grep -c "^processor" "$cpu_file")"
+    #cores="$(awk '/^core id/&&!a[$0]++{++i} END {print i}' "$cpu_file")"
+    
+
+    # Remove un-needed patterns from cpu output.
+    
+    cpu="${cpu//(tm)}"
+    cpu="${cpu//(TM)}"
+    cpu="${cpu//(r)}"
+    cpu="${cpu//(R)}"
+    cpu="${cpu//CPU}"
+    cpu="${cpu//Processor}"
+    cpu="${cpu//Dual-Core}"
+    cpu="${cpu//Quad-Core}"
+    cpu="${cpu//Six-Core}"
+    cpu="${cpu//Eight-Core}"
+    cpu="${cpu//, * Compute Cores*}"
+    cpu="${cpu//, * COMPUTE CORES*}"
+    cpu="${cpu//Core / }"
+    cpu="${cpu//(\"AuthenticAMD\"*)}"
+    cpu="${cpu//with Radeon * Graphics}"
+    cpu="${cpu//, altivec supported}"
+    cpu="${cpu//FPU*}"
+    cpu="${cpu//Chip Revision*}"
+    cpu="${cpu//Technologies, Inc}"
+    cpu="${cpu//Core2/Core 2}"
+
+    # Trim spaces from core and speed output
+    cores="${cores//[[:space:]]}"
+    speed="${speed//[[:space:]]}"
+
+    # Remove CPU brand from the output.
+    cpu="${cpu/AMD }"
+    cpu="${cpu/Intel }"
+    cpu="${cpu/Core? Duo }"
+    cpu="${cpu/Qualcomm }"    
+    
+    cpu="${cpu} (${cores}C)"
+    info "CPU" "$cpu"
+}
+#}}}
+
+##########################################################################
+#{{{ GPU
+##########################################################################
+
+get_gpu(){
+    gpu_cmd="$(lspci -mm | awk -F '\\"|\\" \\"|\\(' '/"Display|"3D|"VGA/ {a[$0] = $3 " " $4} END {for(i in a){if(!seen[a[i]]++) print a[i]}}')"
+    IFS=$'\n' read -d "" -ra gpus <<< "$gpu_cmd"
+    [[ "${gpus[0]}" == *Intel* && "${gpus[1]}" == *Intel* ]] && unset -v "gpus[0]"
+
+    for gpu in "${gpus[@]}"; do        
+        case "$gpu" in
+            *"AMD"*)                
+                brand="${gpu/*AMD*ATI*/AMD ATI}"
+                brand="${brand:-${gpu/*AMD*/AMD}}"
+                brand="${brand:-${gpu/*ATI*/ATi}}"
+
+                gpu="${gpu/'[AMD/ATI]' }"
+                gpu="${gpu/'[AMD]' }"
+                gpu="${gpu/OEM }"
+                gpu="${gpu/Advanced Micro Devices, Inc.}"
+                gpu="${gpu/ \/ *}"
+                gpu="${gpu/*\[}"
+                gpu="${gpu/\]*}"
+                gpu="$brand $gpu"
+            ;;
+
+            *"nvidia"*)
+                gpu="${gpu/*\[}"
+                gpu="${gpu/\]*}"
+                gpu="NVIDIA $gpu"
+            ;;
+
+            *"intel"*)
+                gpu="${gpu/*Intel/Intel}"
+                gpu="${gpu/'(R)'}"
+                gpu="${gpu/'Corporation'}"
+                gpu="${gpu/ \(*}"
+                gpu="${gpu/Integrated Graphics Controller}"
+
+                [[ -z "$(trim "$gpu")" ]] && gpu="Intel Integrated Graphics"
+            ;;
+
+            *"virtualbox"*)
+                gpu="VirtualBox Graphics Adapter"
+            ;;
+        esac
+    done
+    gpu="${gpu/AMD }"
+    gpu="${gpu/NVIDIA }"
+    gpu="${gpu/Intel }"
+    info "GPU" "$gpu"
+}
+##########################################################################
+#{{{ RESOLUTION
+##########################################################################
+
+get_res(){
+    if type -p xrandr >/dev/null; then
+
+        resolution="$(xrandr --nograb --current |\
+                      awk -F 'connected |\\+|\\(' \
+                             '/ connected/ && $2 {printf $2 ", "}')"
+        resolution="${resolution/primary }"
+        resolution="${resolution//\*}"
+
+    elif type -p xwininfo >/dev/null; then
+        read -r w h \
+            < <(xwininfo -root | awk -F':' '/Width|Height/ {printf $2}')
+        resolution="${w}x${h}"
+
+    elif type -p xdpyinfo >/dev/null; then
+        resolution="$(xdpyinfo | awk '/dimensions:/ {printf $2}')"
+    fi
+    
+    resolution="${resolution%,*}"
+
+    info "Resolution" "$resolution"
+}
+#}}}
+
+
+##########################################################################
+#{{{ TERMINAL
+##########################################################################
+
+get_term(){
+    while [[ -z "$term" ]]; do
+        parent="$(get_ppid "$parent")"
+        [[ -z "$parent" ]] && break
+        name="$(get_process_name "$parent")"
+
+        case "${name// }" in
+            "${SHELL/*\/}"|*"sh"|"screen"|"su"*) ;;
+
+            "login"*|*"Login"*|"init"|"(init)")
+                term="$(tty)"
+            ;;
+
+            "ruby"|"1"|"systemd"|"sshd"*|"python"*|"USER"*"PID"*|"kdeinit"*|"launchd"*)
+                break
+            ;;
+
+            "gnome-terminal-") term="gnome-terminal" ;;
+            *"nvim")           term="Neovim Terminal" ;;
+            *"NeoVimServer"*)  term="VimR Terminal" ;;
+            *"tmux"*)          term="tmux" ;;
+            *)                 term="${name##*/}" ;;
+        esac
+    done
+
+    # Log that the function was run.
+    term_run=1
+    info "Terminal" "$term"
+}
+
+get_bday(){
+    bday=$(ls -alct /|sed '$!d'|awk '{print $7, $6, $8}')
+    info "Birthday" "$bday"
+}
+
+get_cols() {
+    printf "\\n\\n"
+    i=1; while [ "$i" -lt 8 ]; do
+        printf "%b" "\\e[4${i}m      \\e[0m"
+        i="$((i+1))"
+    done
+    printf "\\n\\n"
+}
+
+
+
+trim() {
+    set -f
+    # shellcheck disable=2048,2086
+    set -- $*
+    printf '%s\n' "${*//[[:space:]]/ }"
+    set +f
+}
+
+get_ppid() {
+    # Get parent process ID of PID.
+    ppid="$(grep -i -F "PPid:" "/proc/${1:-$PPID}/status")"
+    ppid="$(trim "${ppid/PPid:}")"
+    printf "%s" "$ppid"
+}
+get_process_name() {
+    # Get PID name.
+    name="$(< "/proc/${1:-$PPID}/comm")"
+    printf "%s" "$name"
+}
+trim_quotes() {
+    trim_output="${1//\'}"
+    trim_output="${trim_output//\"}"
+    printf "%s" "$trim_output"
+}
+
+info() {
+    reset="\\e[0m"
+    bold="\\e[1m"
+    title_color="\\e[32m"
+    len="${#1}"
+    length=($len + 10)
+
+    if [ "$2" ]; then
+        printf "\\e[%sC%b: %s\\n" "$GAP" "${title_color}${1}${reset}" "$2"
+    else
+        printf "\\e[%sC%b\\n" "$GAP" "${bold}${1}${reset}"
+    fi
+}
+
+
+main() {
+    printf "%b\\n" "$art"
+    ascii_height="$(echo "$art" | wc -l)"
+    printf "%b" "\\e[?25l\\e[?7l\\e[${ascii_height}A"
+
+    #get_title
+    get_model
+    get_distro
+    get_packages
+    get_uptime
+    get_res
+    get_shell
+    get_wm
+    get_term    
+    get_kernel
+    get_cpu
+    #get_gpu
+    get_bday
+    get_memory
+
+    printf "\\e[?25h\\e[?7h\\n"
+}
+
+main "$@"

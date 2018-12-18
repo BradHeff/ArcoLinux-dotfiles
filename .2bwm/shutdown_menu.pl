@@ -3,11 +3,12 @@
 use strict;
 use warnings;
 use Capture::Tiny qw(capture);
+use utf8;
 
-my $title = "Menu";
-my $color_normal = "argb:0023262f, argb:F2e0b053, argb:0023262f, argb:F2e0b053, argb:F223262f";
-my $color_window = "argb:D923262f, argb:F29e5630, argb:F29e5630";
-my $options = "-width -30 -location 5 -bw 1 -dmenu -i -p \"$title\" -lines 4 -color-window \'$color_window\' -color-normal \'$color_normal\' -font \'FontAwesome 5 Free 10\'";
+my $title = "Shutdown Menu";
+#my $color_normal = "argb:0023262f, argb:F2a3be8c, argb:0023262f, argb:F2a3be8c, argb:F223262f";
+#my $color_window = "argb:D923262f, argb:F2ffffff, argb:F2ffffff";
+my $options = "-width -30 -location 3 -bw 1 -dmenu -i -p \"$title\" -lines 4"; # -color-window \'$color_window\' -color-normal \'$color_normal\' -font \'Inconsolata 11\'";
 
 sub get_item {
 	my $RESULT = capture { system qq{sh /home/pheonix/.checksession} };
@@ -15,9 +16,9 @@ sub get_item {
 	chomp($RESULT);
 	
 	if($RESULT ne ""){
-		$items = "Shutdown\nReboot\nSuspend";
+		$items = " Shutdown\n Reboot\n Suspend";
 	}else{
-		$items = "Shutdown\nReboot\nSuspend\nLogout";
+		$items = " Shutdown\n Reboot\n Suspend\n Logout";
 	}
 	
 		

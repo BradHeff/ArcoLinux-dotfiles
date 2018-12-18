@@ -1,0 +1,3 @@
+#!/bin/bash
+
+slurm -i "$1" -Lzs

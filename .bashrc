@@ -2,7 +2,7 @@
 # ~/.bashrc
 #
 
-. ~/.git-prompt.bash
+. /home/pheonix/.git-prompt.bash
 
 precmd() {
     echo `git_prompt_precmd`
@@ -11,13 +11,14 @@ precmd() {
 [[ $- != *i* ]] && return
 
 export HISTCONTROL=ignoreboth:erasedups
+export QT_QPA_PLATFORMTHEME=qt5ct
 
 SELECT(){
 	if [ "$?" -eq 0 ]
     then
 		echo ""
 	else 
-		echo "[X]"
+		echo "[X] "
 fi
 }
 
@@ -29,11 +30,14 @@ COLOR_BLUE="\[$(tput setaf 4)\]"
 COLOR_PURPLE="\[$(tput setaf 5)\]"
 COLOR_CYAN="\[$(tput setaf 6)\]"
 COLOR_WHITE="\[$(tput setaf 7)\]"
+COLOR_BLUE="\[$(tput setaf 8)\]"
 COLOR_RESET="\[$(tput sgr0)\]"
+COLOR_BOLD="\[$(tput bold)\]"
 
 
-PS1="${COLOR_RED}\$(SELECT)${COLOR_CYAN}[${COLOR_RESET}\\w${COLOR_CYAN}]-[${COLOR_RESET}\\@${COLOR_CYAN}]${COLOR_PURPLE}\$(precmd)
-${COLOR_YELLOW}>${COLOR_RESET} "
+#PS1="${COLOR_RED}\$(SELECT)${COLOR_RESET}\\h ${COLOR_YELLOW}${COLOR_BOLD}::${COLOR_RESET} ${COLOR_GREEN}\\w ${COLOR_PURPLE}\$(precmd) ${COLOR_B}${COLOR_BOLD}>>${COLOR_RESET} "
+PS1="${COLOR_RED}\$(SELECT)${COLOR_GREEN}\\w ${COLOR_PURPLE}\$(precmd)${COLOR_RESET}
+${COLOR_GREEN}${COLOR_BOLD}::${COLOR_RESET} "
 
 mkcd() {
         if [ $# != 1 ]; then
@@ -103,19 +107,19 @@ deps() {
 gitclone() {
   if [[ "$1" -eq "gh" ]]
   then
-    git clone https://USER:KEY@github.com/USER/"$2".git
+    git clone https://BradHeff:bf9816eec762a61511d33e750090b339f614ae61@github.com/BradHeff/"$2".git
   elif [[ "$1" -eq "gl" ]]
   then
-    git clone https://USER:KEY@gitlab.com/USER/"$2".git
+    git clone https://BradHeff:5ggxv8Maw6s4HRYyk_6E@gitlab.com/BradHeff/"$2".git
   fi  
 }
 gitremote() {
   if [[ "$1" -eq "gh" ]]
   then
-    git remote add origin https://USER:KEY@github.com/USER/"$2".git
+    git remote add origin https://BradHeff:bf9816eec762a61511d33e750090b339f614ae61@github.com/BradHeff/"$2".git
   elif [[ "$1" -eq "gl" ]]
   then
-    git remote add origin https://USER:KEY@gitlab.com/USER/"$2".git
+    git remote add origin https://BradHeff:5ggxv8Maw6s4HRYyk_6E@gitlab.com/BradHeff/"$2".git
   fi  
 }
 dd() {
@@ -172,6 +176,7 @@ alias merge="xrdb -merge ~/.Xresources"
 # pacman or pm
 alias pacman="sudo pacman --color auto"
 alias update="sudo pacman -Syyu"
+alias prm="sudo pacman -R --color auto"
 alias pins="sudo pacman -S --color auto"
 alias psr="sudo pacman -Ss --color auto"
 alias pdep="deps p"
@@ -179,6 +184,7 @@ alias pdep="deps p"
 # yay as aur helper - updates everything
 alias pksyua="yay -Syu --noconfirm"
 alias yins="yay -S --color auto"
+alias yrm="yay -R --color auto"
 alias ysr="yay -Ss --color auto"
 alias ydep="deps y"
 
@@ -245,6 +251,8 @@ shopt -s expand_aliases # expand aliases
 
 #neofetch
 #clear && cowsay 'Welcome to ArcoLinuxD'
-clear && ~/.i3/info
+export _JAVA_AWT_WM_NONREPARENTING=1
+#clear && ~/.2bwm/info
+clear && bash ~/.2bwm/flowerfetch
 EDITOR=vim
 

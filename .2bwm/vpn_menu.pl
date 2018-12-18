@@ -5,10 +5,10 @@ use warnings;
 use Capture::Tiny qw(capture);
 #use List::MoreUtils qw(firstidx);
 
-my $title = "Menu";
-my $color_normal = "argb:0023262f, argb:F2a3be8c, argb:0023262f, argb:F2a3be8c, argb:F223262f";
-my $color_window = "argb:D923262f, argb:F2ffffff, argb:F2ffffff";
-my $options = "-width -30 -location 5 -bw 1 -dmenu -i -p \"$title\" -lines 10 -color-window \'$color_window\' -color-normal \'$color_normal\' -font \'Inconsolata for Powerline 10\'";
+my $title = "VPN Menu";
+#my $color_normal = "argb:0023262f, argb:F2a3be8c, argb:0023262f, argb:F2a3be8c, argb:F223262f";
+#my $color_window = "argb:D923262f, argb:F2ffffff, argb:F2ffffff";
+my $options = "-width -30 -location 3 -bw 1 -dmenu -i -p \"$title\" -lines 10"; # -color-window \'$color_window\' -color-normal \'$color_normal\' -font \'Inconsolata 11\'";
 my $menu = "";
 
 sub get_cur_vpn {
