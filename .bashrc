@@ -107,19 +107,19 @@ deps() {
 gitclone() {
   if [[ "$1" -eq "gh" ]]
   then
-    git clone https://BradHeff:bf9816eec762a61511d33e750090b339f614ae61@github.com/BradHeff/"$2".git
+    git clone https://BradHeff:TOKEN@github.com/BradHeff/"$2".git
   elif [[ "$1" -eq "gl" ]]
   then
-    git clone https://BradHeff:5ggxv8Maw6s4HRYyk_6E@gitlab.com/BradHeff/"$2".git
+    git clone https://BradHeff:TOKEN@gitlab.com/BradHeff/"$2".git
   fi  
 }
 gitremote() {
   if [[ "$1" -eq "gh" ]]
   then
-    git remote add origin https://BradHeff:bf9816eec762a61511d33e750090b339f614ae61@github.com/BradHeff/"$2".git
+    git remote add origin https://BradHeff:TOKEN@github.com/BradHeff/"$2".git
   elif [[ "$1" -eq "gl" ]]
   then
-    git remote add origin https://BradHeff:5ggxv8Maw6s4HRYyk_6E@gitlab.com/BradHeff/"$2".git
+    git remote add origin https://BradHeff:TOKEN@gitlab.com/BradHeff/"$2".git
   fi  
 }
 dd() {
