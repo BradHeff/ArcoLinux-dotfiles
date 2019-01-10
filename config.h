@@ -5,7 +5,7 @@
 /* Move this many pixels when moving or resizing with keyboard unless the window has hints saying otherwise.
  *0)move step slow   1)move step fast
  *2)mouse slow       3)mouse fast     */
-static const uint16_t movements[] = {22,120,400,1000};
+static const uint16_t movements[] = {24,120,400,1000};
 /* resize by line like in mcwm -- jmbi */
 static const bool     resize_by_line          = true;
 /* the ratio used when resizing and keeping the aspect */
@@ -13,7 +13,7 @@ static const float    resize_keep_aspect_ratio= 1.03;
 ///---Offsets---///
 /*0)offsetx          1)offsety
  *2)maxwidth         3)maxheight */
-static const uint8_t offsets[] = {0,22,0,22};
+static const uint8_t offsets[] = {0,24,0,24};
 ///---Colors---///
 /*0)focuscol         1)unfocuscol
  *2)fixedcol         3)unkilcol
@@ -154,10 +154,10 @@ static key keys[] = {
     // Resize while keeping the window aspect
     {  MOD ,              XK_Home,       resizestep_aspect, {.i=TWOBWM_RESIZE_KEEP_ASPECT_GROW}},
     {  MOD ,              XK_End,        resizestep_aspect, {.i=TWOBWM_RESIZE_KEEP_ASPECT_SHRINK}},
-    // Full screen window without borders
-    {  MOD ,              XK_x,         maximize,          {.i=TWOBWM_FULLSCREEN}},
-    //Full screen window without borders overiding offsets
-    {  MOD |SHIFT ,       XK_x,          maximize,          {.i=TWOBWM_FULLSCREEN_OVERRIDE_OFFSETS}},
+    // Maximize (ignore offset and no EWMH atom)
+    {  MOD ,              XK_x,          maximize,          {}},
+    // Full screen (disregarding offsets and adding EWMH atom)
+    {  MOD |SHIFT ,       XK_x,          fullscreen,        {}},
     // Maximize vertically
     {  MOD |CONTROL,      XK_m,          maxvert_hor,       {.i=TWOBWM_MAXIMIZE_VERTICALLY}},
     // Maximize horizontally
