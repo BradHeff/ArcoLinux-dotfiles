@@ -96,9 +96,9 @@ work > "${PANEL_FIFO}" &
 get_vpn(){
     while true; do
         if [ -d "/proc/sys/net/ipv4/conf/tun0" ]; then
-            vpn="%{F${color_head} T3}${sep_left}%{F${color_back} B${color_head}} %{T2}${icon_vpn_on} %{T1}On %{F${color_sec_b2} B${color_head} T3}${sep_left}%{F- B${color_sec_b2} T1}"
+            vpn="%{F${color_sel} T3}${sep_left}%{F${color_back} B${color_sel}} %{T2}${icon_vpn_on} %{T1}On %{F${color_sec_b2} B${color_sel} T3}${sep_left}%{F- B${color_sec_b2} T1}"
         elif [ -d "/proc/sys/net/ipv4/conf/ppp0" ]; then
-            vpn="%{F${color_head} T3}${sep_left}%{F${color_back} B${color_head}} %{T2}${icon_vpn_on} %{T1}On %{F${color_sec_b2} B${color_head} T3}${sep_left}%{F- B${color_sec_b2} T1}"
+            vpn="%{F${color_sel} T3}${sep_left}%{F${color_back} B${color_sel}} %{T2}${icon_vpn_on} %{T1}On %{F${color_sec_b2} B${color_sel} T3}${sep_left}%{F- B${color_sec_b2} T1}"
         else
             vpn="%{F${color_sec_b2} T3}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_vpn_off}%{F- T1} Off "
         fi  
@@ -115,7 +115,7 @@ clock()
     while true; do        
         local time="$(date +'%_I:%M%P')"
         # time        
-        echo "CLOCK %{F${color_head} B${color_sec_b1} T3}${sep_left}%{F${color_back} B${color_head}} %{T2}${icon_clock} %{T1}${time} %{T1}%{F${color_head} B${color_head} T3}${sep_left}%{F- B-} %{T1}"
+        echo "CLOCK %{F${color_sel} B${color_sec_b1} T3}${sep_left}%{F${color_back} B${color_sel}} %{T2}${icon_clock} %{T1}${time} %{T1}%{F${color_head2} B${color_sel} T3}${sep_left}%{F- B- T1}"
         sleep ${TIME_SLEEP}
     done
 }
@@ -176,32 +176,22 @@ weather(){
 
 weather > "${PANEL_FIFO}" &
 
-get_insync(){
+show_theme() {    
     while true; do
-        command=$(insync get_status)
+        
+        echo "THEME %{A:perl ~/.2bwm/wallpaper_changer_menu.pl:}%{F${color_head2} B${color_head2} T3}${sep_left}%{F- B${color_head2}} %{T2}${icon_theme} %{F${color_head2} B${color_head2} T3}${sep_left}%{F- B- T1}%{A}"
 
-        if [[ "${command}" == "SYNCED" ]]; then
-            status="%{F${color_head} T3}${sep_left}%{F${color_back} B${color_head} T2} ${icon_synced} %{F${color_back} B${color_head} T3}${sep_left}%{F- B- T1}"
-        elif [[ "${command}" == "SYNCING" ]]; then
-            status="%{F${color_sunset} T3}${sep_left}%{F${color_back} B${color_sunset} T2} ${icon_syncing} %{F${color_back} B${color_sunset} T3}${sep_left}%{F- B- T1}"
-        elif [[ "${command}" == "SHARE" ]]; then
-            status="%{F${color_share} T3}${sep_left}%{F${color_back} B${color_share} T2} ${icon_sync_share} %{F${color_back} B${color_share} T3}${sep_left}%{F- B- T1}"
-        else
-            status="%{F${color_vol_alert} T3}${sep_left}%{F${color_back} B${color_vol_alert} T2} ${icon_sync_error} %{F${color_back} B${color_vol_alert} T3}${sep_left}%{F- B- T1}"
-        fi
-
-        echo "SYNC ${status}"
-
-        sleep ${SYNC_SLEEP}
+        sleep ${TIME_SLEEP}    
     done
+    
 }
 
-#get_insync > "${PANEL_FIFO}" &
+show_theme > "${PANEL_FIFO}" &
 
 while read -r line; do
     case $line in
-        SYNC*)
-            fn_sync="${line#SYNC }"
+        THEME*)
+            fn_theme="${line#THEME }"
             ;;
         CLOCK*)
             fn_time="${line#CLOCK }"
@@ -236,9 +226,6 @@ while read -r line; do
         FREE*)
             fn_space="%{F${color_sec_b2} T3}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_space}%{F- T1} ${line#FREE } "
             ;;
-        MARKET*)
-            fn_crpt="${line#MARKET }"
-            ;;
         WIN*)            
             num_title=$(xprop -id ${line#???} | awk '/_NET_WM_NAME/{$1=$2="";print}' | cut -d'"' -f2 | wc -c)
 
@@ -251,5 +238,5 @@ while read -r line; do
             ;;
     esac
     #printf "%s\n" "%{l}${fn_work}${title}%{S1}${fn_work}${title} %{S0}%{r}${fn_music}${stab}${fn_space}${stab}${fn_mem}${stab}${fn_cpu}${stab}${fn_load}${fn_vpn}${fn_weather}${fn_update}${fn_sync}${fn_vol}${fn_date}${stab}${fn_time}%{S1}${fn_crpt}${fn_vol}${fn_date}${stab}${fn_time}"
-    printf "%s\n" "%{l}${fn_work}${title}%{S1}${fn_work}${title} %{S0}%{r}${fn_music}${stab}${fn_vpn}${fn_space}${fn_mem}${fn_cpu}${fn_update}${fn_weather}${fn_sync}${fn_vol}${fn_date}${stab}${fn_time}%{S1}${fn_music}${fn_date}${stab}${fn_time}"
+    printf "%s\n" "%{l}${fn_work}${title}%{S1}${fn_work}${title} %{S0}%{r}${fn_music}${stab}${fn_vpn}${fn_space}${fn_mem}${fn_cpu}${fn_update}${fn_weather}${fn_sync}${fn_vol}${fn_date}${stab}${fn_time}${fn_theme}%{S1}${fn_music}${fn_date}${stab}${fn_time}${fn_theme}"
 done < "${PANEL_FIFO}" | lemonbar -d -f "${FONTS}" -f "${ICONFONTS}" -f "${FONTS_P}" -g "${GEOMETRY}" -B "${BBG}" -F "${BFG}" -r 0 -R "${BRDRC}" -u 2 | sh > /dev/null

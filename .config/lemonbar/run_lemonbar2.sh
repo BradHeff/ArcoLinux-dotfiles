@@ -176,28 +176,6 @@ weather(){
 
 weather > "${PANEL_FIFO}" &
 
-get_insync(){
-    while true; do
-        command=$(insync get_status)
-
-        if [[ "${command}" == "SYNCED" ]]; then
-            status="%{F${color_head} T3}${sep_left}%{F${color_back} B${color_head} T2} ${icon_synced} %{F${color_back} B${color_head} T3}${sep_left}%{F- B- T1}"
-        elif [[ "${command}" == "SYNCING" ]]; then
-            status="%{F${color_sunset} T3}${sep_left}%{F${color_back} B${color_sunset} T2} ${icon_syncing} %{F${color_back} B${color_sunset} T3}${sep_left}%{F- B- T1}"
-        elif [[ "${command}" == "SHARE" ]]; then
-            status="%{F${color_share} T3}${sep_left}%{F${color_back} B${color_share} T2} ${icon_sync_share} %{F${color_back} B${color_share} T3}${sep_left}%{F- B- T1}"
-        else
-            status="%{F${color_vol_alert} T3}${sep_left}%{F${color_back} B${color_vol_alert} T2} ${icon_sync_error} %{F${color_back} B${color_vol_alert} T3}${sep_left}%{F- B- T1}"
-        fi
-
-        echo "SYNC ${status}"
-
-        sleep ${SYNC_SLEEP}
-    done
-}
-
-#get_insync > "${PANEL_FIFO}" &
-
 show_theme() {    
     while true; do
         
@@ -214,9 +192,6 @@ while read -r line; do
     case $line in
         THEME*)
             fn_theme="${line#THEME }"
-            ;;
-        SYNC*)
-            fn_sync="${line#SYNC }"
             ;;
         CLOCK*)
             fn_time="${line#CLOCK }"
@@ -264,9 +239,6 @@ while read -r line; do
             ;;
         FREE*)
             fn_space="%{F${color_sec_b2} T3}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_space}%{F- T1} ${line#FREE } "
-            ;;
-        MARKET*)
-            fn_crpt="${line#MARKET }"
             ;;
         WIN*)            
             num_title=$(xprop -id ${line#???} | awk '/_NET_WM_NAME/{$1=$2="";print}' | cut -d'"' -f2 | wc -c)
