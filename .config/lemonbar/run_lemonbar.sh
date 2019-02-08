@@ -10,7 +10,7 @@ mkfifo "${PANEL_FIFO}"
 
 conky -c $(dirname $0)/lemonbar_conky > "${PANEL_FIFO}" &
 
-xprop -spy -root _NET_ACTIVE_WINDOW | sed -un 's/.*\(0x.*\)/WIN\1/p' > "${PANEL_FIFO}" &
+#xprop -spy -root _NET_ACTIVE_WINDOW | sed -un 's/.*\(0x.*\)/WIN\1/p' > "${PANEL_FIFO}" &
 
 cnt=0
 
@@ -86,7 +86,7 @@ work(){
                 seq="${seq}%{F- T1} • "
             fi
         done
-        echo "WORKSPACES ${seq}%{F${color_sec_b1} B${color_sec_b2} T3}${sep_right}%{F- B- T1}"
+        echo "WORKSPACES ${seq}%{F${color_sec_b1} B${color_back} T3}${sep_right}%{F- B- T1}"
         sleep ${WORKSPACE_SLEEP}
     done
 }
@@ -114,8 +114,8 @@ clock()
 {
     while true; do        
         local time="$(date +'%_I:%M%P')"
-        # time
-        echo "CLOCK %{F${color_head} B${color_sec_b1} T3}${sep_left}%{F${color_back} B${color_head}} %{T2}${icon_clock} %{T1}${time} %{F- B- T1}"
+        # time        
+        echo "CLOCK %{F${color_head} B${color_sec_b1} T3}${sep_left}%{F${color_back} B${color_head}} %{T2}${icon_clock} %{T1}${time} %{T1}%{F${color_head} B${color_head} T3}${sep_left}%{F- B-} %{T1}"
         sleep ${TIME_SLEEP}
     done
 }
@@ -252,4 +252,4 @@ while read -r line; do
     esac
     #printf "%s\n" "%{l}${fn_work}${title}%{S1}${fn_work}${title} %{S0}%{r}${fn_music}${stab}${fn_space}${stab}${fn_mem}${stab}${fn_cpu}${stab}${fn_load}${fn_vpn}${fn_weather}${fn_update}${fn_sync}${fn_vol}${fn_date}${stab}${fn_time}%{S1}${fn_crpt}${fn_vol}${fn_date}${stab}${fn_time}"
     printf "%s\n" "%{l}${fn_work}${title}%{S1}${fn_work}${title} %{S0}%{r}${fn_music}${stab}${fn_vpn}${fn_space}${fn_mem}${fn_cpu}${fn_update}${fn_weather}${fn_sync}${fn_vol}${fn_date}${stab}${fn_time}%{S1}${fn_music}${fn_date}${stab}${fn_time}"
-done < "${PANEL_FIFO}" | lemonbar -d -f "${FONTS}" -f "${ICONFONTS}" -f "${FONTS_P}" -g "${GEOMETRY}" -B "${BBG}" -F "${BFG}" | sh > /dev/null
+done < "${PANEL_FIFO}" | lemonbar -d -f "${FONTS}" -f "${ICONFONTS}" -f "${FONTS_P}" -g "${GEOMETRY}" -B "${BBG}" -F "${BFG}" -r 0 -R "${BRDRC}" -u 2 | sh > /dev/null

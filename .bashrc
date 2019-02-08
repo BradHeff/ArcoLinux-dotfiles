@@ -12,6 +12,7 @@ precmd() {
 
 export HISTCONTROL=ignoreboth:erasedups
 export QT_QPA_PLATFORMTHEME=qt5ct
+export ANDROID_HOME=/home/pheonix/Android/Sdk
 
 SELECT(){
 	if [ "$?" -eq 0 ]
@@ -89,7 +90,12 @@ youtube() {
         youtube-dl -q "$1"
     elif [ $# -eq 2 ]
     then
-        youtube-dl -q -x --audio-format mp3 "$2" 
+        if [[ "$1" -eq "mp4" ]]
+        then
+          youtube-dl -q --recode-video mp4 "$2"
+        else
+          youtube-dl -q -x --audio-format mp3 "$2" 
+        fi
     else
         echo "No arguments supplied"
     fi
@@ -107,19 +113,19 @@ deps() {
 gitclone() {
   if [[ "$1" -eq "gh" ]]
   then
-    git clone https://BradHeff:TOKEN@github.com/BradHeff/"$2".git
+    git clone https://USER:PASS@github.com/BradHeff/"$2".git
   elif [[ "$1" -eq "gl" ]]
   then
-    git clone https://BradHeff:TOKEN@gitlab.com/BradHeff/"$2".git
+    git clone https://USER:PASS@gitlab.com/BradHeff/"$2".git
   fi  
 }
 gitremote() {
   if [[ "$1" -eq "gh" ]]
   then
-    git remote add origin https://BradHeff:TOKEN@github.com/BradHeff/"$2".git
+    git remote add origin https://USER:PASS@github.com/BradHeff/"$2".git
   elif [[ "$1" -eq "gl" ]]
   then
-    git remote add origin https://BradHeff:TOKEN@gitlab.com/BradHeff/"$2".git
+    git remote add origin https://USER:PASS@gitlab.com/BradHeff/"$2".git
   fi  
 }
 dd() {
@@ -176,10 +182,11 @@ alias merge="xrdb -merge ~/.Xresources"
 # pacman or pm
 alias pacman="sudo pacman --color auto"
 alias update="sudo pacman -Syyu"
-alias prm="sudo pacman -R --color auto"
+alias prm="sudo pacman -Rs --color auto"
 alias pins="sudo pacman -S --color auto"
 alias psr="sudo pacman -Ss --color auto"
 alias pdep="deps p"
+alias pclean="sudo pacman -Rns \$(pacman -Qtdq)"
 
 # yay as aur helper - updates everything
 alias pksyua="yay -Syu --noconfirm"
@@ -230,6 +237,7 @@ alias ~="cd ~ && source ~/.bashrc"
 
 alias yt='youtube'
 alias ytm='youtube mp3'
+alias ytr='youtube mp4'
 
 alias rmd='rm -r'
 alias srm='sudo rm'
@@ -249,10 +257,9 @@ shopt -s dotglob
 shopt -s histappend # do not overwrite history
 shopt -s expand_aliases # expand aliases
 
-#neofetch
-#clear && cowsay 'Welcome to ArcoLinuxD'
 export _JAVA_AWT_WM_NONREPARENTING=1
-#clear && ~/.2bwm/info
+
+(cat ~/.cache/wal/sequences &)
 clear && bash ~/.2bwm/flowerfetch
 EDITOR=vim
 

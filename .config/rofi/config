@@ -34,8 +34,8 @@ rofi.modi:                           drun,run
 rofi.lines:                          6
 !rofi.font:                           Inconsolata for Powerline 10
 !rofi.font:                           UW Ttyp0 10
-!rofi.font:                           Liberation Mono 10
-rofi.font:                           Iosevka 10
+rofi.font:                           Liberation Mono 10
+!rofi.font:                           Iosevka 10
 rofi.bw:                             1
 rofi.case-sensitive:                 false
 rofi.terminal: 						 urxvtc

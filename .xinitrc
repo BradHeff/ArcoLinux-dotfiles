@@ -32,15 +32,8 @@ if [[ "$RESULT" != "" ]]; then
 	xrdb -merge /home/pheonix/.Xresources &
 	sh /home/pheonix/.checkfeh &	
 	( ! is_running 'compton' ) && compton -b --config "$HOME/.compton.conf" &
-	#( ! is_running "conky" ) && conky &
 
-	if ( ! is_running "lemonbar" ); then
-		/home/pheonix/.bin/lemon &
-	else
-		killall lemonbar
-		killall sleep
-		/home/pheonix/.bin/lemon &
-	fi
+	/home/pheonix/.bin/lemon &
 	
 	( ! is_running "polkit-gnome-authentication-agent-1" ) && /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 	( ! is_running "dunst" ) && dunst -config "$HOME/.config/dunst/dunstrc" &
@@ -51,7 +44,5 @@ if [[ "$RESULT" != "" ]]; then
 	#( ! is_running "nextcloud" ) && nextcloud &
 	( ! is_running "syncthing" ) && syncthing -no-browser &
 	( ! is_running "xfce4-power-manager" ) && xfce4-power-manager &
-
+	wal -R &
 fi
-
-

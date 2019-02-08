@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 2 ]; then
+	ffmpeg -v warning -i "$1" -vf scale=1440:-1 -gifflags -transdiff -y "$2"
+
+else
+	echo "must enter video file and output gif arguments"
+	echo ""
+	echo "EXAMPLE:"
+	echo "        convertgif ~/Videos/sample.mp4 ~/output.gif"
+fi

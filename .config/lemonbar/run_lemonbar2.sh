@@ -10,7 +10,7 @@ mkfifo "${PANEL_FIFO}"
 
 conky -c $(dirname $0)/lemonbar_conky > "${PANEL_FIFO}" &
 
-xprop -spy -root _NET_ACTIVE_WINDOW | sed -un 's/.*\(0x.*\)/WIN\1/p' > "${PANEL_FIFO}" &
+#xprop -spy -root _NET_ACTIVE_WINDOW | sed -un 's/.*\(0x.*\)/WIN\1/p' > "${PANEL_FIFO}" &
 
 perl "$HOME/.config/lemonbar/i3_workspaces.pl" > "${PANEL_FIFO}" &
 
@@ -98,9 +98,9 @@ work > "${PANEL_FIFO}" &
 get_vpn(){
     while true; do
         if [ -d "/proc/sys/net/ipv4/conf/tun0" ]; then
-            vpn="%{F${color_head} T3}${sep_left}%{F${color_back} B${color_head}} %{T2}${icon_vpn_on} %{T1}On %{F${color_sec_b2} B${color_head} T3}${sep_left}%{F- B${color_sec_b2} T1}"
+            vpn="%{F${color_sel} T3}${sep_left}%{F${color_back} B${color_sel}} %{T2}${icon_vpn_on} %{T1}On %{F${color_sec_b2} B${color_sel} T3}${sep_left}%{F- B${color_sec_b2} T1}"
         elif [ -d "/proc/sys/net/ipv4/conf/ppp0" ]; then
-            vpn="%{F${color_head} T3}${sep_left}%{F${color_back} B${color_head}} %{T2}${icon_vpn_on} %{T1}On %{F${color_sec_b2} B${color_head} T3}${sep_left}%{F- B${color_sec_b2} T1}"
+            vpn="%{F${color_sel} T3}${sep_left}%{F${color_back} B${color_sel}} %{T2}${icon_vpn_on} %{T1}On %{F${color_sec_b2} B${color_sel} T3}${sep_left}%{F- B${color_sec_b2} T1}"
         else
             vpn="%{F${color_sec_b2} T3}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_vpn_off}%{F- T1} Off "
         fi  
@@ -117,7 +117,7 @@ clock()
     while true; do        
         local time="$(date +'%_I:%M%P')"
         # time
-        echo "CLOCK %{F${color_head} B${color_sec_b1} T3}${sep_left}%{F${color_back} B${color_head}} %{T2}${icon_clock} %{T1}${time} %{F- B- T1}"
+        echo "CLOCK %{F${color_sel} B${color_sec_b1} T3}${sep_left}%{F${color_back} B${color_sel}} %{T2}${icon_clock} %{T1}${time} %{F${color_head2} B${color_sel} T3}${sep_left}%{F- B- T1}"
         sleep ${TIME_SLEEP}
     done
 }
@@ -144,17 +144,15 @@ volume()
         local mut="$(amixer get Master | grep -E -o 'off' | head -1)"
 
         if [[ ${mut} == "off" ]]; then
-            echo "VOLUME %{F${color_yay} B${color_sec_b2} T3}${sep_left}%{F${color_back} B${color_yay}} %{T2}${icon_vol_mute} %{T1}MUTE %{F${color_sec_b1} B${color_yay} T3}${sep_left}%{F- B- T1} "
+            echo "VOLUME %{F${color_yay} B${color_sec_b2} T3}${sep_left}%{F- B${color_yay}} %{T2}${icon_vol_mute} %{T1}MUTE %{F${color_sec_b1} B${color_yay} T3}${sep_left}%{F- B- T1} "
         elif (( vol == 0 )); then
-            echo "VOLUME %{F${color_yay} B${color_sec_b2} T3}${sep_left}%{F${color_back} B${color_yay}} %{T2}${icon_vol_mute} %{T1}${vol}% %{F${color_sec_b1} B${color_yay} T3}${sep_left}%{F- B- T1} "
+            echo "VOLUME %{F${color_yay} B${color_sec_b2} T3}${sep_left}%{F- B${color_yay}} %{T2}${icon_vol_mute} %{T1}${vol}% %{F${color_sec_b1} B${color_yay} T3}${sep_left}%{F- B- T1} "
         elif (( vol > 70 )); then
-            echo "VOLUME %{F${color_vol_alert} B${color_sec_b2} T3}${sep_left}%{F${color_back} B${color_vol_alert}} %{T2}${icon_vol} %{T1}${vol}% %{F${color_sec_b1} B${color_vol_alert} T3}${sep_left}%{F- B- T1} "
+            echo "VOLUME %{F${color_vol_alert} B${color_sec_b2} T3}${sep_left}%{F- B${color_vol_alert}} %{T2}${icon_vol} %{T1}${vol}% %{F${color_sec_b1} B${color_vol_alert} T3}${sep_left}%{F- B- T1} "
         elif (( vol > 55 )); then
             echo "VOLUME %{F${color_vol_warn} B${color_sec_b2} T3}${sep_left}%{F${color_back} B${color_vol_warn}} %{T2}${icon_vol} %{T1}${vol}% %{F${color_sec_b1} B${color_vol_warn} T3}${sep_left}%{F- B- T1} "
-        elif (( vol > 10 )); then
-            echo "VOLUME %{F${color_vol_good} B${color_sec_b2} T3}${sep_left}%{F${color_back} B${color_vol_good}} %{T2}${icon_vol} %{T1}${vol}% %{F${color_sec_b1} B${color_vol_good} T3}${sep_left}%{F- B- T1} "
         else
-            echo "VOLUME %{F${color_sec_b2} B${color_sec_b2} T3}${sep_left}%{F${color_icon} B${color_sec_b2}} %{T2}${icon_vol}%{F- T1} ${vol}% %{F${color_sec_b1} B${color_sec_b2} T3}${sep_left}%{F- B- T1} "
+            echo "VOLUME %{F${color_vol_good} B${color_sec_b2} T3}${sep_left}%{F${color_back} B${color_vol_good}} %{T2}${icon_vol} %{T1}${vol}% %{F${color_sec_b1} B${color_vol_good} T3}${sep_left}%{F- B- T1} "
         fi
 
         sleep ${VOLUME_SLEEP} 
@@ -200,8 +198,23 @@ get_insync(){
 
 #get_insync > "${PANEL_FIFO}" &
 
+show_theme() {    
+    while true; do
+        
+        echo "THEME %{A:perl ~/.2bwm/wallpaper_changer_menu.pl:}%{F${color_head2} B${color_head2} T3}${sep_left}%{F- B${color_head2}} %{T2}${icon_theme} %{F${color_head2} B${color_head2} T3}${sep_left}%{F- B- T1}%{A}"
+
+        sleep ${TIME_SLEEP}    
+    done
+    
+}
+
+show_theme > "${PANEL_FIFO}" &
+
 while read -r line; do
     case $line in
+        THEME*)
+            fn_theme="${line#THEME }"
+            ;;
         SYNC*)
             fn_sync="${line#SYNC }"
             ;;
@@ -224,12 +237,12 @@ while read -r line; do
                     wsp="${wsp}%{F${color_sec_b1} B${color_head}}${sep_right}%{F${color_back} B${color_head} T1} ${1#???} %{F${color_head} B${color_sec_b1}}${sep_right}"
                     ;;
                 INA*|URG*|ACT*)
-                    wsp="${wsp}%{F- T1} ${1#???} "
+                    wsp="${wsp}%{F${color_sec_b1} B${color_sec_b1}}${sep_right}%{F- T1} ${1#???} %{F${color_sec_b1} B${color_sec_b1}}${sep_right}"
                     ;;
                 esac
                 shift
             done
-            fn_work="${wsp} %{F${color_sec_b1} B${color_sec_b2}}${sep_right}"
+            fn_work="${wsp} %{F${color_sec_b1} B-}${sep_right}"
             ;;       
         MUSIC*)
             fn_music="${line#MUSIC }"
@@ -267,5 +280,5 @@ while read -r line; do
             ;;
     esac
     #printf "%s\n" "%{l}${fn_work}${title}%{S1}${fn_work}${title} %{S0}%{r}${fn_music}${stab}${fn_space}${stab}${fn_mem}${stab}${fn_cpu}${stab}${fn_load}${fn_vpn}${fn_weather}${fn_update}${fn_sync}${fn_vol}${fn_date}${stab}${fn_time}%{S1}${fn_crpt}${fn_vol}${fn_date}${stab}${fn_time}"
-    printf "%s\n" "%{l}${fn_work}${title}%{S1}${fn_work}${title} %{S0}%{r}${fn_music}${stab}${fn_vpn}${fn_space}${fn_mem}${fn_cpu}${fn_update}${fn_weather}${fn_sync}${fn_vol}${fn_date}${stab}${fn_time}%{S1}${fn_music}${fn_date}${stab}${fn_time}"
-done < "${PANEL_FIFO}" | lemonbar -f "${FONTS}" -f "${ICONFONTS}" -f "${FONTS_P}" -g "${GEOMETRY}" -B "${BBG}" -F "${BFG}" | sh > /dev/null
+    printf "%s\n" "%{l}${fn_work}${title}%{S1}${fn_work}${title} %{S0}%{r}${fn_music}${stab}${fn_vpn}${fn_space}${fn_mem}${fn_cpu}${fn_update}${fn_weather}${fn_sync}${fn_vol}${fn_date}${stab}${fn_time}${fn_theme}%{S1}${fn_music}${fn_date}${stab}${fn_time}${fn_theme}"
+done < "${PANEL_FIFO}" | lemonbar -f "${FONTS}" -f "${ICONFONTS}" -g "${GEOMETRY}" -B "${BBG}" -F "${BFG}" | sh > /dev/null

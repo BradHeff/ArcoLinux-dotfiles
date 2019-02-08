@@ -1,12 +1,43 @@
 #!/usr/bin/env bash
 
-#sh $HOME/.config/lemonbar/run_lemonbar2.sh &
-RESULT=$(sh /home/pheonix/.checksession)
 
-if [[ "$RESULT" == "" ]];then
-	sh $HOME/.config/lemonbar/run_lemonbar2.sh &
-else
-	sh $HOME/.config/lemonbar/run_lemonbar.sh &
-fi
+function killer {
+	killall lemonbar
+	while pgrep -u $UID -x lemonbar >/dev/null; do sleep 1; done
+
+	killall sleep
+	while pgrep -u $UID -x sleep >/dev/null; do sleep 1; done
+
+	pkill -f i3_workspaces.pl
+	while pgrep -u $UID -x i3_workspaces.pl >/dev/null; do sleep 1; done
+
+	pkill -f run_lemonbar
+	while pgrep -u $UID -x run_lemonbar >/dev/null; do sleep 1; done
+}
+
+function starter {
+	RESULT=$(sh $HOME/.checksession)
+
+	if [[ "$RESULT" == "" ]];then
+		sh $HOME/.config/lemonbar/run_lemonbar2.sh &
+	else
+		sh $HOME/.config/lemonbar/run_lemonbar.sh &
+	fi
+}
+
+case "$1" in
+
+	"kill") 
+		killer		
+	;;
+	"restart")
+		killer
+
+		starter
+	;;
+	*) 
+		starter
+	;;	
+esac
 
 exit

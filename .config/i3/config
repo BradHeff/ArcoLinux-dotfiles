@@ -40,8 +40,8 @@ new_float pixel 3
 
 # GAPS
 smart_gaps on
-gaps inner 2
-gaps outer 1
+gaps inner 3
+gaps outer 3
 
 ##############################
 #}}} SETTINGS END
@@ -57,9 +57,11 @@ gaps outer 1
 ##############################
 
 # start a terminal
-bindsym $mod+Return exec --no-startup-id urxvt;focus
-
+bindsym $mod+Control+Return exec --no-startup-id urxvt;focus
+bindsym $mod+Return exec --no-startup-id urxvt -title floating -geometry 120x23
 # start a Firefox
+bindsym $mod+w exec --no-startup-id perl /home/pheonix/.i3/weather_menu.pl
+bindsym $mod+Control+w exec --no-startup-id perl /home/pheonix/.2bwm/wallpaper_changer_menu.pl
 bindsym $mod+Shift+w exec firefox
 bindsym $mod+Shift+n exec firefox --new-window https://www.netflix.com/browse/my-list
 
@@ -73,8 +75,12 @@ bindsym $mod+Shift+a exec subl3
 bindsym Print exec scrot -q 100 -e 'mv $f ~/Pictures/screenshots/'
 
 # move workspace to to left screen or right
-bindsym $mod+bracketright move workspace to output right
-bindsym $mod+bracketleft move workspace to output left
+bindsym $mod+Shift+period move workspace to output right
+bindsym $mod+Shift+comma move workspace to output left
+
+bindsym $mod+period move container to output right
+bindsym $mod+comma move container to output left
+
 
 # Backlight Control
 #bindsym Shift+$mod+bracketright exec sudo light -A 10
@@ -96,8 +102,8 @@ bindsym $mod+Shift+s scratchpad show
 bindsym $mod+c exec --no-startup-id /home/pheonix/.i3/camtoggle
 
 # Open VPN Menu
-bindsym $mod+Shift+e exec --no-startup-id perl /home/pheonix/.config/polybar/vpn_menu.pl
-#bindsym $mod+Shift+e exec --no-startup-id urxvt -title bash -geometry 120x23 -e sudo openvpn --config /home/pheonix/Documents/purevpn/udp_nz.ovpn
+bindsym $mod+Shift+e exec --no-startup-id perl /home/pheonix/.i3/vpn_menu.pl
+#bindsym $mod+Shift+e exec --no-startup-id urxvt -title bash -geometry 120x23 -e sudo openvpn --config /home/pheonix/Documents/mullvad/mullvad_au.conf
 
 # Volume Controls
 bindsym $mod+plus exec --no-startup-id sh /home/pheonix/.i3/lmc up
@@ -105,7 +111,7 @@ bindsym $mod+minus exec --no-startup-id sh /home/pheonix/.i3/lmc down
 bindsym $mod+m exec --no-startup-id sh /home/pheonix/.i3/lmc mute
 
 # Start Rofi
-bindsym $mod+d exec "rofi -show drun" 
+bindsym $mod+d exec "rofi -show drun -theme ~/.cache/wal/colors-rofi-dark.rasi" 
 
 ##############################
 #}} USER BINDS END
@@ -123,7 +129,7 @@ bindsym $mod+Shift+r restart
 
 # exit i3 (logs you out of your X session)
 #bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3?' -b 'Yes, exit i3' 'i3-msg exit'"
-bindsym $mod+Shift+q exec perl /home/pheonix/.config/polybar/shutdown_menu.pl
+bindsym $mod+Shift+q exec perl /home/pheonix/.i3/shutdown_menu.pl
 
 # resize window (you can also use the mouse for that)
 mode " resize " {
@@ -190,9 +196,9 @@ bindsym $mod+v split v
 bindsym $mod+x fullscreen toggle
 
 # change container layout (stacked, tabbed, toggle split)
-bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+#bindsym $mod+s layout stacking
+#bindsym $mod+w layout tabbed
+#bindsym $mod+e layout toggle split
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
@@ -220,11 +226,11 @@ bindsym $mod+a focus parent
 
 # Force workspaces to be created on specific screens
 workspace $ws4 output "DisplayPort-0"
+workspace $ws5 output "DisplayPort-0"
 
 workspace $ws1 output "HDMI-A-0"
 workspace $ws2 output "HDMI-A-0"
 workspace $ws3 output "HDMI-A-0"
-workspace $ws5 output "HDMI-A-0"
 workspace $ws6 output "HDMI-A-0"
 workspace $ws7 output "HDMI-A-0"
 workspace $ws8 output "HDMI-A-0"
@@ -274,64 +280,72 @@ bindsym $mod+0 workspace $ws10
 
 # Assign programs to open on specific workspaces
 assign [class="Firefox"] $ws1
+
+assign [class="jetbrains-studio"] $ws2
+assign [class="NetBeans IDE"] $ws2
+assign [class="Atom"] $ws2
+
 assign [class="Thunar"] $ws3
 assign [class="smplayer"] $ws4
-assign [class="MPlayer"] $ws4
+assign [class="Firefox" title="Netflix - Mozilla Firefox"] $ws4
+
+assign [class="(?i)libreoffice"] $ws5
+assign [class="zoom"] $ws5
+assign [title="bash"] $ws5
+
 assign [class="Tixati"] $ws6
+
 assign [class="Steam"] $ws7
+
 assign [class="Subl3"] $ws8
-assign [class="jetbrains-studio"] $ws8
+
 assign [class="obs"] $ws9
 assign [class="TelegramDesktop"] $ws9
-assign [title="bash"] $ws5
-assign [class="Firefox" title="Netflix - Mozilla Firefox"] $ws4
 
 # set specific programs to be in floating mode
 
 #for_window [class="^.*"] border pixel 3
-for_window [class="Tixati"] floating enable
+for_window [class="Tixati"] floating enable,focus
 for_window [title="Welcome to Android Studio"] floating enable
-for_window [class="Thunar"] floating enable
+#for_window [class="Apache NetBeans IDE 10.0"] floating enable
+
+for_window [title="Zoom - Free Account"] floating enable,focus
+for_window [title="Settings" class="zoom"] floating enable
+for_window [title="Participants.*" class="zoom"] floating enable
+for_window [title="Zoom Group Chat" class="zoom"] floating enable
+
+for_window [class="Thunar"] floating enable,focus
 for_window [class="TelegramDesktop"] floating enable
 
-for_window [class="obs"] floating enable
-for_window [class="Nm-connection-editor"] floating enable
-for_window [class="Nm-connection-editor"] move position center
+for_window [class="obs"] floating enable,focus
+for_window [class="Nm-connection-editor"] floating enable,move position center
 for_window [class="Pavucontrol"] floating enable
 
-for_window [class="URxvt" title="bash"] move position center
-for_window [class="URxvt" title="bash"] floating enable
+for_window [class="URxvt" title="bash"] floating enable,move position center
+for_window [class="URxvt" title="thun"] floating enable,move position center
+for_window [class="URxvt" title="floating"] floating enable;focus,move position center
 
-for_window [class="URxvt" title="thun"] move position center
-for_window [class="URxvt" title="thun"] floating enable
-
-for_window [class="Pamac-updater"] move position center
-for_window [class="Pamac-updater"] floating enable
-
-for_window [class="Pamac-manager"] move position center
-for_window [class="Pamac-manager"] floating enable
+for_window [class="Pamac-updater"] floating enable,move position center
+for_window [class="Pamac-manager"] floating enable,move position center
 
 # Scratchpad
-for_window [class="URxvt" title="scratch"] floating enable
-for_window [class="URxvt" title="scratch"] move scratchpad
+for_window [class="URxvt" title="scratch"] floating enable,move scratchpad
 
 for_window [class=".pl"] floating enable
 for_window [class=".py"] floating enable
 
 # force focus on opening programs
 for_window [class="Firefox"] focus
-for_window [class="Thunar"] focus
-for_window [class="smplayer"] focus
+for_window [class="smplayer"] floating disable,focus
 for_window [class="MPlayer"] focus
 for_window [class="Subl3"] focus
-for_window [class="obs"] focus
-for_window [class="Tixati"] focus
 for_window [class="jetbrains-studio"] focus
+for_window [class="Atom"] focus, border pixel 0
 
-for_window [class="Firefox" title="Netflix - Mozilla Firefox"] move container to workspace $ws4
-for_window [class="mpv" title="video0 - mpv"] floating enable
-for_window [class="mpv" title="video0 - mpv"] sticky enable
-for_window [class="mpv" title="video0 - mpv"] border pixel 0
+for_window [class="(?i)libreoffice"] move container to workspace $ws5, focus
+for_window [class="Firefox" title="Netflix - Mozilla Firefox"] move container to workspace $ws4, focus
+
+for_window [class="mpv" title="video0 - mpv"] floating enable,sticky enable,border pixel 0
 no_focus [class="mpv" title="video0 - mpv"]
 
 ##############################
@@ -361,8 +375,6 @@ client.focused 		$color		    $color		$text-color 	$inactive-bg-color
 exec --no-startup-id xrandr --output DisplayPort-0 --auto --output HDMI-A-0 --primary --left-of DisplayPort-0 &
 exec_always --no-startup-id sh /home/pheonix/.checkfeh &
 exec_always --no-startup-id compton -b --config "/home/pheonix/.compton.conf" &
-#exec_always --no-startup-id /home/pheonix/.bin/pbar 3 &
-exec --no-startup-id conky &
 exec --no-startup-id /home/pheonix/.bin/lemon &
 exec --no-startup-id xrdb -merge /home/pheonix/.Xresources &
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
@@ -370,12 +382,12 @@ exec --no-startup-id dunst -config "/home/pheonix/.config/dunst/dunstrc" &
 exec --no-startup-id mpd &
 exec --no-startup-id redshift &
 exec --no-startup-id start-pulseaudio-x11 &
-exec --no-startup-id insync start &
-exec --no-startup-id nextcloud &
 exec --no-startup-id syncthing -no-browser &
 exec --no-startup-id xfce4-power-manager &
 exec_always --no-startup-id numlockx on
+exec --no-startup-id wal -R &
 exec --no-startup-id urxvt -title scratch &
+
 
 ####################
 #}} DISABLED STARTUPS
@@ -386,6 +398,10 @@ exec --no-startup-id urxvt -title scratch &
 #exec --no-startup-id ~/.i3/startconky &
 #exec --no-startup-id syncthing-gtk &
 #exec --no-startup-id pamac-tray &
+#exec --no-startup-id insync start &
+#exec --no-startup-id nextcloud &
+#exec_always --no-startup-id /home/pheonix/.bin/pbar 3 &
+#exec --no-startup-id conky &
 
 ##################################
 #}}} STATUP ITEMS END

@@ -21,7 +21,7 @@ class wifi(object):
 
 	def show_menu(self, TITLE, ITEMS, LINES):
 		items = subprocess.Popen(('echo', ITEMS), stdout=subprocess.PIPE)
-		output = subprocess.check_output(("rofi", "-width", "-30", "-location", "3", "-bw", "2", "-dmenu", "-i", "-p", TITLE, "-lines", str(LINES)), stdin=items.stdout)
+		output = subprocess.check_output(("rofi", "-width", "-30", "-location", "3", "-dmenu", "-i", "-p", TITLE, "-lines", "-theme", "~/.cache/wal/colors-rofi-dark.rasi", str(LINES)), stdin=items.stdout)
 		return output.decode().strip()
 	
 	def connect(self, SSID):

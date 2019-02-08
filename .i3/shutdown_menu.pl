@@ -8,7 +8,7 @@ use utf8;
 my $title = "Shutdown Menu";
 #my $color_normal = "argb:0023262f, argb:F2a3be8c, argb:0023262f, argb:F2a3be8c, argb:F223262f";
 #my $color_window = "argb:D923262f, argb:F2ffffff, argb:F2ffffff";
-my $options = "-width -30 -location 3 -dmenu -i -p \"$title\" -lines 4 -theme ~/.cache/wal/colors-rofi-dark.rasi"; # -font 'font awesome 10'"; # -color-window \'$color_window\' -color-normal \'$color_normal\' -font \'Inconsolata 11\'";
+my $options = "-width -30 -location 3 -dmenu -i -p \"$title\" -lines 4 -font 'font awesome 10' -theme ~/.cache/wal/colors-rofi-dark.rasi"; # -color-window \'$color_window\' -color-normal \'$color_normal\' -font \'Inconsolata 11\'";
 
 sub get_item {
 	my $RESULT = capture { system qq{sh /home/pheonix/.checksession} };

@@ -25,39 +25,73 @@
 #5% — 0D
 #0% — 00
 
+source ~/.cache/wal/colors.sh
+
+export fg_a="#FF${foreground/'#'}"
+
+export bg_a="#FF${background/'#'}"
+export bg_b="#FF${color1/'#'}"
+
+export main_bg="#4D${color0/'#'}"
+export bg_select="#FF${color6/'#'}"
+
+export con_bg="#FF${color4/'#'}"
+
+export bg_alert="#FF${color5/'#'}"
+export bg_warn="#FFB5BD68" #"#FF93a1a1"
+export bg_good="#FF${color6/'#'}" #"#FF268bd2"
+
 res_w=$(xrandr | grep "current" | awk '{print $8a}')
+res_w2=$(xrandr | grep "primary" | awk '{print $4}' | cut -d 'x' -f 1)
 
 WIDTH="${res_w}" # bar width
 HEIGHT=22 # bar height
 XOFF=0 # x offset
 YOFF=0 # y offset
-#BRDR=5 # border width
-#BRDRC=#00000000 # border color
+
+WIDTH2="${res_w2}" # bar width
+YOFF2=$(expr 1080 - ${HEIGHT}) # y offset
 
 # color definitions 
-# 82a4b3
-color_back="#99282A36"              # Default background
-color_trans="#00282A36"              # Default background
-color_fore="#FFC5C8C6"              # Default foreground
-color_wsp="#FFB5BD68"              # Background for first element GREEN
-color_sec_b1="#FF282A2E"            # Background for section   DARK GREY
-color_sec_b2="#FF454A4F"            # Background for section 2 LIGHTISH GREY
-color_sec_b3="#FF60676E"            # Background for section 3 LIGHT GREY
-color_icon="#FF979997"              # For icons                 GREY
-color_pacman="#FFCE935F"              # Background color for mail alert
-color_yay="#FFCC6666"              # Background color for chat alert
-color_cpu="#FF5F819D"               # Background color for cpu alert
-color_vol_good="#FF5E8D87"          # Background color for volume OK
-color_vol_warn="#FFB5BD68"               # Background for volume WARN
-color_vol_alert="#FFf59360"              # Background color for volume ALERT
-color_disable="#FF1D1F21"           # Foreground for disable elements
-#color_head="#FFa3be8c"               # Background for selected workspace 8C9440
-color_head="#FF82a4b3"               # Background for selected workspace 8C9440
-color_sunset="#FFf59360"            # Background music
-color_share="#FFa3be8c"            # Background music
+
+color_back=${main_bg} # 				#4D282A36 Default background
+
+color_fore=${fg_a} 						##FFC5C8C6 Default foreground
+
+color_sec_b1=${bg_a} 					##FF3e268a
+color_sec_b2=${bg_b} 					##FF5d36ab
+
+color_icon=${fg_a}   					##FF979997 For icons
+color_pacman="#FFCE935F"              	# Background color for mail alert
+color_yay="#FFCC6666"              		# Background color for chat alert
+
+color_vol_good=${bg_good} 				##FF4ea1e8
+color_vol_warn=${bg_warn} 					##FFefe9a5
+color_vol_alert=${bg_alert} 				##FFef97ee
+
+color_head=${bg_select} 				##FF4ea1e8 ##FF82a4b3 Background for selected workspace 8C9440
+color_head2=${con_bg}
+
+color_sel=${fg_a}
+
+#color_sec_b1="#FF282A2E"            # Background for section   DARK GREY
+#color_sec_b2="#FF454A4F"            # Background for section 2 LIGHTISH GREY
+#color_sec_b3="#FF60676E"            # Background for section 3 LIGHT GREY
+
+#color_vol_good="#FF5E8D87"          # Background color for volume OK
+#color_vol_warn="#FFB5BD68"        	 # Background for volume WARN
+#color_vol_alert="#FFf59360"         # Background color for volume ALERT
+
+#color_head="#FFa3be8c"              # Background for selected workspace 8C9440
+#color_sunset="#FFf59360"            # Background music
+#color_share="#FFa3be8c"             # Background music
 
 BBG=${color_back} # bar background color
 BFG=${color_fore}
+
+BRDRC=${color_trans} #back background transparent
+
+FOFF=-2
 
 if [ ${WIDTH} -gt 1024 ]; then
   stab='  '
@@ -70,13 +104,14 @@ fi
 DESKTOP_COUNT=5
 
 # Sleep constnats
-WORKSPACE_SLEEP=0.5
+WORKSPACE_SLEEP=0.3
 VOLUME_SLEEP=1
 DATE_SLEEP=5
 TIME_SLEEP=1
 MUSIC_SLEEP=3
 MEM_SLEEP=3
 VPN_SLEEP=3
+IP_SLEEP=3
 UPDATE_SLEEP=60
 SPACE_SLEEP=5
 LOAD_SLEEP=3
@@ -87,8 +122,10 @@ SYNC_SLEEP=5
 # Char glyps for powerline fonts
 sep_left=""                        # Powerline separator left
 sep_right=""                       # Powerline separator right
-sep_l_left=""                      # Powerline light separator left
-sep_l_right=""                     # Powerline light sepatator right
+#sep_left='  '                        # Powerline separator left
+#sep_right='  '                       # Powerline separator right
+sep_l_left=""                      # Powerline light separator left
+sep_l_right=""                     # Powerline light sepatator right
 
 icon_clock=""                      # Clock icon
 icon_date=""						# Date icon
@@ -113,9 +150,13 @@ icon_synced=""
 icon_syncing=""
 icon_sync_error=""
 icon_sync_share=""
+icon_theme=""
 
 PANEL_FIFO=/tmp/panel-fifo
-FONTS_P="Inconsolata for Powerline:size=13"
+PANEL_FIFO_BTM=/tmp/panel-fifo_btm
+FONTS_P="Inconsolata for Powerline:size=12"
 FONTS="Iosevka:size=11"
 ICONFONTS="FontAwesome:size=11"
 GEOMETRY="${WIDTH}x${HEIGHT}+${XOFF}+${YOFF}"
+GEOMETRY2="${WIDTH2}x${HEIGHT}+${XOFF}+${YOFF2}"
+#GEOMETRY2="${WIDTH2}x${HEIGHT}+${XOFF}+${YOFF}"
