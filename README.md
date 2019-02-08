@@ -24,6 +24,8 @@ PROGRAMS
 2BWM
 ---
 
+![Screenshot](Screenshot/wal_menu.gif)
+
 ![Screenshot](Screenshot/screen_2b1.png)
 
 ![Screenshot](Screenshot/screen_2b2.png)

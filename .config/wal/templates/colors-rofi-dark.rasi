@@ -28,7 +28,7 @@
 }}
 
 #window {{
-    
+    lines: 6;
     border: 1;
     padding: 1.0ch;
     children: [ entry, listview ];
@@ -47,8 +47,7 @@
 }}
 
 #listview {{
-    spacing:    5px;
-	lines: 6;
+    spacing:    5px;	
     border: 1px 0px 0px;
     border-color: @border-color;
     scrollbar: false;
