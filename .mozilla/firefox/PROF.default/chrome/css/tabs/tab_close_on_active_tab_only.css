@@ -1,0 +1,11 @@
+/* Firefox Quantum userChrome.css tweaks ************************************************/
+/* Github: https://github.com/aris-t2/customcssforfx ************************************/
+/****************************************************************************************/
+
+.tabbrowser-tab:not([selected="true"]) .tab-close-button {
+  visibility: collapse !important;
+}
+
+#tabbrowser-tabs .tabbrowser-tab[selected="true"] .tab-close-button {
+  visibility: visible !important;
+}

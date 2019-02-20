@@ -22,16 +22,16 @@ set $ws_bord		     	#ffffff
 # We use variables to avoid repeating the names in multiple places.
 workspace_layout default
 
-set $ws1 "1 "
-set $ws2 "2 "
-set $ws3 "3 "
-set $ws4 "4 "
-set $ws5 "5 "
-set $ws6 "6 "
-set $ws7 "7 "
-set $ws8 "8 "
-set $ws9 "9 "
-set $ws10 "10 "
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
 
 
 # set window borders
@@ -69,7 +69,8 @@ bindsym $mod+Shift+n exec firefox --new-window https://www.netflix.com/browse/my
 bindsym $mod+t exec thunar
 
 #start a Sublime Text
-bindsym $mod+Shift+a exec subl3
+bindsym $mod+Shift+a exec atom
+bindsym $mod+Control+a exec subl3
 
 # Take Screenshot
 bindsym Print exec scrot -q 100 -e 'mv $f ~/Pictures/screenshots/'
@@ -178,7 +179,7 @@ bindsym $mod+Shift+j move left
 bindsym $mod+Shift+k move down
 bindsym $mod+Shift+l move up
 bindsym $mod+Shift+semicolon move right
-bindsym $mod+Shift+h move position center
+bindsym $mod+g move position center
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
@@ -284,6 +285,7 @@ assign [class="Firefox"] $ws1
 assign [class="jetbrains-studio"] $ws2
 assign [class="NetBeans IDE"] $ws2
 assign [class="Atom"] $ws2
+assign [class="Electron"] $ws2
 
 assign [class="Thunar"] $ws3
 assign [class="smplayer"] $ws4
@@ -309,7 +311,7 @@ for_window [class="Tixati"] floating enable,focus
 for_window [title="Welcome to Android Studio"] floating enable
 #for_window [class="Apache NetBeans IDE 10.0"] floating enable
 
-for_window [title="Zoom - Free Account"] floating enable,focus
+for_window [class="zoom" title="Account"] floating enable,focus
 for_window [title="Settings" class="zoom"] floating enable
 for_window [title="Participants.*" class="zoom"] floating enable
 for_window [title="Zoom Group Chat" class="zoom"] floating enable
@@ -375,6 +377,7 @@ client.focused 		$color		    $color		$text-color 	$inactive-bg-color
 exec --no-startup-id xrandr --output DisplayPort-0 --auto --output HDMI-A-0 --primary --left-of DisplayPort-0 &
 exec_always --no-startup-id sh /home/pheonix/.checkfeh &
 exec_always --no-startup-id compton -b --config "/home/pheonix/.compton.conf" &
+exec --no-startup-id wal -R &
 exec --no-startup-id /home/pheonix/.bin/lemon &
 exec --no-startup-id xrdb -merge /home/pheonix/.Xresources &
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
@@ -384,9 +387,9 @@ exec --no-startup-id redshift &
 exec --no-startup-id start-pulseaudio-x11 &
 exec --no-startup-id syncthing -no-browser &
 exec --no-startup-id xfce4-power-manager &
-exec_always --no-startup-id numlockx on
-exec --no-startup-id wal -R &
 exec --no-startup-id urxvt -title scratch &
+exec_always --no-startup-id numlockx on
+
 
 
 ####################

@@ -234,34 +234,38 @@ get_memory() {
 
 
 get_wm() {
-     id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
-     id="${id##* }"
-     if [[ "$id" != "found." ]]; then
-         wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t)"
-         wm="${wm/*WM_NAME = }"
-         wm="${wm/\"}"
-         wm="${wm/\"*}"
-     fi
+    if [[ "$DISPLAY" ]]; then
+         id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
+         id="${id##* }"
+         if [[ "$id" != "found." ]]; then
+             wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t)"
+             wm="${wm/*WM_NAME = }"
+             wm="${wm/\"}"
+             wm="${wm/\"*}"
+         fi
 
-     # Window Maker does not set _NET_WM_NAME
-     [[ "$wm" =~ "WINDOWMAKER" ]] && wm="wmaker"
+         # Window Maker does not set _NET_WM_NAME
+         [[ "$wm" =~ "WINDOWMAKER" ]] && wm="wmaker"
 
-     # Fallback for non-EWMH WMs.
-     [[ -z "$wm" ]] && \
-         wm="$(ps -e | grep -m 1 -o -F \
-                  -e "catwm" \
-                  -e "dwm" \
-                  -e "2bwm" \
-                  -e "monsterwm" \
-                  -e "tinywm")"
+         # Fallback for non-EWMH WMs.
+         [[ -z "$wm" ]] && \
+             wm="$(ps -e | grep -m 1 -o -F \
+                      -e "catwm" \
+                      -e "dwm" \
+                      -e "2bwm" \
+                      -e "monsterwm" \
+                      -e "tinywm")"
 
-    #wm_run=1
-    #echo "$wm"
-    #id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
-    #id="${id##* }"
-    #wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t |awk '{gsub(/\"/,"")}NR==2{print $3}' )"
-    #wm="${wm%\"*}"
-    #wm="${wm#*\"}"
+        #wm_run=1
+        #echo "$wm"
+        #id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
+        #id="${id##* }"
+        #wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t |awk '{gsub(/\"/,"")}NR==2{print $3}' )"
+        #wm="${wm%\"*}"
+        #wm="${wm#*\"}"
+    else
+        wm="NONE"
+    fi
 
     info "WM" "$wm"
 }
@@ -453,24 +457,28 @@ get_gpu(){
 ##########################################################################
 
 get_res(){
-    if type -p xrandr >/dev/null; then
+    if [[ "$DISPLAY" ]]; then
+        if type -p xrandr >/dev/null; then
 
-        resolution="$(xrandr --nograb --current |\
-                      awk -F 'connected |\\+|\\(' \
-                             '/ connected/ && $2 {printf $2 ", "}')"
-        resolution="${resolution/primary }"
-        resolution="${resolution//\*}"
+            resolution="$(xrandr --nograb --current |\
+                          awk -F 'connected |\\+|\\(' \
+                                 '/ connected/ && $2 {printf $2 ", "}')"
+            resolution="${resolution/primary }"
+            resolution="${resolution//\*}"
 
-    elif type -p xwininfo >/dev/null; then
-        read -r w h \
-            < <(xwininfo -root | awk -F':' '/Width|Height/ {printf $2}')
-        resolution="${w}x${h}"
+        elif type -p xwininfo >/dev/null; then
+            read -r w h \
+                < <(xwininfo -root | awk -F':' '/Width|Height/ {printf $2}')
+            resolution="${w}x${h}"
 
-    elif type -p xdpyinfo >/dev/null; then
-        resolution="$(xdpyinfo | awk '/dimensions:/ {printf $2}')"
+        elif type -p xdpyinfo >/dev/null; then
+            resolution="$(xdpyinfo | awk '/dimensions:/ {printf $2}')"
+        fi
+        
+        resolution="${resolution%,*}"
+    else
+        resolution="NONE"
     fi
-    
-    resolution="${resolution%,*}"
 
     info "Resolution" "$resolution"
 }
@@ -482,6 +490,26 @@ get_res(){
 ##########################################################################
 
 get_term(){
+    # If function was run, stop here.
+    ((term_run == 1)) && return
+
+    # Workaround for macOS systems that
+    # don't support the block below.
+    case "$TERM_PROGRAM" in
+        "iTerm.app")    term="iTerm2" ;;
+        "Terminal.app") term="Apple Terminal" ;;
+        "Hyper")        term="HyperTerm" ;;
+        *)              term="${TERM_PROGRAM/\.app}" ;;
+    esac
+
+    # Most likely TosWin2 on FreeMiNT - quick check
+    [[ "$TERM" == "tw52" || "$TERM" == "tw100" ]] && \
+        term="TosWin2"
+
+    [[ "$SSH_CONNECTION" ]] && \
+        term="$SSH_TTY"
+
+    # Check $PPID for terminal emulator.
     while [[ -z "$term" ]]; do
         parent="$(get_ppid "$parent")"
         [[ -z "$parent" ]] && break
@@ -494,14 +522,14 @@ get_term(){
                 term="$(tty)"
             ;;
 
-            "ruby"|"1"|"systemd"|"sshd"*|"python"*|"USER"*"PID"*|"kdeinit"*|"launchd"*)
+            "ruby"|"1"|"tmux"*|"systemd"|"sshd"*|"python"*|"USER"*"PID"*|"kdeinit"*|"launchd"*)
                 break
             ;;
 
             "gnome-terminal-") term="gnome-terminal" ;;
+            "urxvtd")          term="urxvt" ;;
             *"nvim")           term="Neovim Terminal" ;;
             *"NeoVimServer"*)  term="VimR Terminal" ;;
-            *"tmux"*)          term="tmux" ;;
             *)                 term="${name##*/}" ;;
         esac
     done

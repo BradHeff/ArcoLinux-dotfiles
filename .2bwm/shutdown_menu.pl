@@ -14,14 +14,14 @@ sub get_item {
 	my $RESULT = capture { system qq{sh /home/pheonix/.checksession} };
 	my $items = "";
 	chomp($RESULT);
-	
+
 	if($RESULT ne ""){
 		$items = "   Shutdown\n   Reboot\n   Suspend";
 	}else{
 		$items = "   Shutdown\n   Reboot\n   Suspend\n   Logout";
 	}
-	
-		
+
+
 	my $var = capture { system qq{echo \"$items\" | sort | rofi $options}};
 	chomp $var;
 	return $var;
@@ -31,14 +31,14 @@ sub handle_item {
 	my $selection = $_[0];
 
 	chomp($selection);
-	
-	if($selection =~ /Logout/){ 
-		print "Logging Off\n";		
-		system qq{i3_exit};		
+
+	if($selection =~ /Logout/){
+		print "Logging Off\n";
+		system qq{i3-msg exit};		
 	}
 	elsif($selection =~ /Reboot/){
 		print "Restarting\n";
-		system qq{systemctl reboot};		
+		system qq{systemctl reboot};
 	}
 	elsif($selection =~ /Shutdown/){
 		print "Powering Off\n";

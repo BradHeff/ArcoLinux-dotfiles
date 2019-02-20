@@ -32,7 +32,7 @@ if [[ "$RESULT" != "" ]]; then
 	xrdb -merge /home/pheonix/.Xresources &
 	sh /home/pheonix/.checkfeh &	
 	( ! is_running 'compton' ) && compton -b --config "$HOME/.compton.conf" &
-
+	
 	/home/pheonix/.bin/lemon &
 	
 	( ! is_running "polkit-gnome-authentication-agent-1" ) && /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &

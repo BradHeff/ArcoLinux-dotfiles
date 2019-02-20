@@ -1,0 +1,24 @@
+#!/bin/bash
+
+FULL_FILENAME="$2"
+FILENAME=${FULL_FILENAME##*/}
+
+echo "$1"
+echo "$2"
+echo "$3"
+echo "$4"
+
+if [[ "$3" && "$4" ]]
+then
+	ffmpeg -i "$1" -ss "$3" -to "$4" -metadata title="$FILENAME" -f mp4 -c:v h264 -r 23.976 -s 1280X720 -profile:v high -level:v 4.1 -aspect 16:9 -pass 1 -b:v 1800k -c:a aac -b:a 128k -ar 48000 -strict -2 -sn "$2"
+else
+  	case "$FULL_FILENAME" in
+  		*.mp3* )
+			ffmpeg -i "$1" -metadata title="$FILENAME" -vn -c:a libmp3lame -b:a 320k -ar 48000 "$2"
+  			;;
+
+  		*.mp4* )
+			ffmpeg -i "$1" -metadata title="$FILENAME" -f mp4 -c:v h264 -r 23.976 -s 1280X720 -profile:v high -level:v 4.1 -aspect 16:9 -pass 1 -b:v 1800k -c:a aac -b:a 128k -ar 48000 -strict -2 -sn "$2"
+  			;;
+  	esac
+fi

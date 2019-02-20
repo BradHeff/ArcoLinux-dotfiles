@@ -1,0 +1,9 @@
+/* Firefox Quantum userChrome.css tweaks ************************************************/
+/* Github: https://github.com/aris-t2/customcssforfx ************************************/
+/****************************************************************************************/
+
+
+/* old toolbar padding */
+#navigator-toolbox > toolbar:not(#toolbar-menubar):not(#TabsToolbar):not(#nav-bar) {
+  padding: 0px !important;
+}

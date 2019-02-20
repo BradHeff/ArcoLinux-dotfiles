@@ -1,0 +1,11 @@
+/* Firefox Quantum userChrome.css tweaks ************************************************/
+/* Github: https://github.com/aris-t2/customcssforfx ************************************/
+/****************************************************************************************/
+
+
+/* hide private mode indicators / private masks */
+* #private-browsing-indicator-titlebar,
+* #private-browsing-indicator,
+* .private-browsing-indicator {
+  visibility: collapse !important;
+}

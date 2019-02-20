@@ -1,0 +1,73 @@
+
+:root:-moz-lwtheme {
+    --toolbox-border-bottom-color: rgba(0,0,0,.0) !important; 
+}
+
+#nav-bar {
+    box-shadow: none !important;
+}
+/* Tab bar below Navigation & Bookmarks Toolbars */
+#nav-bar { /* main toolbar */
+  -moz-box-ordinal-group: 1 !important;
+  box-shadow: none !important;
+}
+#PersonalToolbar { /* bookmarks toolbar */
+  -moz-box-ordinal-group: 2 !important;
+}
+#TabsToolbar { /* tab bar */
+  -moz-box-ordinal-group: 3 !important;
+  padding-top: 0 !important;
+}
+/* Clean up spacing */
+.titlebar-placeholder {
+  display: none !important;
+}
+toolbarbutton.bookmark-item {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+}
+
+/* If you display either:
+   (1) The title bar, or
+   (2) On Windows, the menu bar
+   You might not want the following extra space above the main toolbar. 
+   In that case, delete the following rule:
+*/
+#navigator-toolbox {
+  padding-top: 20px !important;
+}
+
+/* Background for Light and Dark themes */
+#main-window[lwthemetextcolor="bright"] #TabsToolbar, 
+#main-window[lwthemetextcolor="dark"] #TabsToolbar {
+  background-color: var(--chrome-secondary-background-color) !important;
+  background-image: none !important;
+}
+#main-window[lwthemetextcolor="dark"] .scrollbutton-up,
+#main-window[lwthemetextcolor="dark"] .scrollbutton-down,
+#main-window[lwthemetextcolor="dark"] .tabs-newtab-button,
+#main-window[lwthemetextcolor="dark"] #new-tab-button,
+#main-window[lwthemetextcolor="dark"] #alltabs-button {
+  fill: var(--lwt-text-color) !important;
+}
+/* Left and right borders on Win 7 & 8, but not on 10 and later: */
+@media (-moz-os-version: windows-win7), (-moz-os-version: windows-win8) {
+  /* Vertical toolbar border */
+  #main-window[sizemode=normal] #navigator-toolbox > toolbar#TabsToolbar {
+    border-left: 1px solid hsla(240,5%,5%,0.3) !important;;
+    border-right: 1px solid hsla(240,5%,5%,0.3) !important;;
+    background-clip: padding-box;
+  }
+}
+
+/* Override vertical shifts when moving a tab (9 Jan 2018) */
+#TabsToolbar[movingtab] {
+  padding-bottom: 0 !important;
+}
+#TabsToolbar[movingtab] > .tabbrowser-tabs {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+#TabsToolbar[movingtab] + #nav-bar {
+  margin-top: 0 !important;
+}
